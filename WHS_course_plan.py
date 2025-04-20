@@ -78,14 +78,17 @@ elif section == "Course Planner":
         grade_num = year.split()[0].replace("th", "")
         base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
 
-        eligible_courses = base_courses[base_courses["Course Name"].apply(
-            lambda name: has_prereq_met(name, year, st.session_state.course_plan, prereq_dict)
-        )]
+        if year != "12th Grade":
+            eligible_courses = base_courses[base_courses["Course Name"].apply(
+                lambda name: has_prereq_met(name, year, st.session_state.course_plan, prereq_dict)
+            )]
+        else:
+            eligible_courses = base_courses.copy()
 
         if not eligible_courses.empty:
-            excluded_courses = base_courses[~base_courses["Course Name"].isin(eligible_courses["Course Name"])]
+            excluded_courses = base_courses[~base_courses["Course Name"].isin(eligible_courses["Course Name"])] if year != "12th Grade" else pd.DataFrame()
         else:
-            excluded_courses = base_courses.copy()
+            excluded_courses = base_courses.copy() if year != "12th Grade" else pd.DataFrame()
 
         if not eligible_courses.empty:
             def format_course_name(row):
@@ -113,7 +116,7 @@ elif section == "Course Planner":
         else:
             st.warning("⚠️ No eligible courses available for this grade level (missing prerequisites?).")
 
-        if not excluded_courses.empty:
+        if not excluded_courses.empty():
             st.markdown("**❌ Courses not shown due to missing prerequisites:**")
             for _, row in excluded_courses.iterrows():
                 prereqs = prereq_dict.get(row["Course Name"], "")
