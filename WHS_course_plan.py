@@ -32,12 +32,12 @@ course_catalog = load_course_catalog()
 def is_grade_allowed(levels, grade):
     try:
         grade_num = int(grade)
-        levels = levels.strip().lower().replace("th", "")
-        if '-' in levels:
-            start, end = map(int, levels.split('-'))
-            return start <= grade_num <= end
-        else:
-            return int(levels) == grade_num
+        # Accept grade if it appears as a whole number or in a range like 10-12
+        return str(grade_num) in levels or any(
+            start <= grade_num <= end
+            for part in levels.split(',')
+            for start, end in [map(int, part.strip().split('-'))] if '-' in part
+        )
     except:
         return False
 
