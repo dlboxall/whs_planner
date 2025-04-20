@@ -82,7 +82,10 @@ elif section == "Course Planner":
             lambda name: has_prereq_met(name, year, st.session_state.course_plan, prereq_dict)
         )]
 
-        excluded_courses = base_courses[~base_courses["Course Name"].isin(eligible_courses["Course Name"])]
+        if not eligible_courses.empty:
+            excluded_courses = base_courses[~base_courses["Course Name"].isin(eligible_courses["Course Name"])]
+        else:
+            excluded_courses = base_courses.copy()
 
         if not eligible_courses.empty:
             def format_course_name(row):
