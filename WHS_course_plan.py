@@ -17,17 +17,18 @@ st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
 # --- Load full course catalog ---
-catalog_path = "WHS_course_catalog_with_tags.csv"
+catalog_path = "WHS_course_catalog_with_prereqs.csv"
 @st.cache_data
 def load_course_catalog():
     df = pd.read_csv(catalog_path)
-    df["Grade Levels"] = df["Grade Levels"].astype(str)  # Ensure string type for filtering
+    df["Grade Levels"] = df["Grade Levels"].astype(str)
     df["Tags"] = df["Tags"].fillna("")
+    df["Prerequisites"] = df["Prerequisites"].fillna("")
     return df
 
 course_catalog = load_course_catalog()
 
-# --- Helper function to check grade eligibility ---
+# --- Helper functions ---
 def is_grade_allowed(levels, grade):
     try:
         grade_num = int(grade)
@@ -40,6 +41,17 @@ def is_grade_allowed(levels, grade):
     except:
         return False
 
+def has_prereq_met(course_name, current_year, course_plan, prereq_dict):
+    prereqs = [p.strip() for p in prereq_dict.get(course_name, "").split(",") if p.strip()]
+    if not prereqs:
+        return True
+    prior_courses = []
+    for yr in years:
+        if years.index(yr) >= years.index(current_year):
+            break
+        prior_courses += course_plan[yr]
+    return all(p in prior_courses for p in prereqs)
+
 # --- Section 1: Career Pathways (placeholder) ---
 if section == "Career Pathways":
     st.header("🎓 Career Pathways")
@@ -49,7 +61,6 @@ if section == "Career Pathways":
 elif section == "Course Planner":
     st.header("📋 4-Year Course Planning Grid")
 
-    # Define 8 entries per year level
     years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
     row_labels = [f"Course {i+1}" for i in range(8)]
 
@@ -58,14 +69,19 @@ elif section == "Course Planner":
             year: ["" for _ in range(8)] for year in years
         }
 
+    prereq_dict = dict(zip(course_catalog["Course Name"], course_catalog["Prerequisites"]))
+
     for year in years:
         st.subheader(year)
         cols = st.columns(4)
 
-        grade_num = year.split()[0].replace("th", "")  # e.g., '9'
-        grade_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
+        grade_num = year.split()[0].replace("th", "")
+        eligible_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
 
-        # Display course name with badges
+        eligible_courses = eligible_courses[eligible_courses["Course Name"].apply(
+            lambda name: has_prereq_met(name, year, st.session_state.course_plan, prereq_dict)
+        )]
+
         def format_course_name(row):
             name = row["Course Name"]
             tags = row["Tags"]
@@ -74,12 +90,12 @@ elif section == "Course Planner":
                 return f"{name} {tag_display}"
             return name
 
-        display_options = grade_courses.apply(format_course_name, axis=1).tolist()
-        name_map = dict(zip(display_options, grade_courses["Course Name"]))
+        display_options = eligible_courses.apply(format_course_name, axis=1).tolist()
+        name_map = dict(zip(display_options, eligible_courses["Course Name"]))
         options = [""] + sorted(display_options)
 
         for i in range(8):
-            col = cols[i % 4]  # Arrange 4 per row
+            col = cols[i % 4]
             with col:
                 selected_display = st.selectbox(
                     label=f"{year} - {row_labels[i]}",
