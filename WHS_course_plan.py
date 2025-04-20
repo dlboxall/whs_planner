@@ -16,11 +16,14 @@ st.title("📘 WHS Course Planner Dashboard")
 st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
-# --- Mock course list ---
-mock_courses = [
-    "", "English 9", "Biology", "Algebra I", "World Geography",
-    "Speech", "Physical Education", "Spanish I", "Introduction to Business"
-]
+# --- Load full course catalog ---
+catalog_path = "WHS_course_catalog_enriched.csv"
+@st.cache_data
+def load_course_catalog():
+    df = pd.read_csv(catalog_path)
+    return df
+
+course_catalog = load_course_catalog()
 
 # --- Section 1: Career Pathways (placeholder) ---
 if section == "Career Pathways":
@@ -43,13 +46,19 @@ elif section == "Course Planner":
     for year in years:
         st.subheader(year)
         cols = st.columns(4)
+
+        # Get course list for that grade
+        grade_filter = year.split()[0]  # e.g., "9"
+        grade_courses = course_catalog[course_catalog["Grade Levels"].str.contains(grade_filter, na=False)]
+        options = [""] + sorted(grade_courses["Course Name"].unique().tolist())
+
         for i in range(8):
             col = cols[i % 4]  # Arrange 4 per row
             with col:
                 selected_course = st.selectbox(
                     label=f"{year} - {row_labels[i]}",
-                    options=mock_courses,
-                    index=mock_courses.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in mock_courses else 0,
+                    options=options,
+                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
                     key=f"{year}_{i}"
                 )
                 st.session_state.course_plan[year][i] = selected_course
@@ -107,4 +116,3 @@ elif section == "Export Plan":
         )
     else:
         st.info("Fill out the course plan before exporting.")
-
