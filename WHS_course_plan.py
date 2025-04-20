@@ -76,34 +76,45 @@ elif section == "Course Planner":
         cols = st.columns(4)
 
         grade_num = year.split()[0].replace("th", "")
-        eligible_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
+        base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
 
-        eligible_courses = eligible_courses[eligible_courses["Course Name"].apply(
+        eligible_courses = base_courses[base_courses["Course Name"].apply(
             lambda name: has_prereq_met(name, year, st.session_state.course_plan, prereq_dict)
         )]
 
-        def format_course_name(row):
-            name = row["Course Name"]
-            tags = row["Tags"]
-            if tags:
-                tag_display = " ".join([f"[{tag.strip()}]" for tag in tags.split(",")])
-                return f"{name} {tag_display}"
-            return name
+        excluded_courses = base_courses[~base_courses["Course Name"].isin(eligible_courses["Course Name"])]
 
-        display_options = eligible_courses.apply(format_course_name, axis=1).tolist()
-        name_map = dict(zip(display_options, eligible_courses["Course Name"]))
-        options = [""] + sorted(display_options)
+        if not eligible_courses.empty:
+            def format_course_name(row):
+                name = row["Course Name"]
+                tags = row["Tags"]
+                if tags:
+                    tag_display = " ".join([f"[{tag.strip()}]" for tag in tags.split(",")])
+                    return f"{name} {tag_display}"
+                return name
 
-        for i in range(8):
-            col = cols[i % 4]
-            with col:
-                selected_display = st.selectbox(
-                    label=f"{year} - {row_labels[i]}",
-                    options=options,
-                    index=options.index(next((k for k, v in name_map.items() if v == st.session_state.course_plan[year][i]), "")) if st.session_state.course_plan[year][i] else 0,
-                    key=f"{year}_{i}"
-                )
-                st.session_state.course_plan[year][i] = name_map.get(selected_display, "")
+            display_options = eligible_courses.apply(format_course_name, axis=1).tolist()
+            name_map = dict(zip(display_options, eligible_courses["Course Name"]))
+            options = [""] + sorted(display_options)
+
+            for i in range(8):
+                col = cols[i % 4]
+                with col:
+                    selected_display = st.selectbox(
+                        label=f"{year} - {row_labels[i]}",
+                        options=options,
+                        index=options.index(next((k for k, v in name_map.items() if v == st.session_state.course_plan[year][i]), "")) if st.session_state.course_plan[year][i] else 0,
+                        key=f"{year}_{i}"
+                    )
+                    st.session_state.course_plan[year][i] = name_map.get(selected_display, "")
+        else:
+            st.warning("⚠️ No eligible courses available for this grade level (missing prerequisites?).")
+
+        if not excluded_courses.empty:
+            st.markdown("**❌ Courses not shown due to missing prerequisites:**")
+            for _, row in excluded_courses.iterrows():
+                prereqs = prereq_dict.get(row["Course Name"], "")
+                st.markdown(f"- {row['Course Name']}: _requires_ {prereqs}")
 
         # Requirements checklist display
         st.markdown("**✅ Requirements Check**")
