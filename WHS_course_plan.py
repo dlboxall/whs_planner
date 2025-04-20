@@ -21,6 +21,7 @@ catalog_path = "WHS_course_catalog_enriched.csv"
 @st.cache_data
 def load_course_catalog():
     df = pd.read_csv(catalog_path)
+    df["Grade Levels"] = df["Grade Levels"].astype(str)  # Ensure string type for filtering
     return df
 
 course_catalog = load_course_catalog()
