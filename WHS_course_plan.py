@@ -17,11 +17,12 @@ st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
 # --- Load full course catalog ---
-catalog_path = "WHS_course_catalog_enriched.csv"
+catalog_path = "WHS_course_catalog_with_tags.csv"
 @st.cache_data
 def load_course_catalog():
     df = pd.read_csv(catalog_path)
     df["Grade Levels"] = df["Grade Levels"].astype(str)  # Ensure string type for filtering
+    df["Tags"] = df["Tags"].fillna("")
     return df
 
 course_catalog = load_course_catalog()
@@ -63,18 +64,30 @@ elif section == "Course Planner":
 
         grade_num = year.split()[0].replace("th", "")  # e.g., '9'
         grade_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
-        options = [""] + sorted(grade_courses["Course Name"].unique().tolist())
+
+        # Display course name with badges
+        def format_course_name(row):
+            name = row["Course Name"]
+            tags = row["Tags"]
+            if tags:
+                tag_display = " ".join([f"[{tag.strip()}]" for tag in tags.split(",")])
+                return f"{name} {tag_display}"
+            return name
+
+        display_options = grade_courses.apply(format_course_name, axis=1).tolist()
+        name_map = dict(zip(display_options, grade_courses["Course Name"]))
+        options = [""] + sorted(display_options)
 
         for i in range(8):
             col = cols[i % 4]  # Arrange 4 per row
             with col:
-                selected_course = st.selectbox(
+                selected_display = st.selectbox(
                     label=f"{year} - {row_labels[i]}",
                     options=options,
-                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                    index=options.index(next((k for k, v in name_map.items() if v == st.session_state.course_plan[year][i]), "")) if st.session_state.course_plan[year][i] else 0,
                     key=f"{year}_{i}"
                 )
-                st.session_state.course_plan[year][i] = selected_course
+                st.session_state.course_plan[year][i] = name_map.get(selected_display, "")
 
         # Requirements checklist display
         st.markdown("**✅ Requirements Check**")
