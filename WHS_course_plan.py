@@ -76,7 +76,7 @@ elif section == "Course Planner":
         cols = st.columns(4)
 
         grade_num = year.split()[0].replace("th", "")
-        base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
+        base_courses = course_catalog[course_catalog["Grade Levels"].str.contains(grade_num, na=False)]
 
         if year != "12th Grade":
             eligible_courses = base_courses[base_courses["Course Name"].apply(
