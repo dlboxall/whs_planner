@@ -26,6 +26,18 @@ def load_course_catalog():
 
 course_catalog = load_course_catalog()
 
+# --- Helper function to check grade eligibility ---
+def is_grade_allowed(levels, grade):
+    grade_num = int(grade)
+    try:
+        if '-' in levels:
+            start, end = map(int, levels.split('-'))
+            return start <= grade_num <= end
+        else:
+            return int(levels) == grade_num
+    except:
+        return False
+
 # --- Section 1: Career Pathways (placeholder) ---
 if section == "Career Pathways":
     st.header("🎓 Career Pathways")
@@ -48,9 +60,8 @@ elif section == "Course Planner":
         st.subheader(year)
         cols = st.columns(4)
 
-        # Get course list for that grade
-        grade_filter = year.split()[0]  # e.g., "9"
-        grade_courses = course_catalog[course_catalog["Grade Levels"].str.contains(grade_filter, na=False)]
+        grade_num = year.split()[0]  # e.g., '9'
+        grade_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lvl: is_grade_allowed(str(lvl), grade_num))]
         options = [""] + sorted(grade_courses["Course Name"].unique().tolist())
 
         for i in range(8):
