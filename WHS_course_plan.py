@@ -116,7 +116,7 @@ elif section == "Course Planner":
         else:
             st.warning("⚠️ No eligible courses available for this grade level (missing prerequisites?).")
 
-        if not excluded_courses.empty():
+        if not excluded_courses.empty:
             st.markdown("**❌ Courses not shown due to missing prerequisites:**")
             for _, row in excluded_courses.iterrows():
                 prereqs = prereq_dict.get(row["Course Name"], "")
