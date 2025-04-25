@@ -61,7 +61,7 @@ if section == "Career Pathways":
     st.info("Select a career interest to explore relevant courses. Coming soon!")
 
 # --- Section 2: Course Planner ---
-elif section == \"Course Planner\":
+elif section == "Course Planner":
     st.header("📋 4-Year Course Planning Grid")
 
     # --- Middle School Advanced Credit Section ---
