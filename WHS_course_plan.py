@@ -7,6 +7,7 @@
 
 import streamlit as st
 import pandas as pd
+import ast
 from io import BytesIO
 from fpdf import FPDF
 
@@ -16,41 +17,43 @@ st.title("📘 WHS Course Planner Dashboard")
 st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
-# --- Load full course catalog ---
-catalog_path = "WHS_course_catalog_with_prereqs.csv"
+# --- Load updated course catalog ---
+catalog_path = "WHS_course_catalog.csv"
 @st.cache_data
 def load_course_catalog():
     df = pd.read_csv(catalog_path)
-    df["Grade Levels"] = df["Grade Levels"].astype(str)
+    df["Grade Levels"] = df["Grade Levels"].apply(lambda x: ast.literal_eval(str(x)))
     df["Tags"] = df["Tags"].fillna("")
-    df["Prerequisites"] = df["Prerequisites"].fillna("")
+    df["Prerequisites"] = df["Prerequisites"].fillna("None")
+    df["Notes"] = df["Notes"].fillna("")
     return df
 
 course_catalog = load_course_catalog()
 
 # --- Helper functions ---
-def is_grade_allowed(levels, grade):
-    try:
-        grade_num = int(grade)
-        # Accept grade if it appears as a whole number or in a range like 10-12
-        return str(grade_num) in levels or any(
-            start <= grade_num <= end
-            for part in levels.split(',')
-            for start, end in [map(int, part.strip().split('-'))] if '-' in part
-        )
-    except:
-        return False
-
-def has_prereq_met(course_name, current_year, course_plan, prereq_dict):
-    prereqs = [p.strip() for p in prereq_dict.get(course_name, "").split(",") if p.strip()]
-    if not prereqs:
-        return True
-    prior_courses = []
+def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
+    taken = []
     for yr in years:
         if years.index(yr) >= years.index(current_year):
             break
-        prior_courses += course_plan[yr]
-    return all(p in prior_courses for p in prereqs)
+        taken += course_plan_codes[yr]
+
+    raw = prereq_dict.get(course_code, "None")
+    if raw == "None":
+        return True
+
+    try:
+        parsed = ast.literal_eval(raw)
+        if isinstance(parsed, int) or isinstance(parsed, str):
+            return str(parsed) in taken
+        elif isinstance(parsed, list) and all(isinstance(x, list) for x in parsed):
+            return all(any(str(code) in taken for code in group) for group in parsed)
+        elif isinstance(parsed, list):
+            return any(str(code) in taken for code in parsed)
+        else:
+            return False
+    except:
+        return False
 
 # --- Section 1: Career Pathways (placeholder) ---
 if section == "Career Pathways":
@@ -65,77 +68,49 @@ elif section == "Course Planner":
     row_labels = [f"Course {i+1}" for i in range(8)]
 
     if "course_plan" not in st.session_state:
-        st.session_state.course_plan = {
-            year: ["" for _ in range(8)] for year in years
-        }
+        st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
+        st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
 
-    prereq_dict = dict(zip(course_catalog["Course Name"], course_catalog["Prerequisites"]))
+    prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
 
     for year in years:
         st.subheader(year)
         cols = st.columns(4)
 
-        grade_num = year.split()[0].replace("th", "")
-        base_courses = course_catalog[course_catalog["Grade Levels"].str.contains(grade_num, na=False)]
+        grade_num = int(year.split()[0].replace("th", ""))
+        base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lst: grade_num in lst)]
 
         if year != "12th Grade":
-            eligible_courses = base_courses[base_courses["Course Name"].apply(
-                lambda name: has_prereq_met(name, year, st.session_state.course_plan, prereq_dict)
+            eligible_courses = base_courses[base_courses["Course Code"].astype(str).apply(
+                lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)
             )]
         else:
             eligible_courses = base_courses.copy()
 
         if not eligible_courses.empty:
-            excluded_courses = base_courses[~base_courses["Course Name"].isin(eligible_courses["Course Name"])] if year != "12th Grade" else pd.DataFrame()
-        else:
-            excluded_courses = base_courses.copy() if year != "12th Grade" else pd.DataFrame()
-
-        if not eligible_courses.empty:
-            def format_course_name(row):
-                name = row["Course Name"]
-                tags = row["Tags"]
-                if tags:
-                    tag_display = " ".join([f"[{tag.strip()}]" for tag in tags.split(",")])
-                    return f"{name} {tag_display}"
-                return name
-
-            display_options = eligible_courses.apply(format_course_name, axis=1).tolist()
-            name_map = dict(zip(display_options, eligible_courses["Course Name"]))
-            options = [""] + sorted(display_options)
+            options = [""] + eligible_courses["Course Name"].tolist()
+            code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+            notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
 
             for i in range(8):
                 col = cols[i % 4]
                 with col:
-                    selected_display = st.selectbox(
+                    selected_course = st.selectbox(
                         label=f"{year} - {row_labels[i]}",
                         options=options,
-                        index=options.index(next((k for k, v in name_map.items() if v == st.session_state.course_plan[year][i]), "")) if st.session_state.course_plan[year][i] else 0,
+                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
                         key=f"{year}_{i}"
                     )
-                    st.session_state.course_plan[year][i] = name_map.get(selected_display, "")
+                    st.session_state.course_plan[year][i] = selected_course
+                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+
+                    if selected_course:
+                        note = notes_lookup.get(selected_course, "")
+                        if note:
+                            st.caption(f"ℹ️ {note}")
         else:
             st.warning("⚠️ No eligible courses available for this grade level (missing prerequisites?).")
 
-        if not excluded_courses.empty:
-            st.markdown("**❌ Courses not shown due to missing prerequisites:**")
-            for _, row in excluded_courses.iterrows():
-                prereqs = prereq_dict.get(row["Course Name"], "")
-                st.markdown(f"- {row['Course Name']}: _requires_ {prereqs}")
-
-        # Requirements checklist display
-        st.markdown("**✅ Requirements Check**")
-        required = {
-            "9th Grade": ["English 9", "Biology"],
-            "10th Grade": ["English 10", "Physical Science"],
-            "11th Grade": ["English 11", "US History"],
-            "12th Grade": ["English 12", "US Government"]
-        }
-        courses_taken = st.session_state.course_plan[year]
-        for req in required.get(year, []):
-            if req in courses_taken:
-                st.success(f"✓ {req} completed")
-            else:
-                st.error(f"✗ {req} missing")
         st.markdown("---")
 
 # --- Section 3: Graduation & Scholarships ---
