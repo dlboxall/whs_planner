@@ -61,7 +61,26 @@ if section == "Career Pathways":
     st.info("Select a career interest to explore relevant courses. Coming soon!")
 
 # --- Section 2: Course Planner ---
-elif section == "Course Planner":
+elif section == \"Course Planner\":
+    st.header("📋 4-Year Course Planning Grid")
+
+    # --- Middle School Advanced Credit Section ---
+    st.subheader("📘 High School Credit Earned in Middle School")
+    ms_options = ["", "Integrated Health", "Algebra I", "Geometry", "Algebra II", "Geography", "Band", "Orchestra"]
+    if "ms_credits" not in st.session_state:
+        st.session_state.ms_credits = ["" for _ in range(4)]
+
+    ms_cols = st.columns(4)
+    for i in range(4):
+        with ms_cols[i % 4]:
+            st.session_state.ms_credits[i] = st.selectbox(
+                f"Middle School Course {i+1}",
+                ms_options,
+                index=ms_options.index(st.session_state.ms_credits[i]) if st.session_state.ms_credits[i] in ms_options else 0,
+                key=f"ms_course_{i}"
+            )
+
+    st.markdown("---")
     st.header("📋 4-Year Course Planning Grid")
 
     years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
