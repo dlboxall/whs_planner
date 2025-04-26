@@ -60,8 +60,9 @@ elif section == "Course Planner":
 
     # --- Middle School Credit Section ---
     st.subheader("📘 High School Credit Earned in Middle School")
+    ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in (x if isinstance(x, list) else [x]))]
 
-    ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
+    #ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
     ms_options = [""] + ms_courses["Course Name"].tolist()
 
     if "ms_credits" not in st.session_state:
