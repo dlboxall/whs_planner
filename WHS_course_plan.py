@@ -84,53 +84,80 @@ elif section == "Course Planner":
     st.header("📋 4-Year Course Planning Grid")
 
     years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
-    row_labels = [f"Course {i+1}" for i in range(8)]
+row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
+row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 
-    if "course_plan" not in st.session_state:
-        st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
-        st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
+if "course_plan" not in st.session_state:
+    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
+    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
 
-    prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
+prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
 
     for year in years:
-        st.subheader(year)
-        cols = st.columns(4)
+    st.subheader(year)
 
-        grade_num = int(year.split()[0].replace("th", ""))
-        base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lst: grade_num in lst)]
+    grade_num = int(year.split()[0].replace("th", ""))
+    base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lst: grade_num in lst)]
 
-        if year != "12th Grade":
-            eligible_courses = base_courses[base_courses["Course Code"].astype(str).apply(
+    prereq_taken = []
+
+    # --- Top 4 courses (fall semester)
+    fall_cols = st.columns(4)
+    for i, label in enumerate(row_labels_fall):
+        col = fall_cols[i]
+        with col:
+            dept_courses = base_courses[base_courses["Department"].str.contains(label, case=False, na=False)]
+            eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
                 lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)
             )]
-        else:
-            eligible_courses = base_courses.copy()
 
-        if not eligible_courses.empty:
             options = [""] + eligible_courses["Course Name"].tolist()
             code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
             notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
 
-            for i in range(8):
-                col = cols[i % 4]
-                with col:
-                    selected_course = st.selectbox(
-                        label=f"{year} - {row_labels[i]}",
-                        options=options,
-                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
-                        key=f"{year}_{i}"
-                    )
-                    st.session_state.course_plan[year][i] = selected_course
-                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+            selected_course = st.selectbox(
+                label=f"{year} - {label}",
+                options=options,
+                index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                key=f"{year}_{i}"
+            )
+            st.session_state.course_plan[year][i] = selected_course
+            st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
 
-                    if selected_course:
-                        note = notes_lookup.get(selected_course, "")
-                        if note:
-                            st.caption(f"ℹ️ {note}")
-        else:
-            st.warning("⚠️ No eligible courses available for this grade level (missing prerequisites?).")
+            if selected_course:
+                prereq_taken.append(code_lookup.get(selected_course, ""))
+                note = notes_lookup.get(selected_course, "")
+                if note:
+                    st.caption(f"ℹ️ {note}")
 
-        st.markdown("---")
+    # --- Bottom 4 courses (spring semester)
+    spring_cols = st.columns(4)
+    for j, label in enumerate(row_labels_spring):
+        col = spring_cols[j]
+        with col:
+            eligible_courses = base_courses[base_courses["Course Code"].astype(str).apply(
+                lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)
+            )]
+
+            options = [""] + eligible_courses["Course Name"].tolist()
+            code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+            notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+            selected_course = st.selectbox(
+                label=f"{year} - {label}",
+                options=options,
+                index=options.index(st.session_state.course_plan[year][j+4]) if st.session_state.course_plan[year][j+4] in options else 0,
+                key=f"{year}_{j+4}"
+            )
+            st.session_state.course_plan[year][j+4] = selected_course
+            st.session_state.course_plan_codes[year][j+4] = code_lookup.get(selected_course, "")
+
+            if selected_course:
+                note = notes_lookup.get(selected_course, "")
+                if note:
+                    st.caption(f"ℹ️ {note}")
+
+    st.markdown("---")
 
 # --- Section 3: Graduation & Scholarships ---
 elif section == "Graduation & Scholarships":
