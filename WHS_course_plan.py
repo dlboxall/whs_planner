@@ -92,8 +92,7 @@ if "course_plan" not in st.session_state:
     st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
 
 prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
-
-    for year in years:
+for year in years:
     st.subheader(year)
 
     grade_num = int(year.split()[0].replace("th", ""))
