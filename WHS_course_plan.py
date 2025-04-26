@@ -11,10 +11,11 @@ st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
 # --- Load updated course catalog ---
-catalog_path = "WHS_course_catalog.csv"
+catalog_path = "WHS_course_catalog.xlsx"
+
 @st.cache_data
 def load_course_catalog():
-    df = pd.read_csv(catalog_path)
+    df = pd.read_excel(catalog_path)
     df["Grade Levels"] = df["Grade Levels"].apply(lambda x: ast.literal_eval(str(x)))
     df["Tags"] = df["Tags"].fillna("")
     df["Prerequisites"] = df["Prerequisites"].fillna("None")
@@ -23,7 +24,7 @@ def load_course_catalog():
 
 course_catalog = load_course_catalog()
 
-# --- Helper functions ---
+# --- Helper function to check prerequisites ---
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     taken = []
     for yr in years:
@@ -57,9 +58,12 @@ if section == "Career Pathways":
 elif section == "Course Planner":
     st.header("📋 4-Year Course Planning Grid")
 
-    # --- Middle School Advanced Credit Section ---
+    # --- Middle School Credit Section ---
     st.subheader("📘 High School Credit Earned in Middle School")
-    ms_options = ["", "Integrated Health", "Algebra I", "Geometry", "Algebra II", "Geography", "Band", "Orchestra"]
+
+    ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
+    ms_options = [""] + ms_courses["Course Name"].tolist()
+
     if "ms_credits" not in st.session_state:
         st.session_state.ms_credits = ["" for _ in range(4)]
 
@@ -93,17 +97,27 @@ elif section == "Course Planner":
 
         prereq_taken = []
 
-        # --- Top 4 courses (fall semester)
+        # --- Top 4 courses (Fall Semester) ---
         fall_cols = st.columns(4)
         for i, label in enumerate(row_labels_fall):
             col = fall_cols[i]
             with col:
-                dept_courses = base_courses[base_courses["Department"].str.contains(label, case=False, na=False)]
+                if label == "English":
+                    dept_courses = base_courses[base_courses["Department"].str.fullmatch("English", case=False, na=False)]
+                elif label == "Mathematics":
+                    dept_courses = base_courses[base_courses["Department"].str.fullmatch("Mathematics", case=False, na=False)]
+                elif label == "Science":
+                    dept_courses = base_courses[base_courses["Department"].str.fullmatch("Science", case=False, na=False)]
+                elif label == "Social Studies":
+                    dept_courses = base_courses[base_courses["Department"].str.fullmatch("Social Studies", case=False, na=False)]
+                else:
+                    dept_courses = base_courses
+
                 eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
                     lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)
                 )]
 
-                options = ["" ] + eligible_courses["Course Name"].tolist()
+                options = [""] + eligible_courses["Course Name"].tolist()
                 code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
                 notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
 
@@ -122,7 +136,7 @@ elif section == "Course Planner":
                     if note:
                         st.caption(f"ℹ️ {note}")
 
-        # --- Bottom 4 courses (spring semester)
+        # --- Bottom 4 courses (Spring Semester) ---
         spring_cols = st.columns(4)
         for j, label in enumerate(row_labels_spring):
             col = spring_cols[j]
@@ -151,8 +165,6 @@ elif section == "Course Planner":
 
         st.markdown("---")
 
-    pass
-
 # --- Section 3: Graduation & Scholarships ---
 elif section == "Graduation & Scholarships":
     st.header("🏆 Graduation Requirements Tracker")
@@ -162,12 +174,20 @@ elif section == "Graduation & Scholarships":
 elif section == "Export Plan":
     st.header("📄 Export Course Plan to PDF")
 
-    def create_pdf_from_plan(course_dict):
+    def create_pdf_from_plan(course_dict, ms_credits):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
         pdf.cell(200, 10, txt="WHS Course Plan", ln=True, align="C")
         pdf.ln(10)
+
+        pdf.set_font("Arial", style="B", size=12)
+        pdf.cell(200, 10, txt="Middle School Credits", ln=True)
+        pdf.set_font("Arial", size=11)
+        for i, course in enumerate(ms_credits):
+            if course.strip():
+                pdf.cell(200, 8, txt=f"  Course {i+1}: {course}", ln=True)
+        pdf.ln(5)
 
         for year, course_list in course_dict.items():
             pdf.set_font("Arial", style="B", size=12)
@@ -181,7 +201,7 @@ elif section == "Export Plan":
         return pdf.output(dest='S').encode('latin1')
 
     if st.session_state.course_plan is not None:
-        pdf_bytes = create_pdf_from_plan(st.session_state.course_plan)
+        pdf_bytes = create_pdf_from_plan(st.session_state.course_plan, st.session_state.ms_credits)
         st.download_button(
             label="📥 Download PDF",
             data=pdf_bytes,
