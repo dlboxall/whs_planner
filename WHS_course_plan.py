@@ -94,7 +94,8 @@ elif section == "Course Planner":
         st.subheader(year)
 
         grade_num = int(year.split()[0].replace("th", ""))
-        base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lst: grade_num in lst)]
+        #base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lst: grade_num in lst)]
+        base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in (x if isinstance(x, list) else [x]))]
 
         prereq_taken = []
 
