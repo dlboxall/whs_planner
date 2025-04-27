@@ -73,6 +73,8 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
         return False, False
 
 # --- Course Planning Grid ---
+years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
+row_labels = ["English", "Mathematics", "Science", "Social Studies", "Course 5", "Course 6", "Course 7", "Course 8"]
 
 for year in years:
     st.subheader(year)
