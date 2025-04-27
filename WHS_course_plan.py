@@ -11,11 +11,11 @@ st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
 # --- Load updated course catalog ---
-catalog_path = "WHS_course_catalog.xlsx"
+catalog_path = "WHS_course_catalog.csv"
 
 @st.cache_data
 def load_course_catalog():
-    df = pd.read_excel(catalog_path)
+    df = pd.read_csv(catalog_path)
     df["Grade Levels"] = df["Grade Levels"].apply(lambda x: ast.literal_eval(str(x)))
     df["Tags"] = df["Tags"].fillna("")
     df["Prerequisites"] = df["Prerequisites"].fillna("None")
