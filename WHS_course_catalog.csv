@@ -8,7 +8,7 @@ Orchestra,5604,Fine Arts,[8],0,None,None,
 Accounting I,9110,Business,"[10,11,12]",1,,None,
 Accounting II,9111,Business,"[11,12]",1,,[9110],
 Introduction To Business,9115,Business,"[9,10,11,12]",0.5,,None,Quarter class
-Personal Finance,9120,Business,"[11,12]",0.5,,None,Quarter class; Economics or Personal Finance required
+Personal Finance,9120,Business,"[11,12]",0.5,,"[2501,2504]",Quarter class; Economics or Personal Finance required
 PLTW Intro To Computer Science,5105,Computer Science,"[9,10,11,12]",1,,None,
 PLTW Computer Science Principles,5606,Computer Science,"[9,10,11,12]",1,,[5105],
 PLTW Cybersecurity,5700,Computer Science,"[10,11,12]",1,,[5105],
@@ -23,7 +23,7 @@ Accelerated English 9,2404,English,[9],1,Accelerated,None,
 English 10,2501,English,[10],1,,"[2401,2404]",
 Accelerated English 10,2504,English,[10],1,Accelerated,[2404],
 English 11,2601,English,[11],1,,"[2501, 2504]",
-English 11 Ap English Language & Composition (With Dual Credit Option),2608,English,[11],1,"AP, Dual Credit",2504,
+English 11 Ap English Language & Composition (With Dual Credit Option),2608,English,[11],1,"AP, Dual Credit",[2504],
 English 12,2715,English,[12],1,,"[2601, 2608]",
 English 12 Ap English Literature & Composition (With Dual Credit Option),2606,English,[12],1,"AP, Dual Credit",[2608],
 Explorations In Reading,2410,English,"[9,10,11,12]",0.5,,None,May be taken twice in separate school years]
@@ -65,7 +65,7 @@ Weight Training,6106,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE
 Team Sports,6113,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
 Individual & Dual Activities,6115,Physical Education,"[10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
 Health Education,6105,Physical Education,"[9, 10, 11, 12]",0.5,,None,Required if not completed in Middle School
-Recreational Sports,6117,Physical Education,"[11, 12]",0.5,,None,Maximum 2 PE classes per year
+Recreational Sports,6117,Physical Education,"[11, 12]",0.5,,"[2501,2504]",Maximum 2 PE classes per year
 Biology,7201,Science,[9],1,,None,
 Physical Science,7101,Science,[10],1,,[7201],
 Chemistry,7301,Science,"[10,11,12]",1,,"[7101,4504,4506]","C or higher in Physical Science, B or higher in Algebra I"
@@ -83,7 +83,7 @@ Modern World History,8201,Social Studies,[10],0.5,,None,
 Accelerated World History,8203,Social Studies,[10],1,Accelerated,None,
 US History,8304,Social Studies,[11],1,,None,
 AP US History,8310,Social Studies,"[11,12]",1.5,AP,[8203],
-US Government,8401,Social Studies,"[11,12]",0.5,,None,
+US Government,8401,Social Studies,"[11,12]",0.5,,"[2501,2504]",
 Rising World Powers,8605,Social Studies,"[9,10]",0.5,,None,
 Criminal Justice,8700,Social Studies,"[10,11,12]",0.5,,None,
 Psychology,8702,Social Studies,"[10,11,12]",0.5,,None,
@@ -91,7 +91,7 @@ Abnormal Psychology,8707,Social Studies,"[11,12]",0.5,,[8702],
 Sociology,8703,Social Studies,"[10,11,12]",0.5,,None,
 "Philosophy A:  A Good Life, Politics, And Morality",8704,Social Studies,"[10,11,12]",0.5,,None,Offered alternate years opposite Phil. B
 "Philosophy B:  Existence, Humanity, & Power",8705,Social Studies,"[10,11,12]",0.5,,None, Offered alternate years opposite Phil. A
-Economics,8701,Social Studies,"[11,12]",0.5,,None,Economics or Personal Finance required
+Economics,8701,Social Studies,"[11,12]",0.5,,"[2501,2504]",Economics or Personal Finance required
 Spanish I,3101,World Languages,"[9,10,11,12]",1,,None,
 Spanish II,3102,World Languages,"[10,11,12]",1,,[3101],C or higher in Spanish I
 Spanish III,3103,World Languages,"[11,12]",1,,[3102],B or higher in Spanish II
