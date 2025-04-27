@@ -72,6 +72,11 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     except:
         return False, False
 
+# --- Initialize session state for course planning ---
+if "course_plan" not in st.session_state:
+    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
+    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
+
 # --- Course Planning Grid ---
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels = ["English", "Mathematics", "Science", "Social Studies", "Course 5", "Course 6", "Course 7", "Course 8"]
