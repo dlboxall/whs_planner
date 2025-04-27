@@ -4,7 +4,7 @@ Integrated Health,6105,Physical Education,[8],0,,None,Counts towards health educ
 Accelerated Algebra I,4304,Mathematics,[8],1,,None,
 Accelerated Geometry,4402,Mathematics,[8],1,,"[4301,4304]",
 Band,5601,Fine Arts,[8],0,,None,
-Orchestra,5604,Fine Arts,[8],0,None,None,
+Orchestra,5604,Fine Arts,[8],0,,None,
 Accounting I,9110,Business,"[10,11,12]",1,,None,
 Accounting II,9111,Business,"[11,12]",1,,[9110],
 Introduction To Business,9115,Business,"[9,10,11,12]",0.5,,None,Quarter class
