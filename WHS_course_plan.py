@@ -24,12 +24,27 @@ def load_course_catalog():
 
 course_catalog = load_course_catalog()
 
-# --- Prerequisite Checking Function ---
+# --- Initialize session state for course planning ---
+if "course_plan" not in st.session_state:
+    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
+    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
+
+if "ms_credits" not in st.session_state:
+    st.session_state.ms_credits = ["" for _ in range(4)]
+
+# --- Load Prerequisites Dictionary ---
+prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
+
+# --- List of school years and row labels ---
+years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
+row_labels = ["English", "Mathematics", "Science", "Social Studies", "Course 5", "Course 6", "Course 7", "Course 8"]
+
+# --- Helper function to check if prerequisites are met ---
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     taken = []
     ms_taken = []
 
-    # Add Middle School credits separately
+    # Collect Middle School Credits
     if "ms_credits" in st.session_state:
         ms_credit_names = st.session_state.ms_credits
         for name in ms_credit_names:
@@ -38,18 +53,13 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
                 if not match.empty:
                     ms_taken.append(str(match.values[0]))
 
-    # Add High School past courses
-    years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
-    row_labels = ["English", "Mathematics", "Science", "Social Studies", "Course 5", "Course 6", "Course 7", "Course 8"]
-
-    prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
-    
+    # Collect previously taken high school courses
     for yr in years:
         if years.index(yr) >= years.index(current_year):
             break
         taken += st.session_state.course_plan_codes[yr]
 
-    # Now check prerequisites
+    # Check prerequisites
     raw = prereq_dict.get(course_code, "None")
     if raw == "None":
         return True, False
@@ -65,6 +75,7 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
         elif isinstance(parsed, list):
             needed = [str(code) for code in parsed]
 
+        # Check if any needed prerequisites are in taken courses or MS credits
         if any(code in taken + ms_taken for code in needed):
             only_ms = all(code not in taken for code in needed) and any(code in ms_taken for code in needed)
             return True, only_ms
