@@ -25,41 +25,99 @@ def load_course_catalog():
 course_catalog = load_course_catalog()
 
 # --- Helper function to check prerequisites ---
+# --- Prerequisite Checking Function ---
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     taken = []
+    ms_taken = []
 
-    # --- Add Middle School credits properly ---
+    # Add Middle School credits separately
     if "ms_credits" in st.session_state:
-        ms_taken = st.session_state.ms_credits
-        for name in ms_taken:
+        ms_credit_names = st.session_state.ms_credits
+        for name in ms_credit_names:
             if name.strip() != "":
                 match = course_catalog.loc[course_catalog["Course Name"] == name, "Course Code"]
                 if not match.empty:
-                    taken.append(str(match.values[0]))  # store the course code as a string
+                    ms_taken.append(str(match.values[0]))
 
-    # --- Add High School past courses ---
+    # Add High School past courses
     for yr in years:
         if years.index(yr) >= years.index(current_year):
             break
         taken += st.session_state.course_plan_codes[yr]
 
-    # --- Now check prerequisites ---
+    # Now check prerequisites
     raw = prereq_dict.get(course_code, "None")
     if raw == "None":
-        return True
+        return True, False
 
     try:
         parsed = ast.literal_eval(raw)
+        needed = []
+
         if isinstance(parsed, int) or isinstance(parsed, str):
-            return str(parsed) in taken
+            needed = [str(parsed)]
         elif isinstance(parsed, list) and all(isinstance(x, list) for x in parsed):
-            return all(any(str(code) in taken for code in group) for group in parsed)
+            needed = [str(code) for group in parsed for code in group]
         elif isinstance(parsed, list):
-            return any(str(code) in taken for code in parsed)
+            needed = [str(code) for code in parsed]
+
+        if any(code in taken + ms_taken for code in needed):
+            only_ms = all(code not in taken for code in needed) and any(code in ms_taken for code in needed)
+            return True, only_ms
         else:
-            return False
+            return False, False
     except:
-        return False
+        return False, False
+
+# --- Course Planning Grid ---
+
+for year in years:
+    st.subheader(year)
+    cols = st.columns(4)
+
+    grade_num = int(year.split()[0].replace("th", ""))
+    base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in (x if isinstance(x, list) else [x]))]
+
+    if year != "12th Grade":
+        eligible_courses = base_courses[base_courses["Course Code"].astype(str).apply(
+            lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)[0]
+        )]
+    else:
+        eligible_courses = base_courses.copy()
+
+    if not eligible_courses.empty:
+        options = [""] + eligible_courses["Course Name"].tolist()
+        code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+        notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+        for i in range(8):
+            col = cols[i % 4]
+            with col:
+                selected_course = st.selectbox(
+                    label=f"{year} - {row_labels[i]}",
+                    options=options,
+                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                    key=f"{year}_{i}"
+                )
+                st.session_state.course_plan[year][i] = selected_course
+                st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+
+                if selected_course:
+                    note = notes_lookup.get(selected_course, "")
+                    if note:
+                        st.caption(f"ℹ️ {note}")
+
+                    # --- New: Middle School Unlock Caption ---
+                    selected_code = code_lookup.get(selected_course, "")
+                    eligible, unlocked_by_ms = has_prereq_met(selected_code, year, st.session_state.course_plan_codes, prereq_dict)
+
+                    if unlocked_by_ms:
+                        st.caption("🎓 Eligible because of Middle School Credit!")
+
+    else:
+        st.warning("⚠️ No eligible courses available for this grade level (missing prerequisites?).")
+
+    st.markdown("---")
 
 # --- Section 1: Career Pathways (placeholder) ---
 if section == "Career Pathways":
