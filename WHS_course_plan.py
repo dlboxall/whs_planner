@@ -24,7 +24,6 @@ def load_course_catalog():
 
 course_catalog = load_course_catalog()
 
-# --- Helper function to check prerequisites ---
 # --- Prerequisite Checking Function ---
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     taken = []
@@ -43,6 +42,8 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
     row_labels = ["English", "Mathematics", "Science", "Social Studies", "Course 5", "Course 6", "Course 7", "Course 8"]
 
+    prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
+    
     for yr in years:
         if years.index(yr) >= years.index(current_year):
             break
