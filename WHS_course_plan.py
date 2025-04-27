@@ -28,17 +28,22 @@ course_catalog = load_course_catalog()
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     taken = []
 
-    # First, add Middle School credits to taken list!
+    # --- Add Middle School credits properly ---
     if "ms_credits" in st.session_state:
         ms_taken = st.session_state.ms_credits
-        taken += [course_catalog.loc[course_catalog["Course Name"] == name, "Course Code"].values[0]
-                  for name in ms_taken if name.strip() != ""]
-    
+        for name in ms_taken:
+            if name.strip() != "":
+                match = course_catalog.loc[course_catalog["Course Name"] == name, "Course Code"]
+                if not match.empty:
+                    taken.append(str(match.values[0]))  # store the course code as a string
+
+    # --- Add High School past courses ---
     for yr in years:
         if years.index(yr) >= years.index(current_year):
             break
-        taken += course_plan_codes[yr]
+        taken += st.session_state.course_plan_codes[yr]
 
+    # --- Now check prerequisites ---
     raw = prereq_dict.get(course_code, "None")
     if raw == "None":
         return True
