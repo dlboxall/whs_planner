@@ -133,7 +133,8 @@ elif section == "Course Planner":
                 st.write(f"Looking for department: '{department}' in grade: {year}")
                 st.write("Available department values in base_courses:", base_courses['Department'].unique())
 
-                dept_courses = base_courses[base_courses["Department"].str.strip().str.lower() == department.lower()]
+                #dept_courses = base_courses[base_courses["Department"].str.strip().str.lower() == department.lower()]
+                dept_courses = base_courses[base_courses["Department"].str.contains(department, case=False, na=False)]
 
                 #dept_courses = base_courses[base_courses["Tags"].str.contains(department, case=False, na=False)]
 
