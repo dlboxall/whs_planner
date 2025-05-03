@@ -33,6 +33,15 @@ def load_course_catalog():
 
 course_catalog = load_course_catalog()
 
+# Ensure middle school plan is initialized
+if "ms_credits" not in st.session_state:
+    st.session_state.ms_credits = ["" for _ in range(4)]
+
+# Ensure high school plan is initialized
+if "course_plan" not in st.session_state:
+    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
+    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
+
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
@@ -40,7 +49,6 @@ prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog
 
 # Helper function...
 # (rest of the app logic continues here)
-
 
 # --- Helper: Check Prerequisites ---
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
