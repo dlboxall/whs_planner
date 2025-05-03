@@ -51,11 +51,11 @@ prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
     taken = [ms_lookup.get(name, "") for name in st.session_state.ms_credits if name]
     for yr in years:
-    if yr == current_year:
-        # Include completed courses so far this year
-        taken += [code for code in course_plan_codes[yr] if code]
-        break
-    taken += course_plan_codes[yr]
+        if yr == current_year:
+            # Include completed courses so far this year
+            taken += [code for code in course_plan_codes[yr] if code]
+            break
+        taken += course_plan_codes[yr]
 
     raw = prereq_dict.get(course_code, "None")
     if raw == "None":
