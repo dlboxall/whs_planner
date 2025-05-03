@@ -21,8 +21,28 @@ def load_course_catalog():
     df["Tags"] = df["Tags"].fillna("")
     df["Prerequisites"] = df["Prerequisites"].fillna("None")
     df["Notes"] = df["Notes"].fillna("")
+    
+    def normalize_department(dept):
+        if isinstance(dept, str):
+            dept = dept.strip().lower()
+            if dept in ["vocal music", "performing arts"]:
+                return "Fine Arts"
+            return dept.title()
+        return dept
+
+    df["Department"] = df["Department"].apply(normalize_department)
     return df
 
+'''
+@st.cache_data
+def load_course_catalog():
+    df = pd.read_csv(catalog_path)
+    df["Grade Levels"] = df["Grade Levels"].apply(lambda x: ast.literal_eval(str(x)))
+    df["Tags"] = df["Tags"].fillna("")
+    df["Prerequisites"] = df["Prerequisites"].fillna("None")
+    df["Notes"] = df["Notes"].fillna("")
+    return df
+'''
 course_catalog = load_course_catalog()
 
 # --- Initialize Session State ---
