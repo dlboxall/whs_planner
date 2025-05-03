@@ -48,15 +48,16 @@ for i in range(4):
 prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
 
 # Helper to check if prerequisites are met
-def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
+def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, current_index):
     taken = [ms_lookup.get(name, "") for name in st.session_state.ms_credits if name]
     for yr in years:
+        for idx, code in enumerate(course_plan_codes[yr]):
+            if yr == current_year and idx >= current_index:
+                break
+            if code:
+                taken.append(code)
         if yr == current_year:
-            # Include completed courses so far this year
-            taken += [code for code in course_plan_codes[yr] if code]
             break
-        taken += course_plan_codes[yr]
-
     raw = prereq_dict.get(course_code, "None")
     if raw == "None":
         return True
@@ -79,7 +80,6 @@ for year in years:
     cols = st.columns(4)
     grade_num = int(year.split()[0].replace("th", "").replace("st", "").replace("nd", "").replace("rd", ""))
     base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in x)]
-    completed_this_year = []
 
     for i in range(8):
         department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
@@ -90,7 +90,7 @@ for year in years:
             if i < 4:
                 dept_courses = base_courses[base_courses["Department"] == department]
                 eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes | {year: completed_this_year}, prereq_dict)
+                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
                 )]
             else:
                 all_departments = sorted(base_courses["Department"].dropna().unique())
@@ -98,7 +98,7 @@ for year in years:
                 if selected_dept:
                     dept_courses = base_courses[base_courses["Department"] == selected_dept]
                     eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes | {year: completed_this_year}, prereq_dict)
+                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
                     )]
                 else:
                     eligible_courses = pd.DataFrame(columns=base_courses.columns)
@@ -119,7 +119,6 @@ for year in years:
                     note = notes_lookup.get(selected_course, "")
                     if note:
                         st.caption(f"ℹ️ {note}")
-                    completed_this_year.append(code_lookup[selected_course])
             else:
                 st.info(f"No eligible courses found for {department} in {year}.")
     st.markdown("---")
