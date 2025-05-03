@@ -1,17 +1,15 @@
 import streamlit as st
 import pandas as pd
 import ast
+from io import BytesIO
 from fpdf import FPDF
 
-# --- Configure Streamlit Page ---
 st.set_page_config(page_title="WHS Course Planner", layout="wide")
-
-st.title("\U0001F4D8 WHS Course Planner Dashboard")
+st.title("📘 WHS Course Planner Dashboard")
 
 st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["Career Pathways", "Course Planner", "Graduation & Scholarships", "Export Plan"])
 
-# --- Load Course Catalog ---
 catalog_path = "WHS_course_catalog.csv"
 
 @st.cache_data
@@ -21,7 +19,7 @@ def load_course_catalog():
     df["Tags"] = df["Tags"].fillna("")
     df["Prerequisites"] = df["Prerequisites"].fillna("None")
     df["Notes"] = df["Notes"].fillna("")
-    
+
     def normalize_department(dept):
         if isinstance(dept, str):
             dept = dept.strip().lower()
@@ -32,21 +30,17 @@ def load_course_catalog():
 
     df["Department"] = df["Department"].apply(normalize_department)
     return df
+
 course_catalog = load_course_catalog()
 
-# --- Initialize Session State ---
-if "course_plan" not in st.session_state:
-    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
-    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]}
-
-if "ms_credits" not in st.session_state:
-    st.session_state.ms_credits = ["" for _ in range(4)]
-
-# --- Setup years and prerequisite dictionary ---
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
+
+# Helper function...
+# (rest of the app logic continues here)
+
 
 # --- Helper: Check Prerequisites ---
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
