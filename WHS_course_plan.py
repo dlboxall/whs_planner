@@ -74,7 +74,8 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict):
 for year in years:
     st.header(year)
     cols = st.columns(4)
-    base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: int(year[0]) in x)]
+    grade_num = int(year.split()[0].replace("th", "").replace("st", "").replace("nd", "").replace("rd", ""))
+    base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in x)]
 
     for i in range(8):
         department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
