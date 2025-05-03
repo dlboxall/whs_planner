@@ -129,6 +129,9 @@ elif section == "Course Planner":
             col = cols[i % 4]
             with col:
                 label = f"{year} - {department}"
+                
+                st.write(f"Looking for department: '{department}' in grade: {year}")
+                st.write("Available department values in base_courses:", base_courses['Department'].unique())
 
                 dept_courses = base_courses[base_courses["Tags"].str.contains(department, case=False, na=False)]
 
