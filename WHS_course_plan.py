@@ -106,7 +106,6 @@ elif section == "Course Planner":
 
     st.markdown("---")
 
-    # High School Planner
     for year in years:
         st.subheader(year)
         cols = st.columns(4)
@@ -114,36 +113,44 @@ elif section == "Course Planner":
         grade_num = int(year.split()[0].replace("th", ""))
         base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda lst: grade_num in lst)]
 
-        if year != "12th Grade":
-            eligible_courses = base_courses[base_courses["Course Code"].astype(str).apply(
-                lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)[0]
-            )]
-        else:
-            eligible_courses = base_courses.copy()
-
         for i in range(8):
+            department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
             col = cols[i % 4]
             with col:
-                label = f"{year} - {row_labels_fall[i]}" if i < 4 else f"{year} - {row_labels_spring[i-4]}"
+                label = f"{year} - {department}"
 
-                if not eligible_courses.empty:
-                    options = [""] + eligible_courses["Course Name"].tolist()
-                    code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
-                    notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+                dept_courses = base_courses[base_courses["Tags"].str.contains(department, case=False, na=False)]
 
-                    selected_course = st.selectbox(
-                        label=label,
-                        options=options,
-                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
-                        key=f"{year}_{i}"
-                    )
-                    st.session_state.course_plan[year][i] = selected_course
-                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+                if year != "12th Grade":
+                    eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
+                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)[0]
+                    )]
+                else:
+                    eligible_courses = dept_courses.copy()
 
-                    if selected_course:
-                        note = notes_lookup.get(selected_course, "")
-                        if note:
-                            st.caption(f"\u2139\ufe0f {note}")
+                options = [""] + eligible_courses["Course Name"].tolist()
+                code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+                notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+                selected_course = st.selectbox(
+                    label=label,
+                    options=options,
+                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                    key=f"{year}_{i}"
+                )
+
+                st.session_state.course_plan[year][i] = selected_course
+                st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+
+                if selected_course:
+                    note = notes_lookup.get(selected_course, "")
+                    if note:
+                        st.caption(f"\u2139\ufe0f {note}")
+
+                    selected_code = code_lookup.get(selected_course, "")
+                    _, unlocked_by_ms = has_prereq_met(selected_code, year, st.session_state.course_plan_codes, prereq_dict)
+                    if unlocked_by_ms:
+                        st.caption("\U0001F393 Eligible because of Middle School Credit! \U0001F389")
 
 # --- Section 3: Graduation & Scholarships ---
 elif section == "Graduation & Scholarships":
