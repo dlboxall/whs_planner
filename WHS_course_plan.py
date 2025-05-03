@@ -76,6 +76,7 @@ for year in years:
     cols = st.columns(4)
     grade_num = int(year.split()[0].replace("th", "").replace("st", "").replace("nd", "").replace("rd", ""))
     base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in x)]
+    completed_this_year = []
 
     for i in range(8):
         department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
@@ -83,20 +84,18 @@ for year in years:
         with col:
             label = f"{year} - {department}"
 
-            # First row uses department filtering
             if i < 4:
                 dept_courses = base_courses[base_courses["Department"] == department]
                 eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)
+                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes | {year: completed_this_year}, prereq_dict)
                 )]
             else:
-                # Let user select department first
                 all_departments = sorted(base_courses["Department"].dropna().unique())
                 selected_dept = st.selectbox(f"Select Department ({department})", [""] + all_departments, key=f"{year}_dept_{i}")
                 if selected_dept:
                     dept_courses = base_courses[base_courses["Department"] == selected_dept]
                     eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)
+                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes | {year: completed_this_year}, prereq_dict)
                     )]
                 else:
                     eligible_courses = pd.DataFrame(columns=base_courses.columns)
@@ -117,6 +116,7 @@ for year in years:
                     note = notes_lookup.get(selected_course, "")
                     if note:
                         st.caption(f"ℹ️ {note}")
+                    completed_this_year.append(code_lookup[selected_course])
             else:
                 st.info(f"No eligible courses found for {department} in {year}.")
     st.markdown("---")
