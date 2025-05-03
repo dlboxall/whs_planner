@@ -121,12 +121,16 @@ elif section == "Course Planner":
 
                 dept_courses = base_courses[base_courses["Tags"].str.contains(department, case=False, na=False)]
 
-                if year != "12th Grade":
-                    eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)[0]
-                    )]
+                if dept_courses.empty:
+                    eligible_courses = pd.DataFrame(columns=base_courses.columns)
+                    st.info(f"No courses found for department tag '{department}' in {year}.")
                 else:
-                    eligible_courses = dept_courses.copy()
+                    if year != "12th Grade":
+                        eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
+                            lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict)[0]
+                        )]
+                    else:
+                        eligible_courses = dept_courses.copy()
 
                 options = [""] + eligible_courses["Course Name"].tolist()
                 code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
