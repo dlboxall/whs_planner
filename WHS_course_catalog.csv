@@ -50,12 +50,12 @@ Drama Ii:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",
 Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,
 Algebra I,4301,Mathematics,[9],1,,None,
 Accelerated Algebra I ,4304,Mathematics,[9],1,Accelerated,None,
-Geometry,4401,Mathematics,"[10,11,12]",1,,"[4301,4304]",
+Geometry,4401,Mathematics,"[9,10,11,12]",1,,"[4301,4304]",
 Accelerated Geometry,4402,Mathematics,"[9,10,11,12]",1,Accelerated,[4304],
 Algebra II with Financial Applications,4506,Mathematics,"[10,11,12]",1,,"[4401,4402]",
 Accelerated Algebra II,4504,Mathematics,"[10,11,12]",1,Accelerated,"[4402]",
 College Algebra (dual credit),4504,Mathematics,"[10,11,12]",1,Dual Credit,"[4506,4504]",
-Precalculus (Accelerated),4701,Mathematics,"[10,11,12]",1,Accelerated,[4504],
+Precalculus (Accelerated),4701,Mathematics,"[10,11,12]",1,Accelerated,"[4504]",
 AP Calculus With Dual Credit Option,4704,Mathematics,"[11,12]",1,"AP, Dual Credit","[[4504],[4701]]",See Ms. Fairchild prior to registration
 Introduction To Statistics And Probability,4707,Mathematics,"[11,12]",1,,"[4506,4504]",
 College Statistics With Dual Credit Option,4601,Mathematics,"[11,12]",0.5,Dual Credit,"[[4504],[4701]]",Only offered to students also taking AP Calculus
@@ -69,12 +69,12 @@ Recreational Sports,6117,Physical Education,"[11, 12]",0.5,,"[2501,2504]",Maximu
 Biology,7201,Science,[9],1,,None,
 Physical Science,7101,Science,[10],1,,[7201],
 Chemistry,7301,Science,"[10,11,12]",1,,"[7101,4504,4506]","C or higher in Physical Science, B or higher in Algebra I"
-Zoology and Ecology,7206,Science,"[11,12]",1,,[7201],Labs require either real or virtual disections
+Zoology and Ecology,7206,Science,"[11,12]",1,,"[7201]",Labs require either real or virtual disections
 Earth And Space Science,7104,Science,"[11,12]",1,,"[7101,7301]",
 Biology II,9999,Science,"[11,12]",1,Dual Credit,"[[7201],[7101]]",Labs require either real or virtual disections
 Physics,7400,Science,"[11,12]",1,,"[[7101],[4504,4506]]","B or higher in Physical Science, Algebra II pre or corequisite"
-Anatomy & Physiology,7209,Science,"[11,12]",1,,[7201],C or higher in Biology recommended
-Advanced Chemistry (With Dual Credit Option),7306,Science,"[11,12]",1,Dual Credit,[7301],"C or higher in Chemistry, Algebra II pre or corequisite"
+Anatomy & Physiology,7209,Science,"[11,12]",1,,"[7201]",C or higher in Biology recommended
+Advanced Chemistry (With Dual Credit Option),7306,Science,"[11,12]",1,Dual Credit,"[7301]","C or higher in Chemistry, Algebra II pre or corequisite"
 Explorations In Science,7407,Science,"[11,12]",1,,"[7101,7301]",
 Environmental Biology,7210,Science,"[11,12]",1,Dual Credit,"[[7201], [7101]]",B or higher in Biology recommended
 World Geography,8101,Social Studies,[9],0.5,,None,
