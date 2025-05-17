@@ -15,9 +15,9 @@ PLTW Cybersecurity,5700,Computer Science,"[10,11,12]",1,,[5105],
 Exploration In Creative Computing,5115,Computer Science,"[9,10,11,12]",1,,None,
 Speech I,2201,English,[9],0.5,,None,Quarter class; Speech 1 or Debate 1 Required
 Debate I,2205,English,[9],0.5,,None,Quarter class; Speech 1 or Debate 1 Required
-Debate II,2206,English,[10],0.5,,[2205],
-Debate III,2207,English,[11],0.5,,[2206],
-Debate IV,2209,English,[12],0.5,,[2207],
+Debate II,2206,English,[10],0.5,,[2205],Quarter course
+Debate III,2207,English,[11],0.5,,[2206],Quarter course
+Debate IV,2209,English,[12],0.5,,[2207],Quarter course
 English 9,2401,English,[9],1,,None,
 Accelerated English 9,2404,English,[9],1,Accelerated,None,
 English 10,2501,English,[10],1,,"[2401,2404]",
@@ -27,27 +27,27 @@ English 11 Ap English Language & Composition (With Dual Credit Option),2608,Engl
 English 12,2715,English,[12],1,,"[2601, 2608]",
 English 12 Ap English Literature & Composition (With Dual Credit Option),2606,English,[12],1,"AP, Dual Credit",[2608],
 Explorations In Reading,2410,English,"[9,10,11,12]",0.5,,None,May be taken twice in separate school years]
-Journalism / Yearbook I,2301,English,"[10,11,12]",0.5,,"[2401,2404]",
-Journalism / Yearbook II,2302,English,"[10,11,12]",0.5,,[2301],
+Journalism / Yearbook I,2301,English,"[10,11,12]",0.5,,"[2401,2404]",Quarter course
+Journalism / Yearbook II,2302,English,"[10,11,12]",0.5,,[2301],Quarter course
 Concert Band,1210,Fine Arts,"[9,10,11,12]",1,,[5601],Prior band experience required or can audition
 Concert Strings,1201,Fine Arts,"[9,10,11,12]",1,,[5604],Prior orchestra experience required or can audition
 Freshman Choir,1220,Vocal Music,[9],1,,None,May be required to audition
 Concert Choir,1221,Vocal Music,"[10,11,12]",1,,None,May be required to audition
-Introduction to Art,1101,Visual Arts,"[9,10,11,12]",0.5,,None,
-Photography I,1106,Visual Arts,"[9,10,11,12]",0.5,,[1101],
-Photography II,1108,Visual Arts,"[10,11,12]",0.5,,[1106],
-Graphic Design,1104,Visual Arts,"[10,11,12]",0.5,,[1101],
-Drawing,1105,Visual Arts,"[9,10,11,12]",0.5,,[1101],
-Painting,1107,Visual Arts,"[11,12]",0.5,,[1105],
-Pottery,1102,Visual Arts,"[9,10,11,12]",0.5,,[1101],
+Introduction to Art,1101,Visual Arts,"[9,10,11,12]",0.5,,None,Quarter course
+Photography I,1106,Visual Arts,"[9,10,11,12]",0.5,,[1101],Quarter course
+Photography II,1108,Visual Arts,"[10,11,12]",0.5,,[1106],Quarter course
+Graphic Design,1104,Visual Arts,"[10,11,12]",0.5,,[1101],Quarter course
+Drawing,1105,Visual Arts,"[9,10,11,12]",0.5,,[1101],Quarter course
+Painting,1107,Visual Arts,"[11,12]",0.5,,[1105],Quarter course
+Pottery,1102,Visual Arts,"[9,10,11,12]",0.5,,[1101],Quarter course
 Advanced Pottery,1109,Visual Arts,[12],0.5,,[1102],Please visit with Mr. Clark prior to registration
-Sculpture,1103,Visual Arts,"[10,11,12]",0.5,,[1101],
-Arts And Crafts,1113,Visual Arts,"[9,10,11,12]",0.5,,[1101],
-Printmaking,1114,Visual Arts,"[10,11,12]",0.5,,[1101],
+Sculpture,1103,Visual Arts,"[10,11,12]",0.5,,[1101],Quarter course
+Arts And Crafts,1113,Visual Arts,"[9,10,11,12]",0.5,,[1101],Quarter course
+Printmaking,1114,Visual Arts,"[10,11,12]",0.5,,[1101],Quarter course
 Unified Art,1120,Visual Arts,"[11,12]",0.5,,[1101],Please visit with Ms. Jensen prior to registration
-Drama I:  Introduction To Acting & Theatre,1301,Performing Arts,"[9,10,11,12]",0.5,,None,
-Drama Ii:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",0.5,,[1301],
-Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,
+Drama I:  Introduction To Acting & Theatre,1301,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter course
+Drama Ii:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",0.5,,[1301],Quarter course
+Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter course
 Algebra I,4301,Mathematics,[9],1,,None,
 Accelerated Algebra I ,4304,Mathematics,[9],1,Accelerated,None,
 Geometry,4401,Mathematics,"[9,10,11,12]",1,,"[4301,4304]",
@@ -55,7 +55,7 @@ Accelerated Geometry,4402,Mathematics,"[9,10,11,12]",1,Accelerated,[4304],
 Algebra II with Financial Applications,4506,Mathematics,"[10,11,12]",1,,"[4401,4402]",
 Accelerated Algebra II,4504,Mathematics,"[10,11,12]",1,Accelerated,"[4401,4402]",
 College Algebra (dual credit),4504,Mathematics,"[10,11,12]",1,Dual Credit,"[4506,4504]",
-Precalculus (Accelerated),4701,Mathematics,"[10,11,12]",1,Accelerated,"[4504]",
+Precalculus (Accelerated),4701,Mathematics,"[10,11,12]",1,Accelerated,[4504],
 AP Calculus With Dual Credit Option,4704,Mathematics,"[11,12]",1,"AP, Dual Credit","[[4504],[4701]]",See Ms. Fairchild prior to registration
 Introduction To Statistics And Probability,4707,Mathematics,"[11,12]",1,,"[4506,4504]",
 College Statistics With Dual Credit Option,4601,Mathematics,"[11,12]",0.5,Dual Credit,"[[4504],[4701]]",Only offered to students also taking AP Calculus
@@ -69,26 +69,26 @@ Recreational Sports,6117,Physical Education,"[11, 12]",0.5,,"[2501,2504]",Maximu
 Biology,7201,Science,[9],1,,None,
 Physical Science,7101,Science,[10],1,,[7201],
 Chemistry,7301,Science,"[10,11,12]",1,,"[7101,4504,4506]","C or higher in Physical Science, B or higher in Algebra I"
-Zoology and Ecology,7206,Science,"[11,12]",1,,"[7201]",Labs require either real or virtual disections
+Zoology and Ecology,7206,Science,"[11,12]",1,,[7201],Labs require either real or virtual disections
 Earth And Space Science,7104,Science,"[11,12]",1,,"[7101,7301]",
 Biology II,9999,Science,"[11,12]",1,Dual Credit,"[[7201],[7101]]",Labs require either real or virtual disections
 Physics,7400,Science,"[11,12]",1,,"[[7101],[4504,4506]]","B or higher in Physical Science, Algebra II pre or corequisite"
-Anatomy & Physiology,7209,Science,"[11,12]",1,,"[7201]",C or higher in Biology recommended
-Advanced Chemistry (With Dual Credit Option),7306,Science,"[11,12]",1,Dual Credit,"[7301]","C or higher in Chemistry, Algebra II pre or corequisite"
+Anatomy & Physiology,7209,Science,"[11,12]",1,,[7201],C or higher in Biology recommended
+Advanced Chemistry (With Dual Credit Option),7306,Science,"[11,12]",1,Dual Credit,[7301],"C or higher in Chemistry, Algebra II pre or corequisite"
 Explorations In Science,7407,Science,"[11,12]",1,,"[7101,7301]",
 Environmental Biology,7210,Science,"[11,12]",1,Dual Credit,"[[7201], [7101]]",B or higher in Biology recommended
-World Geography,8101,Social Studies,[9],0.5,,None,
+World Geography,8101,Social Studies,[9],0.5,,None,Quarter course
 Accelerated World Geography,8102,Social Studies,[9],1,Accelerated,None,
-Modern World History,8201,Social Studies,[10],0.5,,None,
+Modern World History,8201,Social Studies,[10],0.5,,None,Quarter course
 Accelerated World History,8203,Social Studies,[10],1,Accelerated,None,
 US History,8304,Social Studies,[11],1,,None,
 AP US History,8310,Social Studies,"[11,12]",1.5,AP,[8203],
-US Government,8401,Social Studies,"[11,12]",0.5,,"[2501,2504]",
-Rising World Powers,8605,Social Studies,"[9,10]",0.5,,None,
-Criminal Justice,8700,Social Studies,"[10,11,12]",0.5,,None,
-Psychology,8702,Social Studies,"[10,11,12]",0.5,,None,
-Abnormal Psychology,8707,Social Studies,"[11,12]",0.5,,[8702],
-Sociology,8703,Social Studies,"[10,11,12]",0.5,,None,
+US Government,8401,Social Studies,"[11,12]",0.5,,"[2501,2504]",Quarter course
+Rising World Powers,8605,Social Studies,"[9,10]",0.5,,None,Quarter course
+Criminal Justice,8700,Social Studies,"[10,11,12]",0.5,,None,Quarter course
+Psychology,8702,Social Studies,"[10,11,12]",0.5,,None,Quarter course
+Abnormal Psychology,8707,Social Studies,"[11,12]",0.5,,[8702],Quarter course
+Sociology,8703,Social Studies,"[10,11,12]",0.5,,None,Quarter course
 "Philosophy A:  A Good Life, Politics, And Morality",8704,Social Studies,"[10,11,12]",0.5,,None,Offered alternate years opposite Phil. B
 "Philosophy B:  Existence, Humanity, & Power",8705,Social Studies,"[10,11,12]",0.5,,None, Offered alternate years opposite Phil. A
 Economics,8701,Social Studies,"[11,12]",0.5,,"[2501,2504]",Economics or Personal Finance required
@@ -96,3 +96,37 @@ Spanish I,3101,World Languages,"[9,10,11,12]",1,,None,
 Spanish II,3102,World Languages,"[10,11,12]",1,,[3101],C or higher in Spanish I
 Spanish III,3103,World Languages,"[11,12]",1,,[3102],B or higher in Spanish II
 Spanish  IV,3104,World Languages,"[11,12]",1,,[3103],B or higher in Spanish III
+Plant Science,9601,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
+Animal Science,9605,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
+Machine Tool,13203,CTE,"[10,11,12]",1,Dual Credit,None,
+Adv Machine Tool,13204,CTE,"[10,11,12]",1,Dual Credit,[13203],
+Welding,13207,CTE,"[10,11,12]",1,Dual Credit,None,
+Adv Welding,13208,CTE,"[10,11,12]",1,Dual Credit,[13207],
+Health Science Careers,14001,CTE,"[11,12]",1,Dual Credit,None,Does not count as a HS science credit
+MedicalTerm & Hlthcare Exp,14002,CTE,"[11,12]",1,Dual Credit,[14001],
+Prin of Biomedical Science,14255,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
+Human Body Systems,14256,CTE,"[10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
+Culinary Arts I,16058,CTE,"[10,11,12]",1,,None,
+Culinary Arts 2,16059,CTE,"[10,11,12]",1,,"[16058,22202,22205]",
+General Construction,17003,CTE,"[10,11,12]",1,,None,
+Residential Construction,17004,CTE,"[10,11,12]",1,Dual Credit,[17003],DC depends on grade and end of course exam
+Woodworking,17007,CTE,"[9,10,11,12]",1,Dual Credit,None,
+Adv Woodworking,17008,CTE,"[10,11,12]",1,Dual Credit,[17007],
+Companion Animals,18102,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+Wildlife & Fisheries,18501,CTE,"[9,10,11,12]",1,,None,
+Intro to Human Services,19001,CTE,"[10,11,12]",0.5,,None,Quarter course
+Human Development: PreSch-School Age,19051,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. Classes for DC
+Human Development: Early Chilhood/Parenting,19255,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. Classes for DC
+Maintenance & Light Repair,20104,CTE,"[10,11,12]",1,,None,Recommended prereq.: Small Engine/Intro to Auto.
+SmEng/Intro to Auto,20109,CTE,"[10,11,12]",1,,None,
+Principles of Engineering,21004,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
+Intro to Engineering,21006,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
+Digital Electronics,21008,CTE,"[10,11,12]",1,Dual Credit,"[4301,4304]",
+Civil Eng & Architecture,21012,CTE,"[10,11,12]",1,Dual Credit,"[4301,4304]",
+Foods and Nutrition,22202,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+Cooking,22205,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+Leadership and Service,22213,CTE,"[11,12]",0.5,,"[19001,19051,19255]",Quarter course
+Business Tech,80023,CTE,"[9,10]",0.5,,None,Quarter course
+Careers That Build,80024,CTE,"[9,10]",0.5,,None,Quarter course
+Science Tech,80025,CTE,"[9,10]",0.5,,None,Does not count as a HS science credit
+Working w/People,80026,CTE,"[9,10]",0.5,,None,Quarter course
