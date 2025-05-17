@@ -46,7 +46,7 @@ Arts And Crafts,1113,Visual Arts,"[9,10,11,12]",0.5,,[1101],Quarter course
 Printmaking,1114,Visual Arts,"[10,11,12]",0.5,,[1101],Quarter course
 Unified Art,1120,Visual Arts,"[11,12]",0.5,,[1101],Please visit with Ms. Jensen prior to registration
 Drama I:  Introduction To Acting & Theatre,1301,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter course
-Drama Ii:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",0.5,,[1301],Quarter course
+Drama II:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",0.5,,[1301],Quarter course
 Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter course
 Algebra I,4301,Mathematics,[9],1,,None,
 Accelerated Algebra I ,4304,Mathematics,[9],1,Accelerated,None,
@@ -54,7 +54,7 @@ Geometry,4401,Mathematics,"[9,10,11,12]",1,,"[4301,4304]",
 Accelerated Geometry,4402,Mathematics,"[9,10,11,12]",1,Accelerated,[4304],
 Algebra II with Financial Applications,4506,Mathematics,"[10,11,12]",1,,"[4401,4402]",
 Accelerated Algebra II,4504,Mathematics,"[10,11,12]",1,Accelerated,"[4401,4402]",
-College Algebra (dual credit),4504,Mathematics,"[10,11,12]",1,Dual Credit,"[4506,4504]",
+College Algebra (dual credit),4502,Mathematics,"[10,11,12]",1,Dual Credit,"[4506,4504]",
 Precalculus (Accelerated),4701,Mathematics,"[10,11,12]",1,Accelerated,[4504],
 AP Calculus With Dual Credit Option,4704,Mathematics,"[11,12]",1,"AP, Dual Credit","[[4504],[4701]]",See Ms. Fairchild prior to registration
 Introduction To Statistics And Probability,4707,Mathematics,"[11,12]",1,,"[4506,4504]",
