@@ -2,123 +2,108 @@ import streamlit as st
 import pandas as pd
 import ast
 
-st.set_page_config(page_title="WHS Course Planner", layout="wide")
-st.title("📘 WHS Course Planner Dashboard")
+st.set_page_config(page_title="Graduation Pathways", layout="wide")
+st.title("🎓 Graduation Pathways Checker")
 
-# Load course catalog
+# Load the course catalog
 def load_course_catalog():
     df = pd.read_csv("WHS_course_catalog.csv")
     df["Grade Levels"] = df["Grade Levels"].apply(lambda x: ast.literal_eval(str(x)))
     df["Prerequisites"] = df["Prerequisites"].fillna("None")
     df["Tags"] = df["Tags"].fillna("")
     df["Notes"] = df["Notes"].fillna("")
+    df["Course Code"] = df["Course Code"].astype(str)
     return df
 
 course_catalog = load_course_catalog()
 
-# Set up grade levels and labels
-years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
-row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
-row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
+# Access saved student course plan
+course_plan = st.session_state.get("course_plan", {})
+ms_credits = st.session_state.get("ms_credits", [])
 
-# Session state initialization
-if "course_plan" not in st.session_state:
-    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
-    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
+# Combine all course names selected
+all_courses = [name for year in course_plan for name in course_plan[year] if name]
+all_courses += [name for name in ms_credits if name]
 
-if "ms_credits" not in st.session_state:
-    st.session_state.ms_credits = ["" for _ in range(4)]
+# Get the subset of catalog that matches selected courses
+selected_df = course_catalog[course_catalog["Course Name"].isin(all_courses)]
+selected_codes = set(selected_df["Course Code"].tolist())
 
-# Middle School Credits
-st.header("High School Credit Earned in Middle School")
-ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
-ms_options = [""] + ms_courses["Course Name"].tolist()
-ms_lookup = dict(zip(ms_courses["Course Name"], ms_courses["Course Code"].astype(str)))
-ms_cols = st.columns(4)
-for i in range(4):
-    with ms_cols[i]:
-        st.session_state.ms_credits[i] = st.selectbox(
-            f"Middle School Course {i+1}",
-            ms_options,
-            index=ms_options.index(st.session_state.ms_credits[i]) if st.session_state.ms_credits[i] in ms_options else 0,
-            key=f"ms_course_{i}"
-        )
+# Graduation Pathway Selector
+pathway = st.radio("Select Graduation Pathway:", [
+    "University",
+    "Career & Technical",
+    "Honors / Scholarship Opportunity"
+])
 
-# Build course prerequisite dictionary
-prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
+# Helper for displaying requirements with progress
+def display_requirement(requirement_text, earned, required):
+    if earned >= required:
+        st.markdown(f"<div style='color:green'><strong>✅ {requirement_text}: {earned} / {required}</strong></div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div style='color:red'><strong>❌ {requirement_text}: {earned} / {required}</strong></div>", unsafe_allow_html=True)
 
-# Helper to check if prerequisites are met
-def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, current_index):
-    taken = [ms_lookup.get(name, "") for name in st.session_state.ms_credits if name]
-    for yr in years:
-        for idx, code in enumerate(course_plan_codes[yr]):
-            if yr == current_year and idx >= current_index:
-                break
-            if code:
-                taken.append(code)
-        if yr == current_year:
-            break
-    raw = prereq_dict.get(course_code, "None")
-    if raw == "None":
-        return True
-    try:
-        parsed = ast.literal_eval(raw)
-        if isinstance(parsed, int) or isinstance(parsed, str):
-            return str(parsed) in taken
-        elif isinstance(parsed, list) and all(isinstance(x, list) for x in parsed):
-            return all(any(str(code) in taken for code in group) for group in parsed)
-        elif isinstance(parsed, list):
-            return any(str(code) in taken for code in parsed)
-        else:
-            return False
-    except:
-        return False
+# --- UNIVERSITY PATHWAY LOGIC --- #
+if pathway == "University":
+    st.header("University Pathway Requirements")
 
-# Main planner loop
-for year in years:
-    st.header(year)
-    cols = st.columns(4)
-    grade_num = int(year.split()[0].replace("th", "").replace("st", "").replace("nd", "").replace("rd", ""))
-    base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in x)]
+    # LANGUAGE ARTS (English department, with group-based code validation)
+    eng_df = selected_df[selected_df["Department"] == "English"]
+    eng_credits = eng_df["Credits"].sum()
+    required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
+    english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
+    display_requirement("4 Units of Language Arts", eng_credits, 4 if english_met else 99)
 
-    for i in range(8):
-        department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
-        col = cols[i % 4]
-        with col:
-            label = f"{year} - {department}"
+    # MATHEMATICS
+    math_df = selected_df[selected_df["Department"] == "Mathematics"]
+    math_credits = math_df["Credits"].sum()
+    has_alg1 = any("Algebra I" in name for name in math_df["Course Name"])
+    has_alg2 = any("Algebra II" in name for name in math_df["Course Name"])
+    has_geom = any("Geometry" in name for name in math_df["Course Name"])
+    condition = math_credits >= 3 and has_alg1 and has_geom and has_alg2
+    display_requirement("3 Units of Math including Algebra I, Geometry, Algebra II", math_credits, 3 if condition else 99)
 
-            if i < 4:
-                dept_courses = base_courses[base_courses["Department"] == department]
-                eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-                )]
-            else:
-                all_departments = sorted(base_courses["Department"].dropna().unique())
-                selected_dept = st.selectbox(f"Select Department ({department})", [""] + all_departments, key=f"{year}_dept_{i}")
-                if selected_dept:
-                    dept_courses = base_courses[base_courses["Department"] == selected_dept]
-                    eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-                    )]
-                else:
-                    eligible_courses = pd.DataFrame(columns=base_courses.columns)
+    # SCIENCE
+    sci_df = selected_df[selected_df["Department"] == "Science"]
+    sci_credits = sci_df["Credits"].sum()
+    has_bio = any("Biology" in name for name in sci_df["Course Name"])
+    condition = sci_credits >= 3 and has_bio
+    display_requirement("3 Units of Science including Biology", sci_credits, 3 if condition else 99)
 
-            if not eligible_courses.empty:
-                options = [""] + eligible_courses["Course Name"].tolist()
-                code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
-                notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
-                selected_course = st.selectbox(
-                    label=label,
-                    options=options,
-                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
-                    key=f"{year}_{i}"
-                )
-                st.session_state.course_plan[year][i] = selected_course
-                st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
-                if selected_course:
-                    note = notes_lookup.get(selected_course, "")
-                    if note:
-                        st.caption(f"ℹ️ {note}")
-            else:
-                st.info(f"No eligible courses found for {department} in {year}.")
-    st.markdown("---")
+    # SOCIAL STUDIES
+    ss_df = selected_df[selected_df["Department"] == "Social Studies"]
+    ss_credits = ss_df["Credits"].sum()
+    has_us_hist = any("U.S. History" in name for name in ss_df["Course Name"])
+    has_govt = any("Government" in name for name in ss_df["Course Name"])
+    condition = ss_credits >= 3 and has_us_hist and has_govt
+    display_requirement("3 Units of Social Studies (incl. U.S. History & Govt.)", ss_credits, 3 if condition else 99)
+
+    # FINE ARTS
+    fa_df = selected_df[selected_df["Department"] == "Fine Arts"]
+    fa_credits = fa_df["Credits"].sum()
+    display_requirement("1 Unit of Fine Arts", fa_credits, 1)
+
+    # PHYSICAL EDUCATION
+    pe_df = selected_df[selected_df["Department"] == "Physical Education"]
+    pe_credits = pe_df["Credits"].sum()
+    display_requirement("0.5 Unit of Physical Education", pe_credits, 0.5)
+
+    # HEALTH
+    health_df = selected_df[selected_df["Department"].str.contains("Health")]
+    health_credits = health_df["Credits"].sum()
+    display_requirement("0.5 Unit of Health or Health Integration", health_credits, 0.5)
+
+    # PERSONAL FINANCE OR ECONOMICS
+    pf_df = selected_df[selected_df["Course Name"].str.contains("Finance|Economics", case=False)]
+    pf_credits = pf_df["Credits"].sum()
+    display_requirement("0.5 Unit of Personal Finance or Economics", pf_credits, 0.5)
+
+    # COMBINATION UNIT
+    combo_df = selected_df[selected_df["Department"].isin([
+        "Career & Technical Education", "World Language"])]
+    combo_credits = combo_df["Credits"].sum()
+    display_requirement("1 Unit of Capstone/CTE/World Language", combo_credits, 1)
+
+    # ELECTIVES (assume total credits expected is 22)
+    total_credits = selected_df["Credits"].sum()
+    display_requirement("5.5 Units of Electives", total_credits, 22)
