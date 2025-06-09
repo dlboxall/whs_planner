@@ -12,6 +12,7 @@ def load_course_catalog():
     df["Prerequisites"] = df["Prerequisites"].fillna("None")
     df["Tags"] = df["Tags"].fillna("")
     df["Notes"] = df["Notes"].fillna("")
+    df["Course Code"] = df["Course Code"].astype(str)
     return df
 
 course_catalog = load_course_catalog()
@@ -26,6 +27,7 @@ all_courses += [name for name in ms_credits if name]
 
 # Get the subset of catalog that matches selected courses
 selected_df = course_catalog[course_catalog["Course Name"].isin(all_courses)]
+selected_codes = set(selected_df["Course Code"].tolist())
 
 # Graduation Pathway Selector
 pathway = st.radio("Select Graduation Pathway:", [
@@ -45,10 +47,12 @@ def display_requirement(requirement_text, earned, required):
 if pathway == "University":
     st.header("University Pathway Requirements")
 
-    # LANGUAGE ARTS
-    la_df = selected_df[selected_df["Department"] == "Language Arts"]
-    la_credits = la_df["Credits"].sum()
-    display_requirement("4 Units of Language Arts", la_credits, 4)
+    # LANGUAGE ARTS (English department, with group-based code validation)
+    eng_df = selected_df[selected_df["Department"] == "English"]
+    eng_credits = eng_df["Credits"].sum()
+    required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
+    english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
+    display_requirement("4 Units of Language Arts", eng_credits, 4 if english_met else 99)
 
     # MATHEMATICS
     math_df = selected_df[selected_df["Department"] == "Mathematics"]
