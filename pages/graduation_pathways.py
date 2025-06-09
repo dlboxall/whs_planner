@@ -37,8 +37,8 @@ pathway = st.radio("Select Graduation Pathway:", [
 ])
 
 # Helper for displaying requirements with progress
-def display_requirement(requirement_text, earned, required):
-    if earned >= required:
+def display_requirement(requirement_text, earned, required, condition=True):
+    if condition and earned >= required:
         st.markdown(f"<div style='color:green'><strong>✅ {requirement_text}: {earned} / {required}</strong></div>", unsafe_allow_html=True)
     else:
         st.markdown(f"<div style='color:red'><strong>❌ {requirement_text}: {earned} / {required}</strong></div>", unsafe_allow_html=True)
@@ -52,7 +52,7 @@ if pathway == "University":
     eng_credits = eng_df["Credits"].sum()
     required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
     english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
-    display_requirement("4 Units of Language Arts", eng_credits, 4 if english_met else 99)
+    display_requirement("4 Units of Language Arts", eng_credits, 4, condition=english_met)
 
     # MATHEMATICS
     math_df = selected_df[selected_df["Department"] == "Mathematics"]
@@ -60,23 +60,23 @@ if pathway == "University":
     has_alg1 = any("Algebra I" in name for name in math_df["Course Name"])
     has_alg2 = any("Algebra II" in name for name in math_df["Course Name"])
     has_geom = any("Geometry" in name for name in math_df["Course Name"])
-    condition = math_credits >= 3 and has_alg1 and has_geom and has_alg2
-    display_requirement("3 Units of Math including Algebra I, Geometry, Algebra II", math_credits, 3 if condition else 99)
+    condition = has_alg1 and has_geom and has_alg2
+    display_requirement("3 Units of Math including Algebra I, Geometry, Algebra II", math_credits, 3, condition)
 
     # SCIENCE
     sci_df = selected_df[selected_df["Department"] == "Science"]
     sci_credits = sci_df["Credits"].sum()
     has_bio = any("Biology" in name for name in sci_df["Course Name"])
-    condition = sci_credits >= 3 and has_bio
-    display_requirement("3 Units of Science including Biology", sci_credits, 3 if condition else 99)
+    condition = has_bio
+    display_requirement("3 Units of Science including Biology", sci_credits, 3, condition)
 
     # SOCIAL STUDIES
     ss_df = selected_df[selected_df["Department"] == "Social Studies"]
     ss_credits = ss_df["Credits"].sum()
     has_us_hist = any("U.S. History" in name for name in ss_df["Course Name"])
     has_govt = any("Government" in name for name in ss_df["Course Name"])
-    condition = ss_credits >= 3 and has_us_hist and has_govt
-    display_requirement("3 Units of Social Studies (incl. U.S. History & Govt.)", ss_credits, 3 if condition else 99)
+    condition = has_us_hist and has_govt
+    display_requirement("3 Units of Social Studies (incl. U.S. History & Govt.)", ss_credits, 3, condition)
 
     # FINE ARTS
     fa_df = selected_df[selected_df["Department"] == "Fine Arts"]
