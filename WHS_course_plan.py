@@ -110,7 +110,8 @@ for year in years:
                 selected_course = st.selectbox(
                     label=label,
                     options=options,
-                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                    #index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else options.index("") if "" in options else 0,
                     key=f"{year}_{i}"
                 )
                 st.session_state.course_plan[year][i] = selected_course
