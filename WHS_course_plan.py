@@ -46,7 +46,7 @@ for i in range(4):
 
 # Student name input and export button
 student_name = st.text_input("Student Name", key="student_name_input")
-if st.button("📄 Export Schedule to PDF"):
+if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
     from io import BytesIO
     import pdfkit
     import pandas as pd
