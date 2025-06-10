@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import ast
+import datetime
 
 st.set_page_config(page_title="WHS Course Planner", layout="wide")
 st.title("📘 WHS Course Planner Dashboard")
@@ -64,64 +65,56 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, cu
             return False
     except:
         return False
-'''
-# Main planner loop
-for year in years:
-    st.header(year)
-    cols = st.columns(4)
-    grade_num = int(year.split()[0].replace("th", "").replace("st", "").replace("nd", "").replace("rd", ""))
-    base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in x)]
 
-    for i in range(8):
-        department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
-        col = cols[i % 4]
-        with col:
-            label = f"{year} - {department}"
+# Student name input and export button
+student_name = st.text_input("Student Name")
+if st.button("📄 Export Schedule to PDF"):
+    from io import BytesIO
+    import pdfkit
+    from jinja2 import Template
 
-            if i < 4:
-                dept_courses = base_courses[base_courses["Department"] == department]
-                eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-                )]
-            else:
-                all_departments = sorted(base_courses["Department"].dropna().unique())
-                dept_key = f"{year}_dept_{i}"
-                default_dept = st.session_state.get(dept_key, "")
-                selected_dept = st.selectbox(
-                    f"Select Department ({department})",
-                    [""] + all_departments,
-                    index=([""] + all_departments).index(default_dept) if default_dept in all_departments else 0,
-                    key=dept_key
-                )
-                #st.session_state[dept_key] = selected_dept
-                if selected_dept:
-                    dept_courses = base_courses[base_courses["Department"] == selected_dept]
-                    eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-                    )]
-                else:
-                    eligible_courses = pd.DataFrame(columns=base_courses.columns)
+    # Build course plan table
+    course_data = []
+    for year in years:
+        sem1 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i < 4 and c]
+        sem2 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i >= 4 and c]
+        course_data.append({
+            "year": year,
+            "sem1": ", ".join(sem1),
+            "sem2": ", ".join(sem2)
+        })
 
-            if not eligible_courses.empty:
-                options = [""] + eligible_courses["Course Name"].tolist()
-                code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
-                notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
-                selected_course = st.selectbox(
-                    label=label,
-                    options=options,
-                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else options.index("") if "" in options else 0,
-                    key=f"{year}_{i}"
-                )
-                st.session_state.course_plan[year][i] = selected_course
-                st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
-                if selected_course:
-                    note = notes_lookup.get(selected_course, "")
-                    if note:
-                        st.caption(f"ℹ️ {note}")
-            else:
-                st.info(f"No eligible courses found for {department} in {year}.")
-    st.markdown("---")
-'''
+    # Generate HTML using Jinja2 template
+    timestamp = datetime.datetime.now().strftime("%B %d, %Y – %I:%M %p")
+    template_str = """
+    <html>
+    <head><style>
+        body { font-family: Arial; margin: 40px; }
+        h1 { font-size: 24px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+    </style></head>
+    <body>
+        <h1>Course Plan for {{ student_name }}</h1>
+        <p><em>Printed: {{ timestamp }}</em></p>
+        <table>
+            <tr><th>Year</th><th>Semester 1 Courses</th><th>Semester 2 Courses</th></tr>
+            {% for row in data %}
+            <tr><td>{{ row.year }}</td><td>{{ row.sem1 }}</td><td>{{ row.sem2 }}</td></tr>
+            {% endfor %}
+        </table>
+        <p style='margin-top: 40px;'>Graduation Pathway Summary: (Coming soon)</p>
+    </body>
+    </html>
+    """
+
+    template = Template(template_str)
+    html_content = template.render(student_name=student_name or "(Unnamed Student)", data=course_data, timestamp=timestamp)
+
+    # Convert to PDF using pdfkit (ensure wkhtmltopdf is installed)
+    pdf_bytes = pdfkit.from_string(html_content, False)
+    st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
+
 # Main planner loop
 for year in years:
     st.header(year)
