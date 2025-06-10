@@ -93,7 +93,7 @@ for year in years:
                     index=([""] + all_departments).index(default_dept) if default_dept in all_departments else 0,
                     key=dept_key
                 )
-                st.session_state[dept_key] = selected_dept
+                #st.session_state[dept_key] = selected_dept
                 if selected_dept:
                     dept_courses = base_courses[base_courses["Department"] == selected_dept]
                     eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
