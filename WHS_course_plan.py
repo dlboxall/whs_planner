@@ -199,10 +199,18 @@ for i in range(4):
         timestamp=timestamp
     )
 
-    # Convert to PDF
-    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+import os
+import pdfkit
+
+wkhtml_path = '/usr/bin/wkhtmltopdf'
+
+if not os.path.exists(wkhtml_path):
+    st.error(f"wkhtmltopdf not found at {wkhtml_path}")
+else:
+    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
     pdf_bytes = pdfkit.from_string(html_content, False, configuration=config)
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
+
 
 # Initialize session state
 if "course_plan" not in st.session_state:
