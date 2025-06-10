@@ -32,21 +32,6 @@ if "course_plan" not in st.session_state:
 if "ms_credits" not in st.session_state:
     st.session_state.ms_credits = ["" for _ in range(4)]
 
-# Student name input and export button
-student_name = st.text_input("Student Name", key="student_name_input")
-
-if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
-    # Build course plan table
-    course_data = []
-    for year in years:
-        sem1 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i < 4 and c]
-        sem2 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i >= 4 and c]
-        course_data.append({
-            "year": year,
-            "sem1": ", ".join(sem1),
-            "sem2": ", ".join(sem2)
-        })
-
     # Graduation summary logic (placeholder)
     grad_summary = [
         {"label": "4 Units of Language Arts", "value": "TBD", "met": False},
@@ -260,7 +245,9 @@ if st.button("📄 Export Schedule to PDF"):
         })
 
     # Generate HTML using Jinja2 template
-    timestamp = datetime.datetime.now().strftime("%B %d, %Y – %I:%M %p")
+    central = pytz.timezone("America/Chicago")
+    timestamp = datetime.datetime.now(central).strftime("%B %d, %Y – %I:%M %p")
+
     template_str = """
     <html>
     <head><style>
