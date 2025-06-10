@@ -105,10 +105,6 @@ if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
         timestamp=timestamp
     )
 
-    # Convert to PDF with WeasyPrint
-    pdf_bytes = HTML(string=html_content).write_pdf()
-    st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
-
 # Middle School Credits
 st.header("High School Credit Earned in Middle School")
 ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
