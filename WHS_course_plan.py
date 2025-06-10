@@ -25,6 +25,90 @@ row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 #Add in extra loop below
 import datetime
 
+# Student name input and export button
+student_name = st.text_input("Student Name", key="student_name_input")
+if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
+    from io import BytesIO
+    import pdfkit
+    import pandas as pd
+    from jinja2 import Template
+
+    # Build course plan table
+    course_data = []
+    for year in years:
+        sem1 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i < 4 and c]
+        sem2 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i >= 4 and c]
+        course_data.append({
+            "year": year,
+            "sem1": ", ".join(sem1),
+            "sem2": ", ".join(sem2)
+        })
+
+    # Graduation summary logic (basic stub for placeholder)
+    grad_summary = [
+        {"label": "4 Units of Language Arts", "value": "TBD", "met": False},
+        {"label": "3 Units of Mathematics", "value": "TBD", "met": False},
+        {"label": "3 Units of Science", "value": "TBD", "met": False},
+        {"label": "3 Units of Social Studies", "value": "TBD", "met": False},
+        {"label": "1 Unit of Fine Arts", "value": "TBD", "met": False},
+        {"label": "0.5 Unit of PE", "value": "TBD", "met": False},
+        {"label": "0.5 Unit of Health", "value": "TBD", "met": False},
+        {"label": "0.5 Unit of Personal Finance", "value": "TBD", "met": False},
+        {"label": "1 Unit of Capstone/CTE/World Language", "value": "TBD", "met": False},
+        {"label": "5.5 Units of Electives", "value": "TBD", "met": False}
+    ]
+
+    # Generate HTML using Jinja2 template
+    timestamp = datetime.datetime.now().strftime("%B %d, %Y – %I:%M %p")
+    template_str = """
+    <html>
+    <head><style>
+        body { font-family: Arial; margin: 40px; }
+        h1 { font-size: 24px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+        .check { color: green; font-weight: bold; }
+        .cross { color: red; font-weight: bold; }
+    </style></head>
+    <body>
+        <h1>Course Plan for {{ student_name }}</h1>
+        <p><em>Printed: {{ timestamp }}</em></p>
+
+        <table>
+            <tr><th>Year</th><th>Semester 1 Courses</th><th>Semester 2 Courses</th></tr>
+            {% for row in data %}
+            <tr><td>{{ row.year }}</td><td>{{ row.sem1 }}</td><td>{{ row.sem2 }}</td></tr>
+            {% endfor %}
+        </table>
+
+        <h2 style='margin-top:40px;'>Graduation Pathway Summary</h2>
+        <table>
+            <tr><th>Status</th><th>Requirement</th><th>Progress</th></tr>
+            {% for item in grad %}
+            <tr>
+                <td class="{{ 'check' if item.met else 'cross' }}">{{ '✅' if item.met else '❌' }}</td>
+                <td>{{ item.label }}</td>
+                <td>{{ item.value }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+    </html>
+    """
+
+    from jinja2 import Template
+    template = Template(template_str)
+    html_content = template.render(
+        student_name=student_name or "(Unnamed Student)",
+        data=course_data,
+        grad=grad_summary,
+        timestamp=timestamp
+    )
+
+    # Convert to PDF
+    pdf_bytes = pdfkit.from_string(html_content, False)
+    st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
+
 # Ensure ms_credits is initialized
 if "ms_credits" not in st.session_state:
     st.session_state.ms_credits = ["" for _ in range(4)]
@@ -43,14 +127,6 @@ for i in range(4):
             index=ms_options.index(st.session_state.ms_credits[i]) if st.session_state.ms_credits[i] in ms_options else 0,
             key=f"ms_course_{i}"
         )
-
-# Student name input and export button
-student_name = st.text_input("Student Name", key="student_name_input")
-if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
-    from io import BytesIO
-    import pdfkit
-    import pandas as pd
-    from jinja2 import Template
 
     # Build course plan table
     course_data = []
