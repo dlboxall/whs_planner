@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import ast
 import datetime
+import pdfkit
+from jinja2 import Template
 
 # Load course catalog
 def load_course_catalog():
