@@ -16,40 +16,30 @@ def load_course_catalog():
 
 course_catalog = load_course_catalog()
 
-# Set up grade levels and labels
+# Grade level structure
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 
-# Session state initialization
+# Initialize session state
 if "course_plan" not in st.session_state:
     st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
     st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
-
 if "ms_credits" not in st.session_state:
     st.session_state.ms_credits = ["" for _ in range(4)]
 
-# Middle School Credits
-st.header("High School Credit Earned in Middle School")
-ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
-ms_options = [""] + ms_courses["Course Name"].tolist()
-ms_lookup = dict(zip(ms_courses["Course Name"], ms_courses["Course Code"].astype(str)))
-ms_cols = st.columns(4)
-for i in range(4):
-    with ms_cols[i]:
-        st.session_state.ms_credits[i] = st.selectbox(
-            f"Middle School Course {i+1}",
-            ms_options,
-            index=ms_options.index(st.session_state.ms_credits[i]) if st.session_state.ms_credits[i] in ms_options else 0,
-            key=f"ms_course_{i}"
-        )
-
-# Build course prerequisite dictionary
+# Build prerequisite dictionary
 prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
 
 # Helper to check if prerequisites are met
 def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, current_index):
-    taken = [ms_lookup.get(name, "") for name in st.session_state.ms_credits if name]
+    taken = []
+    for name in st.session_state.ms_credits:
+        if name:
+            code = course_catalog.loc[course_catalog["Course Name"] == name, "Course Code"]
+            if not code.empty:
+                taken.append(str(code.values[0]))
+
     for yr in years:
         for idx, code in enumerate(course_plan_codes[yr]):
             if yr == current_year and idx >= current_index:
@@ -58,12 +48,13 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, cu
                 taken.append(code)
         if yr == current_year:
             break
+
     raw = prereq_dict.get(course_code, "None")
     if raw == "None":
         return True
     try:
         parsed = ast.literal_eval(raw)
-        if isinstance(parsed, int) or isinstance(parsed, str):
+        if isinstance(parsed, (int, str)):
             return str(parsed) in taken
         elif isinstance(parsed, list) and all(isinstance(x, list) for x in parsed):
             return all(any(str(code) in taken for code in group) for group in parsed)
@@ -96,7 +87,12 @@ for year in years:
                 all_departments = sorted(base_courses["Department"].dropna().unique())
                 dept_key = f"{year}_dept_{i}"
                 default_dept = st.session_state.get(dept_key, "")
-                selected_dept = st.selectbox(f"Select Department ({department})", [""] + all_departments, index=[""] + all_departments.index(default_dept) if default_dept in all_departments else 0, key=dept_key)
+                selected_dept = st.selectbox(
+                    f"Select Department ({department})",
+                    [""] + all_departments,
+                    index=([""] + all_departments).index(default_dept) if default_dept in all_departments else 0,
+                    key=dept_key
+                )
                 st.session_state[dept_key] = selected_dept
                 if selected_dept:
                     dept_courses = base_courses[base_courses["Department"] == selected_dept]
