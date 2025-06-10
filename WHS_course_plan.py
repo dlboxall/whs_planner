@@ -200,11 +200,9 @@ for i in range(4):
     )
 
     # Convert to PDF
-    pdf_bytes = pdfkit.from_string(html_content, False)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    pdf_bytes = pdfkit.from_string(html_content, False, configuration=config)
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
-
-
-
 
 # Initialize session state
 if "course_plan" not in st.session_state:
