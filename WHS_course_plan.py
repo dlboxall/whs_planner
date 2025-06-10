@@ -3,9 +3,6 @@ import pandas as pd
 import ast
 import datetime
 
-st.set_page_config(page_title="WHS Course Planner", layout="wide")
-st.title("📘 WHS Course Planner Dashboard")
-
 # Load course catalog
 def load_course_catalog():
     df = pd.read_csv("WHS_course_catalog.csv")
@@ -22,15 +19,19 @@ years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 
-#Add in extra loop below
-import datetime
+# Initialize session state
+if "course_plan" not in st.session_state:
+    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
+    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
+
+if "ms_credits" not in st.session_state:
+    st.session_state.ms_credits = ["" for _ in range(4)]
 
 # Student name input and export button
 student_name = st.text_input("Student Name", key="student_name_input")
 if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
     from io import BytesIO
     import pdfkit
-    import pandas as pd
     from jinja2 import Template
 
     # Build course plan table
@@ -96,7 +97,6 @@ if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
     </html>
     """
 
-    from jinja2 import Template
     template = Template(template_str)
     html_content = template.render(
         student_name=student_name or "(Unnamed Student)",
@@ -108,10 +108,6 @@ if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
     # Convert to PDF
     pdf_bytes = pdfkit.from_string(html_content, False)
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
-
-# Ensure ms_credits is initialized
-if "ms_credits" not in st.session_state:
-    st.session_state.ms_credits = ["" for _ in range(4)]
 
 # Middle School Credits
 st.header("High School Credit Earned in Middle School")
@@ -127,6 +123,7 @@ for i in range(4):
             index=ms_options.index(st.session_state.ms_credits[i]) if st.session_state.ms_credits[i] in ms_options else 0,
             key=f"ms_course_{i}"
         )
+
 
     # Build course plan table
     course_data = []
