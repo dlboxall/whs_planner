@@ -45,7 +45,7 @@ for i in range(4):
         )
 
 # Student name input and export button
-student_name = st.text_input("Student Name")
+student_name = st.text_input("Student Name", key="student_name_input")
 if st.button("📄 Export Schedule to PDF"):
     from io import BytesIO
     import pdfkit
@@ -127,6 +127,7 @@ if st.button("📄 Export Schedule to PDF"):
     # Convert to PDF
     pdf_bytes = pdfkit.from_string(html_content, False)
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
+
 
 
 
