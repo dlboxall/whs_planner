@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import ast
 import datetime
+import pytz
+
 from io import BytesIO
 from jinja2 import Template
 from xhtml2pdf import pisa
@@ -60,7 +62,8 @@ if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
     ]
 
     # Generate HTML using Jinja2 template
-    timestamp = datetime.datetime.now().strftime("%B %d, %Y – %I:%M %p")
+    central = pytz.timezone("America/Chicago")
+    timestamp = datetime.datetime.now(central).strftime("%B %d, %Y – %I:%M %p")
     template_str = """
     <html>
     <head><style>
@@ -192,18 +195,6 @@ for i in range(4):
         grad=grad_summary,
         timestamp=timestamp
     )
-
-import os
-import pdfkit
-
-wkhtml_path = '/usr/bin/wkhtmltopdf'
-
-if not os.path.exists(wkhtml_path):
-    st.error(f"wkhtmltopdf not found at {wkhtml_path}")
-else:
-    config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
-    pdf_bytes = pdfkit.from_string(html_content, False, configuration=config)
-    st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
 
 
 # Initialize session state
