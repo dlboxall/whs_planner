@@ -23,6 +23,12 @@ row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 
 #Add in extra loop below
+import datetime
+
+# Ensure ms_credits is initialized
+if "ms_credits" not in st.session_state:
+    st.session_state.ms_credits = ["" for _ in range(4)]
+
 # Middle School Credits
 st.header("High School Credit Earned in Middle School")
 ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
