@@ -1,3 +1,7 @@
+years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
+row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
+row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
+
 # Main planner loop
 for year in years:
     st.header(year)
