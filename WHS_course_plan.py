@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import ast
 import datetime
-import pdfkit
+from io import BytesIO
 from jinja2 import Template
+from weasyprint import HTML
 
 # Load course catalog
 def load_course_catalog():
@@ -31,11 +32,8 @@ if "ms_credits" not in st.session_state:
 
 # Student name input and export button
 student_name = st.text_input("Student Name", key="student_name_input")
-if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
-    from io import BytesIO
-    import pdfkit
-    from jinja2 import Template
 
+if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
     # Build course plan table
     course_data = []
     for year in years:
@@ -47,7 +45,7 @@ if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
             "sem2": ", ".join(sem2)
         })
 
-    # Graduation summary logic (basic stub for placeholder)
+    # Graduation summary logic (placeholder)
     grad_summary = [
         {"label": "4 Units of Language Arts", "value": "TBD", "met": False},
         {"label": "3 Units of Mathematics", "value": "TBD", "met": False},
@@ -107,8 +105,8 @@ if st.button("📄 Export Schedule to PDF", key="export_schedule_button"):
         timestamp=timestamp
     )
 
-    # Convert to PDF
-    pdf_bytes = pdfkit.from_string(html_content, False)
+    # Convert to PDF with WeasyPrint
+    pdf_bytes = HTML(string=html_content).write_pdf()
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
 
 # Middle School Credits
