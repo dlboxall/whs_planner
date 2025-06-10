@@ -1,3 +1,22 @@
+import streamlit as st
+import pandas as pd
+import ast
+
+st.set_page_config(page_title="WHS Course Planner", layout="wide")
+st.title("📘 WHS Course Planner Dashboard")
+
+# Load course catalog
+def load_course_catalog():
+    df = pd.read_csv("WHS_course_catalog.csv")
+    df["Grade Levels"] = df["Grade Levels"].apply(lambda x: ast.literal_eval(str(x)))
+    df["Prerequisites"] = df["Prerequisites"].fillna("None")
+    df["Tags"] = df["Tags"].fillna("")
+    df["Notes"] = df["Notes"].fillna("")
+    return df
+
+course_catalog = load_course_catalog()
+
+# Set up grade levels and labels
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
