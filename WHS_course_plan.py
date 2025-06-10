@@ -4,7 +4,7 @@ import ast
 import datetime
 from io import BytesIO
 from jinja2 import Template
-from weasyprint import HTML
+from xhtml2pdf import pisa
 
 # Load course catalog
 def load_course_catalog():
@@ -299,8 +299,10 @@ if st.button("📄 Export Schedule to PDF"):
     template = Template(template_str)
     html_content = template.render(student_name=student_name or "(Unnamed Student)", data=course_data, timestamp=timestamp)
 
-    # Convert to PDF using pdfkit (ensure wkhtmltopdf is installed)
-    pdf_bytes = pdfkit.from_string(html_content, False)
+    # Convert to PDF with xhtml2pdf
+    pdf_buffer = BytesIO()
+    pisa_status = pisa.CreatePDF(src=html_content, dest=pdf_buffer)
+    pdf_bytes = pdf_buffer.getvalue()
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
 
 # Main planner loop
