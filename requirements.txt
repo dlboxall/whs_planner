@@ -4,3 +4,4 @@ pandas
 openpyxl
 pdfkit
 WeasyPrint
+xhtml2pdf
