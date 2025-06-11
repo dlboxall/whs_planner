@@ -8,6 +8,23 @@ from io import BytesIO
 from jinja2 import Template
 from xhtml2pdf import pisa
 
+#Loop for student name entry and setup for pdf printout
+# Student name input (outside the button)
+student_name = st.text_input("Student Name", key="student_name_input")
+
+if st.button("📄 Export Schedule to PDF"):
+    # Build course plan table
+    course_data = []
+    for year in years:
+        sem1 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i < 4 and c]
+        sem2 = [c for i, c in enumerate(st.session_state.course_plan[year]) if i >= 4 and c]
+        course_data.append({
+            "year": year,
+            "sem1": ", ".join(sem1),
+            "sem2": ", ".join(sem2)
+        })
+#End copied loop
+
 # Load course catalog
 def load_course_catalog():
     df = pd.read_csv("WHS_course_catalog.csv")
