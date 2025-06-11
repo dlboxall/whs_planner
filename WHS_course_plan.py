@@ -23,7 +23,7 @@ course_catalog = load_course_catalog()
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
-
+'''
 # Initialize session state
 if "course_plan" not in st.session_state:
     st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
@@ -93,7 +93,7 @@ html_content = template.render(
     grad=grad_summary,
     timestamp=timestamp
 )
-
+'''
 # Middle School Credits
 st.header("High School Credit Earned in Middle School")
 ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
