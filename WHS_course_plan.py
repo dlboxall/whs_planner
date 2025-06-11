@@ -23,77 +23,7 @@ course_catalog = load_course_catalog()
 years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
-'''
-# Initialize session state
-if "course_plan" not in st.session_state:
-    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
-    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
 
-if "ms_credits" not in st.session_state:
-    st.session_state.ms_credits = ["" for _ in range(4)]
-
-    # Graduation summary logic (placeholder)
-    grad_summary = [
-        {"label": "4 Units of Language Arts", "value": "TBD", "met": False},
-        {"label": "3 Units of Mathematics", "value": "TBD", "met": False},
-        {"label": "3 Units of Science", "value": "TBD", "met": False},
-        {"label": "3 Units of Social Studies", "value": "TBD", "met": False},
-        {"label": "1 Unit of Fine Arts", "value": "TBD", "met": False},
-        {"label": "0.5 Unit of PE", "value": "TBD", "met": False},
-        {"label": "0.5 Unit of Health", "value": "TBD", "met": False},
-        {"label": "0.5 Unit of Personal Finance", "value": "TBD", "met": False},
-        {"label": "1 Unit of Capstone/CTE/World Language", "value": "TBD", "met": False},
-        {"label": "5.5 Units of Electives", "value": "TBD", "met": False}
-    ]
-
-    # Generate HTML using Jinja2 template
-    central = pytz.timezone("America/Chicago")
-    timestamp = datetime.datetime.now(central).strftime("%B %d, %Y – %I:%M %p")
-    template_str = """
-    <html>
-    <head><style>
-        body { font-family: Arial; margin: 40px; }
-        h1 { font-size: 24px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #999; padding: 8px; text-align: left; }
-        .check { color: green; font-weight: bold; }
-        .cross { color: red; font-weight: bold; }
-    </style></head>
-    <body>
-        <h1>Course Plan for {{ student_name }}</h1>
-        <p><em>Printed: {{ timestamp }}</em></p>
-
-        <table>
-            <tr><th>Year</th><th>Semester 1 Courses</th><th>Semester 2 Courses</th></tr>
-            {% for row in data %}
-            <tr><td>{{ row.year }}</td><td>{{ row.sem1 }}</td><td>{{ row.sem2 }}</td></tr>
-            {% endfor %}
-        </table>
-
-        <h2 style='margin-top:40px;'>Graduation Pathway Summary</h2>
-        <table>
-            <tr><th>Status</th><th>Requirement</th><th>Progress</th></tr>
-            {% for item in grad %}
-            <tr>
-                <td class="{{ 'check' if item.met else 'cross' }}">{{ '✅' if item.met else '❌' }}</td>
-                <td>{{ item.label }}</td>
-                <td>{{ item.value }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </body>
-    </html>
-    """
-student_name = st.text_input("Student Name", key="student_name_input")
-
-template = Template(template_str)
-html_content = template.render(
-    student_name=student_name or "(Unnamed Student)",
-    data=course_data,
-    grad=grad_summary,
-    timestamp=timestamp
-)
-'''
 # Middle School Credits
 st.header("High School Credit Earned in Middle School")
 ms_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: 8 in x)]
@@ -109,7 +39,51 @@ for i in range(4):
             key=f"ms_course_{i}"
         )
 
+# Initialize session state (Start of pasted loop)
+if "course_plan" not in st.session_state:
+    st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
+    st.session_state.course_plan_codes = {year: ["" for _ in range(8)] for year in years}
+if "ms_credits" not in st.session_state:
+    st.session_state.ms_credits = ["" for _ in range(4)]
 
+# Build prerequisite dictionary
+prereq_dict = dict(zip(course_catalog["Course Code"].astype(str), course_catalog["Prerequisites"]))
+
+# Helper to check if prerequisites are met
+def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, current_index):
+    taken = []
+    for name in st.session_state.ms_credits:
+        if name:
+            code = course_catalog.loc[course_catalog["Course Name"] == name, "Course Code"]
+            if not code.empty:
+                taken.append(str(code.values[0]))
+
+    for yr in years:
+        for idx, code in enumerate(course_plan_codes[yr]):
+            if yr == current_year and idx >= current_index:
+                break
+            if code:
+                taken.append(code)
+        if yr == current_year:
+            break
+
+    raw = prereq_dict.get(course_code, "None")
+    if raw == "None":
+        return True
+    try:
+        parsed = ast.literal_eval(raw)
+        if isinstance(parsed, (int, str)):
+            return str(parsed) in taken
+        elif isinstance(parsed, list) and all(isinstance(x, list) for x in parsed):
+            return all(any(str(code) in taken for code in group) for group in parsed)
+        elif isinstance(parsed, list):
+            return any(str(code) in taken for code in parsed)
+        else:
+            return False
+    except:
+        return False
+#End of pasted loop
+    
     # Build course plan table
     course_data = []
     for year in years:
@@ -162,7 +136,7 @@ for i in range(4):
         timestamp=timestamp
     )
 
-
+'''
 # Initialize session state
 if "course_plan" not in st.session_state:
     st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
@@ -206,6 +180,7 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, cu
             return False
     except:
         return False
+'''
 
 from io import BytesIO
 from jinja2 import Template
