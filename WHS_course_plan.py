@@ -101,7 +101,7 @@ if "ms_credits" not in st.session_state:
     </body>
     </html>
     """
-student_name = st.text_input("Student Name", key="student_name_input")
+#student_name = st.text_input("Student Name", key="student_name_input")
 
 template = Template(template_str)
 html_content = template.render(
