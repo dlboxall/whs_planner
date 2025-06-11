@@ -86,13 +86,13 @@ if "ms_credits" not in st.session_state:
     """
 student_name = st.text_input("Student Name", key="student_name_input")
 
-    template = Template(template_str)
-    html_content = template.render(
-        student_name=student_name or "(Unnamed Student)",
-        data=course_data,
-        grad=grad_summary,
-        timestamp=timestamp
-    )
+template = Template(template_str)
+html_content = template.render(
+    student_name=student_name or "(Unnamed Student)",
+    data=course_data,
+    grad=grad_summary,
+    timestamp=timestamp
+)
 
 # Middle School Credits
 st.header("High School Credit Earned in Middle School")
