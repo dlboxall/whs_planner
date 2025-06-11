@@ -232,7 +232,7 @@ from jinja2 import Template
 from xhtml2pdf import pisa
 import pytz
 
-# Student name input
+# Student name input (outside the button)
 student_name = st.text_input("Student Name", key="student_name_input")
 
 if st.button("📄 Export Schedule to PDF"):
@@ -312,7 +312,7 @@ if st.button("📄 Export Schedule to PDF"):
 
     # Convert to PDF with xhtml2pdf
     pdf_buffer = BytesIO()
-    pisa_status = pisa.CreatePDF(src=html_content, dest=pdf_buffer)
+    pisa.CreatePDF(src=html_content, dest=pdf_buffer)
     pdf_bytes = pdf_buffer.getvalue()
 
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
