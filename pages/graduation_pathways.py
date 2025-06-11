@@ -120,7 +120,7 @@ if pathway == "University":
 
     # COMBINATION UNIT
     combo_df = graduation_df[graduation_df["Department"].isin([
-        "Career & Technical Education", "World Language"])]
+        "CTE", "World Languages"])]
     combo_credits = combo_df["Credits"].sum()
     display_requirement("1 Unit of Capstone/CTE/World Language", combo_credits, 1)
 
