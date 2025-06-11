@@ -227,13 +227,15 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, cu
     except:
         return False
 
-# Student name input and export button
-student_name = st.text_input("Student Name")
-if st.button("📄 Export Schedule to PDF"):
-    from io import BytesIO
-    import pdfkit
-    from jinja2 import Template
+from io import BytesIO
+from jinja2 import Template
+from xhtml2pdf import pisa
+import pytz
 
+# Student name input
+student_name = st.text_input("Student Name", key="student_name_input")
+
+if st.button("📄 Export Schedule to PDF"):
     # Build course plan table
     course_data = []
     for year in years:
@@ -245,10 +247,25 @@ if st.button("📄 Export Schedule to PDF"):
             "sem2": ", ".join(sem2)
         })
 
-    # Generate HTML using Jinja2 template
+    # Graduation summary logic (placeholder)
+    grad_summary = [
+        {"label": "4 Units of Language Arts", "value": "TBD", "met": False},
+        {"label": "3 Units of Mathematics", "value": "TBD", "met": False},
+        {"label": "3 Units of Science", "value": "TBD", "met": False},
+        {"label": "3 Units of Social Studies", "value": "TBD", "met": False},
+        {"label": "1 Unit of Fine Arts", "value": "TBD", "met": False},
+        {"label": "0.5 Unit of PE", "value": "TBD", "met": False},
+        {"label": "0.5 Unit of Health", "value": "TBD", "met": False},
+        {"label": "0.5 Unit of Personal Finance", "value": "TBD", "met": False},
+        {"label": "1 Unit of Capstone/CTE/World Language", "value": "TBD", "met": False},
+        {"label": "5.5 Units of Electives", "value": "TBD", "met": False}
+    ]
+
+    # Central Time timestamp
     central = pytz.timezone("America/Chicago")
     timestamp = datetime.datetime.now(central).strftime("%B %d, %Y – %I:%M %p")
 
+    # HTML template for PDF
     template_str = """
     <html>
     <head><style>
@@ -256,28 +273,48 @@ if st.button("📄 Export Schedule to PDF"):
         h1 { font-size: 24px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+        .check { color: green; font-weight: bold; }
+        .cross { color: red; font-weight: bold; }
     </style></head>
     <body>
         <h1>Course Plan for {{ student_name }}</h1>
         <p><em>Printed: {{ timestamp }}</em></p>
+
         <table>
             <tr><th>Year</th><th>Semester 1 Courses</th><th>Semester 2 Courses</th></tr>
             {% for row in data %}
             <tr><td>{{ row.year }}</td><td>{{ row.sem1 }}</td><td>{{ row.sem2 }}</td></tr>
             {% endfor %}
         </table>
-        <p style='margin-top: 40px;'>Graduation Pathway Summary: (Coming soon)</p>
+
+        <h2 style='margin-top:40px;'>Graduation Pathway Summary</h2>
+        <table>
+            <tr><th>Status</th><th>Requirement</th><th>Progress</th></tr>
+            {% for item in grad %}
+            <tr>
+                <td class="{{ 'check' if item.met else 'cross' }}">{{ '✅' if item.met else '❌' }}</td>
+                <td>{{ item.label }}</td>
+                <td>{{ item.value }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </body>
     </html>
     """
 
     template = Template(template_str)
-    html_content = template.render(student_name=student_name or "(Unnamed Student)", data=course_data, timestamp=timestamp)
+    html_content = template.render(
+        student_name=student_name or "(Unnamed Student)",
+        data=course_data,
+        grad=grad_summary,
+        timestamp=timestamp
+    )
 
     # Convert to PDF with xhtml2pdf
     pdf_buffer = BytesIO()
     pisa_status = pisa.CreatePDF(src=html_content, dest=pdf_buffer)
     pdf_bytes = pdf_buffer.getvalue()
+
     st.download_button("📥 Download PDF", pdf_bytes, file_name="WHS_Course_Schedule.pdf", mime="application/pdf")
 
 # Main planner loop
