@@ -4,6 +4,9 @@ import ast
 
 from layout import department_sidebar
 
+st.set_page_config(page_title="Graduation Pathways", layout="wide")
+st.title("🎓 Graduation Pathways Checker")
+
 # Sidebar codes
 department_sidebar()
 
@@ -16,8 +19,8 @@ department_sidebar()
 #else:
     #st.markdown("### No student name entered yet.")
 
-st.set_page_config(page_title="Graduation Pathways", layout="wide")
-st.title("🎓 Graduation Pathways Checker")
+#st.set_page_config(page_title="Graduation Pathways", layout="wide")
+#st.title("🎓 Graduation Pathways Checker")
 
 # Load the course catalog
 def load_course_catalog():
