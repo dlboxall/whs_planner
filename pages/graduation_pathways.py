@@ -2,6 +2,19 @@ import streamlit as st
 import pandas as pd
 import ast
 
+from layout import department_sidebar
+
+# Sidebar codes
+department_sidebar()
+
+st.markdown("## 🎓 Graduation Pathway Tracker")
+
+# Reuse the student name if entered
+student_name = st.session_state.get("student_name", "")
+if student_name:
+    st.markdown(f"### Reviewing graduation progress for **{student_name}**")
+else:
+    st.markdown("### No student name entered yet.")
 st.set_page_config(page_title="Graduation Pathways", layout="wide")
 st.title("🎓 Graduation Pathways Checker")
 
