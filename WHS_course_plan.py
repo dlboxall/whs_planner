@@ -174,16 +174,25 @@ for year in years:
                     eligible_courses = pd.DataFrame(columns=base_courses.columns)
 
                 if not eligible_courses.empty:
-                    selected_course = eligible_courses["Course Name"].iloc[0]
-                    code = eligible_courses["Course Code"].astype(str).iloc[0]
-                    note = eligible_courses["Notes"].iloc[0]
+                    options = [""] + eligible_courses["Course Name"].tolist()
+                    code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+                    notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+                    selected_course = st.selectbox(
+                        label=f"{label} – Select Course",
+                        options=options,
+                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                        key=f"{year}_{i}"
+                    )
 
                     st.session_state.course_plan[year][i] = selected_course
-                    st.session_state.course_plan_codes[year][i] = code
+                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+                    
+                    if selected_course:
+                        note = notes_lookup.get(selected_course, "")
+                        if note:
+                            st.caption(f"ℹ️ {note}")
 
-                    st.write(f"**{selected_course}**")
-                    if note:
-                        st.caption(f"ℹ️ {note}")
                 elif course_code:
                     if not department_names:
                         st.warning(f"'{course_code}' is not a valid department code.")
