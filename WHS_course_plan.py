@@ -3,9 +3,25 @@ import pandas as pd
 import ast
 from layout import department_sidebar
 
+#Connect to Dept Codes in sidebar
+dept_code_to_name = {
+    "BUS": "Business",
+    "CSC": "Computer Science",
+    "CTE": "CTE",
+    "ENG": "English",
+    "MUS": ["Fine Arts", "Vocal Music"],
+    "MTH": "Mathematics",
+    "DRM": "Performing Arts",
+    "PED": "Physical Education",
+    "SCI": "Science",
+    "SOC": "Social Studies",
+    "ART": "Visual Arts",
+    "WLG": "World Languages"
+}
+
 st.set_page_config(page_title="WHS Course Planner", layout="wide")
 
-# Sidebar codes
+# Show sidebar codes
 department_sidebar()
 
 st.markdown("## 📘 WHS Course Planner Dashboard")
@@ -104,7 +120,7 @@ for year in years:
             label = f"{year} – {department}"
 
             if i < 4:
-                # --- Dropdown logic for English, Math, Science, Social Studies ---
+                # --- Core subjects: dropdown selection by department ---
                 dept_courses = base_courses[base_courses["Department"] == department]
                 eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
                     lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
@@ -131,9 +147,8 @@ for year in years:
                             st.caption(f"ℹ️ {note}")
                 else:
                     st.info(f"No eligible courses found for {department} in {year}.")
-
             else:
-                # --- Text input logic for Courses 5–8 ---
+                # --- Electives: text input for 3-letter department code ---
                 course_code_key = f"{year}_{i}_code"
                 course_code_input = st.text_input(
                     f"Enter 3-letter code for Course {i+1}",
@@ -144,12 +159,19 @@ for year in years:
 
                 course_code = course_code_input.upper()
 
-                eligible_courses = base_courses[
-                    (base_courses["Course Code"].astype(str).str.upper() == course_code)
-                    & (base_courses["Course Code"].astype(str).apply(
+                # Get mapped department name(s)
+                department_names = dept_code_to_name.get(course_code, [])
+
+                if isinstance(department_names, str):
+                    department_names = [department_names]  # Normalize to list
+
+                if department_names:
+                    dept_courses = base_courses[base_courses["Department"].isin(department_names)]
+                    eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
                         lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-                    ))
-                ]
+                    )]
+                else:
+                    eligible_courses = pd.DataFrame(columns=base_courses.columns)
 
                 if not eligible_courses.empty:
                     selected_course = eligible_courses["Course Name"].iloc[0]
@@ -163,7 +185,10 @@ for year in years:
                     if note:
                         st.caption(f"ℹ️ {note}")
                 elif course_code:
-                    st.warning(f"No eligible course found for code '{course_code}' in {year} Grade.")
+                    if not department_names:
+                        st.warning(f"'{course_code}' is not a valid department code.")
+                    else:
+                        st.warning(f"No eligible course found for code '{course_code}' in {year} Grade.")
 
     st.markdown("---")
 
