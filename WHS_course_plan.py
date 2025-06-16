@@ -112,17 +112,14 @@ for year in years:
     else:
         # --- Course 5–8: use text input instead of dropdown ---
         course_code_key = f"{year}_{i}_code"
-        if course_code_key not in st.session_state:
-            st.session_state[course_code_key] = ""
-    
         course_code_input = st.text_input(
-            f"Enter 3-letter code for Course {i+1}", 
-            value=st.session_state[course_code_key],
+            f"Enter 3-letter code for Course {i+1}",
+            value=st.session_state.get(course_code_key, ""),
             max_chars=3,
             key=course_code_key
-        ).upper()
-    
-        st.session_state[course_code_key] = course_code_input
+        ).upper()  # Optional: force uppercase display
+
+       #st.session_state[course_code_key] = course_code_input
     
         # Filter course by entered code
         eligible_courses = base_courses[
