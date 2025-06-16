@@ -103,50 +103,50 @@ for year in years:
         with col:
             label = f"{year} - {department}"
 #New Code
-        if i < 4:
-            # --- Core classes, keep dropdown logic as is ---
-            dept_courses = base_courses[base_courses["Department"] == department]
-            eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-            )]
-        else:
-            # --- Course 5–8: use text input instead of dropdown ---
-            course_code_key = f"{year}_{i}_code"
-            if course_code_key not in st.session_state:
-                st.session_state[course_code_key] = ""
-        
-            course_code_input = st.text_input(
-                f"Enter 3-letter code for Course {i+1}", 
-                value=st.session_state[course_code_key],
-                max_chars=3,
-                key=course_code_key
-            ).upper()
-        
-            st.session_state[course_code_key] = course_code_input
-        
-            # Filter course by entered code
-            eligible_courses = base_courses[
-                (base_courses["Course Code"].astype(str).str.upper() == course_code_input)
-                & (base_courses["Grade Levels"].apply(lambda x: grade_num in x))
-            ]
-        
-        # --- After if/else branch: handle rendering if valid course found ---
-        if not eligible_courses.empty:
-            selected_course = eligible_courses["Course Name"].iloc[0]
-            course_code = eligible_courses["Course Code"].astype(str).iloc[0]
-            note = eligible_courses["Notes"].iloc[0]
-        
-            st.session_state.course_plan[year][i] = selected_course
-            st.session_state.course_plan_codes[year][i] = course_code
-        
-            st.write(f"**{selected_course}**")
-            if note:
-                st.caption(f"ℹ️ {note}")
-        else:
-            if i >= 4 and course_code_input:
-                st.warning(f"No eligible course found for code '{course_code_input}' in {year} Grade.")
-            st.session_state.course_plan[year][i] = ""
-            st.session_state.course_plan_codes[year][i] = ""
+    if i < 4:
+        # --- Core classes, keep dropdown logic as is ---
+        dept_courses = base_courses[base_courses["Department"] == department]
+        eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
+            lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+        )]
+    else:
+        # --- Course 5–8: use text input instead of dropdown ---
+        course_code_key = f"{year}_{i}_code"
+        if course_code_key not in st.session_state:
+            st.session_state[course_code_key] = ""
+    
+        course_code_input = st.text_input(
+            f"Enter 3-letter code for Course {i+1}", 
+            value=st.session_state[course_code_key],
+            max_chars=3,
+            key=course_code_key
+        ).upper()
+    
+        st.session_state[course_code_key] = course_code_input
+    
+        # Filter course by entered code
+        eligible_courses = base_courses[
+            (base_courses["Course Code"].astype(str).str.upper() == course_code_input)
+            & (base_courses["Grade Levels"].apply(lambda x: grade_num in x))
+        ]
+    
+    # --- After if/else branch: handle rendering if valid course found ---
+    if not eligible_courses.empty:
+        selected_course = eligible_courses["Course Name"].iloc[0]
+        course_code = eligible_courses["Course Code"].astype(str).iloc[0]
+        note = eligible_courses["Notes"].iloc[0]
+    
+        st.session_state.course_plan[year][i] = selected_course
+        st.session_state.course_plan_codes[year][i] = course_code
+    
+        st.write(f"**{selected_course}**")
+        if note:
+            st.caption(f"ℹ️ {note}")
+    else:
+        if i >= 4 and course_code_input:
+            st.warning(f"No eligible course found for code '{course_code_input}' in {year} Grade.")
+        st.session_state.course_plan[year][i] = ""
+        st.session_state.course_plan_codes[year][i] = ""
     st.markdown("---")
                 
             
