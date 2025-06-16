@@ -101,54 +101,72 @@ for year in years:
         department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
         col = cols[i % 4]
         with col:
-            label = f"{year} - {department}"
-#New Code
-    if i < 4:
-        # --- Core classes, keep dropdown logic as is ---
-        dept_courses = base_courses[base_courses["Department"] == department]
-        eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-            lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-        )]
-    else:
-        # --- Course 5–8: use text input instead of dropdown ---
-        course_code_key = f"{year}_{i}_code"
-        course_code_input = st.text_input(
-            f"Enter 3-letter code for Course {i+1}",
-            value=st.session_state.get(course_code_key, ""),
-            max_chars=3,
-            key=course_code_key
-        ).upper()  # Optional: force uppercase display
+            label = f"{year} – {department}"
 
-       #st.session_state[course_code_key] = course_code_input
-    
-        # Filter course by entered code
-        eligible_courses = base_courses[
-            (base_courses["Course Code"].astype(str).str.upper() == course_code_input)
-            & (base_courses["Grade Levels"].apply(lambda x: grade_num in x))
-        ]
-    
-    # --- After if/else branch: handle rendering if valid course found ---
-    if not eligible_courses.empty:
-        selected_course = eligible_courses["Course Name"].iloc[0]
-        course_code = eligible_courses["Course Code"].astype(str).iloc[0]
-        note = eligible_courses["Notes"].iloc[0]
-    
-        st.session_state.course_plan[year][i] = selected_course
-        st.session_state.course_plan_codes[year][i] = course_code
-    
-        st.write(f"**{selected_course}**")
-        if note:
-            st.caption(f"ℹ️ {note}")
-    else:
-        if i >= 4 and course_code_input:
-            st.warning(f"No eligible course found for code '{course_code_input}' in {year} Grade.")
-        st.session_state.course_plan[year][i] = ""
-        st.session_state.course_plan_codes[year][i] = ""
+            if i < 4:
+                # --- Dropdown logic for English, Math, Science, Social Studies ---
+                dept_courses = base_courses[base_courses["Department"] == department]
+                eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
+                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+                )]
+
+                if not eligible_courses.empty:
+                    options = [""] + eligible_courses["Course Name"].tolist()
+                    code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+                    notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+                    selected_course = st.selectbox(
+                        label=label,
+                        options=options,
+                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                        key=f"{year}_{i}"
+                    )
+
+                    st.session_state.course_plan[year][i] = selected_course
+                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+
+                    if selected_course:
+                        note = notes_lookup.get(selected_course, "")
+                        if note:
+                            st.caption(f"ℹ️ {note}")
+                else:
+                    st.info(f"No eligible courses found for {department} in {year}.")
+
+            else:
+                # --- Text input logic for Courses 5–8 ---
+                course_code_key = f"{year}_{i}_code"
+                course_code_input = st.text_input(
+                    f"Enter 3-letter code for Course {i+1}",
+                    value=st.session_state.get(course_code_key, ""),
+                    max_chars=3,
+                    key=course_code_key
+                ).strip()
+
+                course_code = course_code_input.upper()
+
+                eligible_courses = base_courses[
+                    (base_courses["Course Code"].astype(str).str.upper() == course_code)
+                    & (base_courses["Course Code"].astype(str).apply(
+                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+                    ))
+                ]
+
+                if not eligible_courses.empty:
+                    selected_course = eligible_courses["Course Name"].iloc[0]
+                    code = eligible_courses["Course Code"].astype(str).iloc[0]
+                    note = eligible_courses["Notes"].iloc[0]
+
+                    st.session_state.course_plan[year][i] = selected_course
+                    st.session_state.course_plan_codes[year][i] = code
+
+                    st.write(f"**{selected_course}**")
+                    if note:
+                        st.caption(f"ℹ️ {note}")
+                elif course_code:
+                    st.warning(f"No eligible course found for code '{course_code}' in {year} Grade.")
+
     st.markdown("---")
-                
-            
-            
-            
+
             
 if False:
     # this code will never run
