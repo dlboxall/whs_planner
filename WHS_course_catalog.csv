@@ -1,5 +1,4 @@
 ﻿Course Name,Course Code,Department,Grade Levels,Credits,Tags,Prerequisites,Notes
-Integrated Health,6105,Physical Education,[8],0,,None,Counts towards health education graduation requirement
 Band,5601,Fine Arts,[8],0,,None,
 Orchestra,5604,Fine Arts,[8],0,,None,
 Accounting I,9110,Business,"[10,11,12]",1,,None,
@@ -61,7 +60,7 @@ Women's Fitness,6102,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE
 Weight Training,6106,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
 Team Sports,6113,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
 Individual & Dual Activities,6115,Physical Education,"[10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
-Health Education,6105,Physical Education,"[9, 10, 11, 12]",0.5,,None,Required if not completed in Middle School
+Health Education,6105,Physical Education,"[8, 9, 10, 11, 12]",0.5,,None,Required; May be taken in Middle School
 Recreational Sports,6117,Physical Education,"[11, 12]",0.5,,"[2501,2504]",Maximum 2 PE classes per year
 Biology,7201,Science,[9],1,,None,
 Physical Science,7101,Science,[10],1,,[7201],
