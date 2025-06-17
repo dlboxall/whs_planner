@@ -35,7 +35,7 @@ with name_col:
 
 with path_col:
     st.markdown("### Please select graduation pathway")
-    st.session_state["grad_pathway"] = st.radio(
+    st.radio(
         label="",
         options=["University", "Career & Technical", "Honors/Scholarship Opportunity"],
         key="grad_pathway"
