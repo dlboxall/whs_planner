@@ -245,7 +245,7 @@ def show_graduation_tracker():
                 selected_names.append(row["Course Name"].values[0])
     
         graduation_df = course_catalog.copy()
-        graduation_df["Credits"] = 1  # Default 1 credit per course
+        #graduation_df["Credits"] = 1  # Default 1 credit per course
         selected_df = graduation_df[graduation_df["Course Name"].isin(selected_names)]
     
         # ---- LANGUAGE ARTS ----
