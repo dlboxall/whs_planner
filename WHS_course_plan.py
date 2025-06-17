@@ -163,7 +163,7 @@ for year in years:
                     key=course_code_key).strip()
                 
                 # Always update the session state explicitly from the user's input
-                st.session_state[course_code_key] = course_code_input
+                #st.session_state[course_code_key] = course_code_input
                 course_code = course_code_input.upper()
 
                 # Get mapped department name(s)
