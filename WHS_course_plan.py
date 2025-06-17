@@ -223,6 +223,17 @@ def show_graduation_tracker():
         # Extract selected course codes and names
         selected_codes = []
         selected_names = []
+        
+        # Include MS credits if any
+        for course_name in st.session_state.ms_credits:
+            if not course_name:
+                continue
+            row = course_catalog[course_catalog["Course Name"] == course_name]
+            if row.empty:
+                continue
+            selected_codes.append(str(row["Course Code"].values[0]))
+            selected_names.append(row["Course Name"].values[0])
+
         for year in st.session_state.course_plan:
             for course_name in st.session_state.course_plan[year]:
                 if not course_name:
