@@ -211,9 +211,6 @@ for year in years:
 
     st.markdown("---")
 
-
-
-
 def show_graduation_tracker():
     st.markdown("### 🎓 Graduation Tracker")
 
@@ -347,7 +344,6 @@ def show_graduation_tracker():
         else:
             rollover_math_df = pd.DataFrame(columns=course_catalog.columns)
 
-
         # ---- SCIENCE ----
         required_sci_groups = [["7201"], ["7101", "7301"]]
         science_df = selected_df[selected_df["Department"] == "Science"]
@@ -391,7 +387,6 @@ def show_graduation_tracker():
             rollover_science_df = extra_science_df.copy()
         else:
             rollover_science_df = pd.DataFrame(columns=course_catalog.columns)
-
 
         # ---- SOCIAL STUDIES ----
         required_ss_groups = [["8304", "8310"], ["8401"]]  # U.S. History and Government
@@ -458,6 +453,26 @@ def show_graduation_tracker():
         else:
             rollover_finance_df = pd.DataFrame(columns=course_catalog.columns)
 
+        # ---- PHYSICAL EDUCATION / HEALTH ----
+        required_pe_codes = {"6105", "6101"}  # Health and PE I
+        pe_df = selected_df[selected_df["Department"] == "Physical Education"]
+        pe_codes = set(pe_df["Course Code"].astype(str))
+        pe_credits = pe_df["Credits"].sum()
+        
+        # Check if required courses are present
+        required_pe_met = required_pe_codes.issubset(pe_codes)
+        
+        # Graduation check
+        if pe_credits >= 1 and required_pe_met:
+            st.success(f"PhysEd/Health: ✅ {pe_credits}/1 (includes PE I + Health)")
+        else:
+            st.warning(f"PhysEd/Health: {pe_credits}/1 credits — requirement {'✓' if required_pe_met else '✗'}")
+        
+        # Rollover any PE credits beyond 1.0
+        extra_pe_df = pd.DataFrame()
+        if pe_credits > 1:
+            used_pe_df = pe_df[pe_df["Course Code"].astype(str).isin(required_pe_codes)]
+            extra_pe_df = pe_df[~pe_df.index.isin(used_pe_df.index)]
 
         # ---- ELECTIVES ----
         matched_english_codes = valid_english_codes + speech_debate_codes
@@ -472,9 +487,19 @@ def show_graduation_tracker():
             rollover_science_df,
             rollover_finance_df,
             rollover_ss_df,
-            rollover_math_df
+            rollover_math_df,
+            extra_pe_df
         ])
 
+        # Optional: Warn if more than 2 PE courses taken in a single year
+        for year in st.session_state.course_plan:
+            pe_in_year = 0
+            for course_name in st.session_state.course_plan[year]:
+                row = course_catalog[course_catalog["Course Name"] == course_name]
+                if not row.empty and row["Department"].values[0] == "Physical Education":
+                    pe_in_year += 1
+            if pe_in_year > 2:
+                st.warning(f"⚠️ {year}: More than 2 PE courses selected — max is 2 per year.")
 
         elective_credits = electives_df["Credits"].sum()
     
