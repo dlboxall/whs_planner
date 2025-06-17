@@ -205,45 +205,67 @@ for year in years:
                         st.warning(f"No eligible course found for code '{course_code}' in {year} Grade.")
 
     st.markdown("---")
-            
-if False:
-    # this code will never run
-    st.write("Temporarily disabled")
 
-    # old main loop
-    if i < 4:
-        dept_courses = base_courses[base_courses["Department"] == department]
-        eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-            lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-        )]
-    else:
-        all_departments = sorted(base_courses["Department"].dropna().unique())
-        selected_dept = st.selectbox(f"Select Department ({department})", [""] + all_departments, key=f"{year}_dept_{i}")
-        if selected_dept:
-            dept_courses = base_courses[base_courses["Department"] == selected_dept]
-            eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-            )]
+#Sidebar graduation tracker
+# Graduation tracker helper function
+def show_graduation_tracker():
+    st.markdown("### 🎓 Graduation Tracker")
+
+    # Define required credits per category
+    tracker = {
+        "English": 4,
+        "Mathematics": 3,
+        "Science": 3,
+        "Social Studies": 3,
+        "Fine Arts / Performing Arts": 1,
+        "Physical Education": 1,
+        "Electives": 5
+    }
+
+    # Count credits by category
+    dept_count = {key: 0 for key in tracker}
+    for year in st.session_state.course_plan:
+        for i, course_name in enumerate(st.session_state.course_plan[year]):
+            if not course_name:
+                continue
+            row = course_catalog[course_catalog["Course Name"] == course_name]
+            if row.empty:
+                continue
+            dept = row["Department"].values[0]
+
+            # Categorize department
+            if dept == "English":
+                dept_count["English"] += 1
+            elif dept == "Mathematics":
+                dept_count["Mathematics"] += 1
+            elif dept == "Science":
+                dept_count["Science"] += 1
+            elif dept == "Social Studies":
+                dept_count["Social Studies"] += 1
+            elif dept in ["Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"]:
+                dept_count["Fine Arts / Performing Arts"] += 1
+            elif dept == "Physical Education":
+                dept_count["Physical Education"] += 1
+            else:
+                dept_count["Electives"] += 1
+
+    # Display results
+    all_met = True
+    for area, required in tracker.items():
+        earned = dept_count[area]
+        if earned < required:
+            st.warning(f"{area}: {earned}/{required} credits")
+            all_met = False
         else:
-            eligible_courses = pd.DataFrame(columns=base_courses.columns)
+            st.success(f"{area}: ✅ {earned}/{required}")
 
-    if not eligible_courses.empty:
-        options = [""] + eligible_courses["Course Name"].tolist()
-        code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
-        notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
-        selected_course = st.selectbox(
-            label=label,
-            options=options,
-            index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
-            key=f"{year}_{i}"
-        )
-        st.session_state.course_plan[year][i] = selected_course
-        st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
-        if selected_course:
-            note = notes_lookup.get(selected_course, "")
-            if note:
-                st.caption(f"ℹ️ {note}")
+    if all_met:
+        st.success("🎉 All graduation requirements met!")
     else:
-        st.info(f"No eligible courses found for {department} in {year}.")
-    st.markdown("---")
+        st.info("📌 Still working toward full requirements.")
+
+
+# Call tracker in right-hand sidebar
+with st.sidebar:
+    show_graduation_tracker()
 
