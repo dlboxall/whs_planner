@@ -220,6 +220,46 @@ def show_graduation_tracker():
     selected_pathway = st.session_state.get("grad_pathway", "University")
 
     if selected_pathway == "University":
+        # --- DUPLICATE COURSE CODE CHECK ---
+        unlimited_repeatable_codes = {"1201", "1210", "1221"}
+        limited_repeatable_counts = {"2401": 2}
+        
+        # Gather all selected course codes (MS + HS)
+        all_selected_codes = []
+        
+        for course_name in st.session_state.ms_credits:
+            if course_name:
+                row = course_catalog[course_catalog["Course Name"] == course_name]
+                if not row.empty:
+                    all_selected_codes.append(str(row["Course Code"].values[0]))
+        
+        for year in st.session_state.course_plan:
+            for course_name in st.session_state.course_plan[year]:
+                if course_name:
+                    row = course_catalog[course_catalog["Course Name"] == course_name]
+                    if not row.empty:
+                        all_selected_codes.append(str(row["Course Code"].values[0]))
+        
+        # Count duplicates
+        from collections import Counter
+        code_counts = Counter(all_selected_codes)
+        non_repeatable_violations = [
+            code for code, count in code_counts.items()
+            if (
+                (code in unlimited_repeatable_codes and count > 1000)  # effectively unlimited
+                or (code in limited_repeatable_counts and count > limited_repeatable_counts[code])
+                or (code not in unlimited_repeatable_codes and code not in limited_repeatable_counts and count > 1)
+            )
+        ]
+        
+        # Report violations
+        if non_repeatable_violations:
+            names = [
+                course_catalog[course_catalog["Course Code"].astype(str) == code]["Course Name"].values[0]
+                for code in non_repeatable_violations
+            ]
+            st.error(f"⚠️ Duplicate course selection: {', '.join(names)} — most courses may only be taken once.")
+
         # Extract selected course codes and names
         selected_codes = []
         selected_names = []
