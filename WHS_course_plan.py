@@ -30,13 +30,6 @@ st.markdown("## 📘 WHS Course Planner Dashboard")
 st.markdown("### Course plan created for:")
 student_name = st.text_input("Enter student name", key="student_name")
 
-#st.markdown("## High School Credit Earned in Middle School")
-
-#st.set_page_config(page_title="WHS Course Planner", layout="wide")
-#st.title("📘 WHS Course Planner Dashboard")
-#st.markdown("### Course plan created for:")
-#student_name = st.text_input("Enter student name", key="student_name")
-
 # Load course catalog
 def load_course_catalog():
     df = pd.read_csv("WHS_course_catalog.csv")
