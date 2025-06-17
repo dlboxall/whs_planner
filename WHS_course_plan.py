@@ -22,7 +22,7 @@ dept_code_to_name = {
 st.set_page_config(page_title="WHS Course Planner", layout="wide")
 
 # Show sidebar codes
-department_sidebar()
+#department_sidebar()
 
 st.markdown("## 📘 WHS Course Planner Dashboard")
 
