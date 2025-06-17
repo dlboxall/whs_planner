@@ -285,7 +285,51 @@ def show_graduation_tracker():
             st.success(f"Mathematics: ✅ {math_credits}/3 (Algebra I, Geometry, Algebra II)")
         else:
             st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_met else '✗'}")
-    
+
+        # ---- SCIENCE ----
+        required_sci_groups = [["7201"], ["7101", "7301"]]
+        science_df = selected_df[selected_df["Department"] == "Science"]
+        science_credits = science_df["Credits"].sum()
+        
+        # Group requirement check
+        science_group_met = all(any(code in selected_codes for code in group) for group in required_sci_groups)
+        
+        # Ensure they have 3+ total credits and satisfy both group requirements
+        if science_credits >= 3 and science_group_met:
+            st.success(f"Science: ✅ {science_credits}/3 (includes Physical Science + Biology)")
+        else:
+            st.warning(f"Science: {science_credits}/3 credits — group coverage {'✓' if science_group_met else '✗'}")
+
+        # Remove only 1 credit from each required group
+        used_science_codes = set()
+        
+        for group in required_sci_groups:
+            for code in group:
+                if code in selected_codes and code not in used_science_codes:
+                    used_science_codes.add(code)
+                    break  # one per group
+        
+        # Calculate how many credits are left after satisfying the science requirement
+        required_science_codes = list(used_science_codes)
+        extra_science_df = science_df[
+            ~science_df["Course Code"].astype(str).isin(required_science_codes)
+        ]
+        
+        # We'll remove only 2 of the 3 total required credits (from code groups) —
+        # the 3rd credit can be from any science course, so we reduce the credit pool
+        total_required_credits = 3
+        required_science_df = science_df[
+            science_df["Course Code"].astype(str).isin(required_science_codes)
+        ]
+        required_credit_total = required_science_df["Credits"].sum()
+        
+        # Figure out how many science credits are "extra"
+        science_credit_buffer = science_credits - total_required_credits
+        if science_credit_buffer > 0:
+            rollover_science_df = extra_science_df.copy()
+        else:
+            rollover_science_df = pd.DataFrame(columns=course_catalog.columns)
+
         # ---- ELECTIVES ----
         matched_english_codes = valid_english_codes + speech_debate_codes
         matched_math_codes = [code for group in required_math_groups for code in group]
@@ -293,7 +337,8 @@ def show_graduation_tracker():
         unmatched_df = selected_df[
             ~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)
         ]
-        electives_df = pd.concat([unmatched_df, extra_english_df])
+        #electives_df = pd.concat([unmatched_df, extra_english_df])
+        electives_df = pd.concat([unmatched_df, extra_english_df, rollover_science_df])
         elective_credits = electives_df["Credits"].sum()
     
         if elective_credits >= 5:
