@@ -211,10 +211,7 @@ for year in years:
 
     st.markdown("---")
 
-# Call tracker in right-hand sidebar
-with st.sidebar:
-    department_sidebar()
-    show_graduation_tracker()
+
 
 
 def show_graduation_tracker():
@@ -277,3 +274,8 @@ def show_graduation_tracker():
 
     elif selected_pathway == "Honors/Scholarship Opportunity":
         st.info("📋 Honors/Scholarship Opportunity tracker coming soon...")
+
+# Call tracker in right-hand sidebar
+with st.sidebar:
+    department_sidebar()
+    show_graduation_tracker()
