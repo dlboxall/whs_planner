@@ -330,6 +330,23 @@ def show_graduation_tracker():
         else:
             rollover_science_df = pd.DataFrame(columns=course_catalog.columns)
 
+        # ---- PERSONAL FINANCE / ECONOMICS ----
+        finance_codes = ["8701", "9120"]
+        finance_df = selected_df[selected_df["Course Code"].astype(str).isin(finance_codes)]
+        finance_credits = finance_df["Credits"].sum()
+        
+        if finance_credits >= 0.5:
+            st.success(f"Econ/Personal Finance: ✅ {finance_credits}/0.5")
+        else:
+            st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
+
+        # Finance rollover to electives (optional)
+        if finance_credits > 0.5:
+            rollover_finance_df = finance_df[finance_df["Credits"] > 0.5]
+        else:
+            rollover_finance_df = pd.DataFrame(columns=course_catalog.columns)
+
+
         # ---- ELECTIVES ----
         matched_english_codes = valid_english_codes + speech_debate_codes
         matched_math_codes = [code for group in required_math_groups for code in group]
@@ -338,7 +355,7 @@ def show_graduation_tracker():
             ~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)
         ]
         #electives_df = pd.concat([unmatched_df, extra_english_df])
-        electives_df = pd.concat([unmatched_df, extra_english_df, rollover_science_df])
+        electives_df = pd.concat([unmatched_df, extra_english_df, rollover_science_df, rollover_finance_df])
         elective_credits = electives_df["Credits"].sum()
     
         if elective_credits >= 5:
