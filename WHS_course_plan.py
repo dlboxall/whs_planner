@@ -26,9 +26,21 @@ department_sidebar()
 
 st.markdown("## 📘 WHS Course Planner Dashboard")
 
-# Student input
-st.markdown("### Course plan created for:")
-student_name = st.text_input("Enter student name", key="student_name")
+# Two-column layout for student name and pathway selection
+name_col, path_col = st.columns(2)
+
+with name_col:
+    st.markdown("### Course plan created for:")
+    student_name = st.text_input("Enter student name", key="student_name")
+
+with path_col:
+    st.markdown("### Please select graduation pathway")
+    st.session_state["grad_pathway"] = st.radio(
+        label="",
+        options=["University", "Career & Technical", "Honors/Scholarship Opportunity"],
+        key="grad_pathway"
+    )
+
 
 # Load course catalog
 def load_course_catalog():
