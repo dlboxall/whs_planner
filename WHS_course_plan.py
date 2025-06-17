@@ -274,3 +274,63 @@ def show_graduation_tracker():
 with st.sidebar:
     show_graduation_tracker()
 
+def show_graduation_tracker():
+    st.markdown("### 🎓 Graduation Tracker")
+
+    selected_pathway = st.session_state.get("grad_pathway", "University")
+
+    if selected_pathway == "University":
+        tracker = {
+            "English": 4,
+            "Mathematics": 3,
+            "Science": 3,
+            "Social Studies": 3,
+            "Fine Arts / Performing Arts": 1,
+            "Physical Education": 1,
+            "Electives": 5
+        }
+
+        dept_count = {key: 0 for key in tracker}
+        for year in st.session_state.course_plan:
+            for i, course_name in enumerate(st.session_state.course_plan[year]):
+                if not course_name:
+                    continue
+                row = course_catalog[course_catalog["Course Name"] == course_name]
+                if row.empty:
+                    continue
+                dept = row["Department"].values[0]
+
+                if dept == "English":
+                    dept_count["English"] += 1
+                elif dept == "Mathematics":
+                    dept_count["Mathematics"] += 1
+                elif dept == "Science":
+                    dept_count["Science"] += 1
+                elif dept == "Social Studies":
+                    dept_count["Social Studies"] += 1
+                elif dept in ["Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"]:
+                    dept_count["Fine Arts / Performing Arts"] += 1
+                elif dept == "Physical Education":
+                    dept_count["Physical Education"] += 1
+                else:
+                    dept_count["Electives"] += 1
+
+        all_met = True
+        for area, required in tracker.items():
+            earned = dept_count[area]
+            if earned < required:
+                st.warning(f"{area}: {earned}/{required} credits")
+                all_met = False
+            else:
+                st.success(f"{area}: ✅ {earned}/{required}")
+
+        if all_met:
+            st.success("🎉 All University graduation requirements met!")
+        else:
+            st.info("📌 Still working toward full University requirements.")
+
+    elif selected_pathway == "Career & Technical":
+        st.info("📋 Career & Technical graduation tracker coming soon...")
+
+    elif selected_pathway == "Honors/Scholarship Opportunity":
+        st.info("📋 Honors/Scholarship Opportunity tracker coming soon...")
