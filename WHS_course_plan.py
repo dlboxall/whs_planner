@@ -285,8 +285,19 @@ def show_graduation_tracker():
                 selected_names.append(row["Course Name"].values[0])
     
         graduation_df = course_catalog.copy()
-        #graduation_df["Credits"] = 1  # Default 1 credit per course
-        selected_df = graduation_df[graduation_df["Course Name"].isin(selected_names)]
+        
+        # Build selected_df by including duplicates
+        selected_df_rows = []
+        
+        for course_name in st.session_state.ms_credits + sum(st.session_state.course_plan.values(), []):
+            if not course_name:
+                continue
+            row = graduation_df[graduation_df["Course Name"] == course_name]
+            if not row.empty:
+                selected_df_rows.append(row.iloc[0])
+        
+        selected_df = pd.DataFrame(selected_df_rows)
+
     
         # ---- LANGUAGE ARTS ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
