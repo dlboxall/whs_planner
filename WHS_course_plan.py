@@ -220,15 +220,48 @@ def show_graduation_tracker():
     selected_pathway = st.session_state.get("grad_pathway", "University")
 
     if selected_pathway == "University":
-        tracker = {
-            "English": 4,
-            "Mathematics": 3,
-            "Science": 3,
-            "Social Studies": 3,
-            "Fine Arts / Performing Arts": 1,
-            "Physical Education": 1,
-            "Electives": 5
-        }
+    # Extract selected course codes and names
+    selected_codes = []
+    selected_names = []
+    for year in st.session_state.course_plan:
+        for course_name in st.session_state.course_plan[year]:
+            if not course_name:
+                continue
+            row = course_catalog[course_catalog["Course Name"] == course_name]
+            if row.empty:
+                continue
+            selected_codes.append(str(row["Course Code"].values[0]))
+            selected_names.append(row["Course Name"].values[0])
+
+    graduation_df = course_catalog.copy()
+    graduation_df["Credits"] = 1  # Default 1 credit each
+    selected_df = graduation_df[graduation_df["Course Name"].isin(selected_names)]
+
+    # --- LANGUAGE ARTS ---
+    eng_df = selected_df[selected_df["Department"] == "English"]
+    eng_credits = eng_df["Credits"].sum()
+    required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
+    english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
+
+    if eng_credits >= 4 and english_met:
+        st.success(f"English: ✅ {eng_credits}/4 (group requirements met)")
+    else:
+        st.warning(f"English: {eng_credits}/4 credits — group coverage {'✓' if english_met else '✗'}")
+
+    # --- MATHEMATICS ---
+    math_df = selected_df[selected_df["Department"] == "Mathematics"]
+    math_credits = math_df["Credits"].sum()
+    required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
+    math_met = all(any(code in selected_codes for code in group) for group in required_math_groups)
+
+    if math_credits >= 3 and math_met:
+        st.success(f"Mathematics: ✅ {math_credits}/3 (Algebra I, Geometry, Algebra II)")
+    else:
+        st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_met else '✗'}")
+
+    # TODO: Add Science, Social Studies, etc.
+    st.info("✅ Partial University credit checks complete. Add other subjects next.")
+
 
         dept_count = {key: 0 for key in tracker}
         for year in st.session_state.course_plan:
