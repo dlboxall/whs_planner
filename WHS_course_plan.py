@@ -222,7 +222,7 @@ def show_graduation_tracker():
     if selected_pathway == "University":
         # --- DUPLICATE COURSE CODE CHECK ---
         unlimited_repeatable_codes = {"1201", "1210", "1221"}
-        limited_repeatable_counts = {"2401": 2}
+        limited_repeatable_counts = {"2410": 2}
         
         # Gather all selected course codes (MS + HS)
         all_selected_codes = []
