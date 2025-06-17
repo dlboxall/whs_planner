@@ -272,7 +272,9 @@ def show_graduation_tracker():
 
 # Call tracker in right-hand sidebar
 with st.sidebar:
+    department_sidebar()
     show_graduation_tracker()
+
 
 def show_graduation_tracker():
     st.markdown("### 🎓 Graduation Tracker")
