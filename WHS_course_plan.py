@@ -286,6 +286,17 @@ def show_graduation_tracker():
         else:
             st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_met else '✗'}")
 
+        # ---- MATH ROLLOVER TO ELECTIVES ----
+        required_math_credits = 3
+        extra_math_credit = math_credits - required_math_credits
+        
+        if extra_math_credit > 0:
+            rollover_math_df = math_df.copy()
+            # If you want to be more precise and exclude required group matches, we can refine this.
+        else:
+            rollover_math_df = pd.DataFrame(columns=course_catalog.columns)
+
+
         # ---- SCIENCE ----
         required_sci_groups = [["7201"], ["7101", "7301"]]
         science_df = selected_df[selected_df["Department"] == "Science"]
@@ -409,8 +420,10 @@ def show_graduation_tracker():
             extra_english_df,
             rollover_science_df,
             rollover_finance_df,
-            rollover_ss_df
+            rollover_ss_df,
+            rollover_math_df
         ])
+
 
         elective_credits = electives_df["Credits"].sum()
     
