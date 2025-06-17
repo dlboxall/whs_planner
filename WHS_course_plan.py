@@ -151,20 +151,19 @@ for year in years:
                 # --- Electives: text input for 3-letter department code ---
                 course_code_key = f"{year}_{i}_code"
 
-                # Ensure the session value is initialized
+                # Initialize the session value if not already set
                 if course_code_key not in st.session_state:
                     st.session_state[course_code_key] = ""
-                
-                # Text input reads the current session value, and reuses its key
-                course_code_input = st.text_input(
+
+                # Create the input box (value persists due to key only)
+                st.text_input(
                     f"Enter 3-letter code for Course {i+1}",
-                    value=st.session_state[course_code_key],
                     max_chars=3,
-                    key=course_code_key).strip()
-                
-                # Always update the session state explicitly from the user's input
-                #st.session_state[course_code_key] = course_code_input
-                course_code = course_code_input.upper()
+                    key=course_code_key
+                )
+
+                # Read from session and normalize
+                course_code = st.session_state[course_code_key].strip().upper()
 
                 # Get mapped department name(s)
                 department_names = dept_code_to_name.get(course_code, [])
@@ -199,7 +198,6 @@ for year in years:
                         note = notes_lookup.get(selected_course, "")
                         if note:
                             st.caption(f"ℹ️ {note}")
-
                 elif course_code:
                     if not department_names:
                         st.warning(f"'{course_code}' is not a valid department code.")
@@ -207,7 +205,6 @@ for year in years:
                         st.warning(f"No eligible course found for code '{course_code}' in {year} Grade.")
 
     st.markdown("---")
-
             
 if False:
     # this code will never run
