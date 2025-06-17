@@ -46,7 +46,7 @@ Drama I:  Introduction To Acting & Theatre,1301,Performing Arts,"[9,10,11,12]",0
 Drama II:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",0.5,,[1301],Quarter course
 Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter course
 Algebra I,4301,Mathematics,[9],1,,None,
-Accelerated Algebra I ,4304,Mathematics,[8,9],1,Accelerated,None,
+Accelerated Algebra I ,4304,Mathematics,"[8,9]",1,Accelerated,None,
 Geometry,4401,Mathematics,"[9,10,11,12]",1,,"[4301,4304]",
 Accelerated Geometry,4402,Mathematics,"[8,9,10,11,12]",1,Accelerated,[4304],
 Algebra II with Financial Applications,4506,Mathematics,"[10,11,12]",1,,"[4401,4402]",
