@@ -1,8 +1,5 @@
 ﻿Course Name,Course Code,Department,Grade Levels,Credits,Tags,Prerequisites,Notes
-Accelerated World Geography,8102,Social Studies,[8],1,,None,
 Integrated Health,6105,Physical Education,[8],0,,None,Counts towards health education graduation requirement
-Accelerated Algebra I,4304,Mathematics,[8],1,,None,
-Accelerated Geometry,4402,Mathematics,[8],1,,"[4301,4304]",
 Band,5601,Fine Arts,[8],0,,None,
 Orchestra,5604,Fine Arts,[8],0,,None,
 Accounting I,9110,Business,"[10,11,12]",1,,None,
@@ -23,9 +20,9 @@ Accelerated English 9,2404,English,[9],1,Accelerated,None,
 English 10,2501,English,[10],1,,"[2401,2404]",
 Accelerated English 10,2504,English,[10],1,Accelerated,[2404],
 English 11,2601,English,[11],1,,"[2501, 2504]",
-English 11 Ap English Language & Composition (With Dual Credit Option),2608,English,[11],1,"AP, Dual Credit",[2504],
+English 11 AP English Language & Composition (With Dual Credit Option),2608,English,[11],1,"AP, Dual Credit",[2504],
 English 12,2715,English,[12],1,,"[2601, 2608]",
-English 12 Ap English Literature & Composition (With Dual Credit Option),2606,English,[12],1,"AP, Dual Credit",[2608],
+English 12 AP English Literature & Composition (With Dual Credit Option),2606,English,[12],1,"AP, Dual Credit",[2608],
 Explorations In Reading,2410,English,"[9,10,11,12]",0.5,,None,May be taken twice in separate school years]
 Journalism / Yearbook I,2301,English,"[10,11,12]",0.5,,"[2401,2404]",Quarter course
 Journalism / Yearbook II,2302,English,"[10,11,12]",0.5,,[2301],Quarter course
@@ -49,9 +46,9 @@ Drama I:  Introduction To Acting & Theatre,1301,Performing Arts,"[9,10,11,12]",0
 Drama II:  Advanced Acting And Theatre Crafts,1302,Performing Arts,"[10,11,12]",0.5,,[1301],Quarter course
 Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter course
 Algebra I,4301,Mathematics,[9],1,,None,
-Accelerated Algebra I ,4304,Mathematics,[9],1,Accelerated,None,
+Accelerated Algebra I ,4304,Mathematics,[8,9],1,Accelerated,None,
 Geometry,4401,Mathematics,"[9,10,11,12]",1,,"[4301,4304]",
-Accelerated Geometry,4402,Mathematics,"[9,10,11,12]",1,Accelerated,[4304],
+Accelerated Geometry,4402,Mathematics,"[8,9,10,11,12]",1,Accelerated,[4304],
 Algebra II with Financial Applications,4506,Mathematics,"[10,11,12]",1,,"[4401,4402]",
 Accelerated Algebra II,4504,Mathematics,"[10,11,12]",1,Accelerated,"[4401,4402]",
 College Algebra (dual credit),4502,Mathematics,"[10,11,12]",1,Dual Credit,"[4506,4504]",
@@ -72,13 +69,13 @@ Chemistry,7301,Science,"[10,11,12]",1,,"[7101,4504,4506]","C or higher in Physic
 Zoology and Ecology,7206,Science,"[11,12]",1,,[7201],Labs require either real or virtual disections
 Earth And Space Science,7104,Science,"[11,12]",1,,"[7101,7301]",
 Biology II,9999,Science,"[11,12]",1,Dual Credit,"[[7201],[7101]]",Labs require either real or virtual disections
-Physics,7400,Science,"[11,12]",1,,"[[7101],[4504,4506]]","B or higher in Physical Science, Algebra II pre or corequisite"
+Physics,7400,Science,"[11,12]",1,,"[[7101,7301],[4504,4506]]","B or higher in Physical Science, Algebra II pre or corequisite"
 Anatomy & Physiology,7209,Science,"[11,12]",1,,[7201],C or higher in Biology recommended
 Advanced Chemistry (With Dual Credit Option),7306,Science,"[11,12]",1,Dual Credit,[7301],"C or higher in Chemistry, Algebra II pre or corequisite"
 Explorations In Science,7407,Science,"[11,12]",1,,"[7101,7301]",
 Environmental Biology,7210,Science,"[11,12]",1,Dual Credit,"[[7201], [7101]]",B or higher in Biology recommended
 World Geography,8101,Social Studies,[9],0.5,,None,Quarter course
-Accelerated World Geography,8102,Social Studies,[9],1,Accelerated,None,
+Accelerated World Geography,8102,Social Studies,[8,9],1,Accelerated,None,
 Modern World History,8201,Social Studies,[10],0.5,,None,Quarter course
 Accelerated World History,8203,Social Studies,[10],1,Accelerated,None,
 US History,8304,Social Studies,[11],1,,None,
@@ -89,7 +86,7 @@ Criminal Justice,8700,Social Studies,"[10,11,12]",0.5,,None,Quarter course
 Psychology,8702,Social Studies,"[10,11,12]",0.5,,None,Quarter course
 Abnormal Psychology,8707,Social Studies,"[11,12]",0.5,,[8702],Quarter course
 Sociology,8703,Social Studies,"[10,11,12]",0.5,,None,Quarter course
-"Philosophy A:  A Good Life, Politics, And Morality",8704,Social Studies,"[10,11,12]",0.5,,None,Offered alternate years opposite Phil. B
+"Philosophy A:  Politics and Morality",8704,Social Studies,"[10,11,12]",0.5,,None,Offered alternate years opposite Phil. B
 "Philosophy B:  Existence, Humanity, & Power",8705,Social Studies,"[10,11,12]",0.5,,None, Offered alternate years opposite Phil. A
 Economics,8701,Social Studies,"[11,12]",0.5,,"[2501,2504]",Economics or Personal Finance required
 Spanish I,3101,World Languages,"[9,10,11,12]",1,,None,
@@ -115,9 +112,9 @@ Adv Woodworking,17008,CTE,"[10,11,12]",1,Dual Credit,[17007],
 Companion Animals,18102,CTE,"[9,10,11,12]",0.5,,None,Quarter course
 Wildlife & Fisheries,18501,CTE,"[9,10,11,12]",1,,None,
 Intro to Human Services,19001,CTE,"[10,11,12]",0.5,,None,Quarter course
-Human Development: PreSch-School Age,19051,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. Classes for DC
-Human Development: Early Chilhood/Parenting,19255,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. Classes for DC
-Maintenance & Light Repair,20104,CTE,"[10,11,12]",1,,None,Recommended prereq.: Small Engine/Intro to Auto.
+Human Development: PreSch-School Age,19051,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. classes for DC
+Human Development: Early Chilhood/Parenting,19255,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. classes for DC
+Maintenance & Light Repair,20104,CTE,"[10,11,12]",1,,None,
 SmEng/Intro to Auto,20109,CTE,"[10,11,12]",1,,None,
 Principles of Engineering,21004,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
 Intro to Engineering,21006,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
