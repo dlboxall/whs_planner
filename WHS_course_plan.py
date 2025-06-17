@@ -330,6 +330,56 @@ def show_graduation_tracker():
         else:
             rollover_science_df = pd.DataFrame(columns=course_catalog.columns)
 
+
+        # ---- SOCIAL STUDIES ----
+        required_ss_groups = [["8304", "8310"], ["8401"]]  # U.S. History and Government
+        social_df = selected_df[selected_df["Department"] == "Social Studies"]
+        social_credits = social_df["Credits"].sum()
+        
+        # Check group coverage
+        ss_group_met = all(any(code in selected_codes for code in group) for group in required_ss_groups)
+        
+        # Subtract credit for each matched group (up to 1 credit max for history group, 0.5 for gov)
+        used_ss_codes = set()
+        for group in required_ss_groups:
+            for code in group:
+                if code in selected_codes:
+                    used_ss_codes.add(code)
+                    break
+        
+        # How many of the remaining credits apply to the 1.5 additional requirement?
+        group_credit_df = social_df[social_df["Course Code"].astype(str).isin(used_ss_codes)]
+        group_credit_total = group_credit_df["Credits"].sum()
+        additional_credit_required = 3 - group_credit_total
+        additional_credit_df = social_df[
+            ~social_df["Course Code"].astype(str).isin(used_ss_codes)
+        ]
+        
+        additional_credit_total = additional_credit_df["Credits"].sum()
+        social_studies_met = (
+            ss_group_met and
+            (group_credit_total + additional_credit_total) >= 3 and
+            additional_credit_total >= 1.5
+        )
+        
+        # Display result
+        if social_studies_met:
+            st.success(f"Social Studies: ✅ {social_credits}/3 (includes U.S. History, Govt, and electives)")
+        else:
+            st.warning(f"Social Studies: {social_credits}/3 credits — group coverage {'✓' if ss_group_met else '✗'}, electives {'✓' if additional_credit_total >= 1.5 else '✗'}")
+        
+        # Rollover extra SS credits to electives
+        required_ss_credits = 3
+        extra_social_credit = social_credits - required_ss_credits
+        
+        if extra_social_credit > 0:
+            rollover_ss_df = additional_credit_df[
+                additional_credit_df["Credits"].cumsum() > (1.5 if ss_group_met else 0)
+            ]
+        else:
+            rollover_ss_df = pd.DataFrame(columns=course_catalog.columns)
+
+        
         # ---- PERSONAL FINANCE / ECONOMICS ----
         finance_codes = ["8701", "9120"]
         finance_df = selected_df[selected_df["Course Code"].astype(str).isin(finance_codes)]
@@ -354,8 +404,14 @@ def show_graduation_tracker():
         unmatched_df = selected_df[
             ~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)
         ]
-        #electives_df = pd.concat([unmatched_df, extra_english_df])
-        electives_df = pd.concat([unmatched_df, extra_english_df, rollover_science_df, rollover_finance_df])
+        electives_df = pd.concat([
+            unmatched_df,
+            extra_english_df,
+            rollover_science_df,
+            rollover_finance_df,
+            rollover_ss_df
+        ])
+
         elective_credits = electives_df["Credits"].sum()
     
         if elective_credits >= 5:
