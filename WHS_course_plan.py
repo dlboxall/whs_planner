@@ -234,24 +234,40 @@ def show_graduation_tracker():
                 selected_names.append(row["Course Name"].values[0])
     
         graduation_df = course_catalog.copy()
-        graduation_df["Credits"] = 1  # Default 1 credit each
+        graduation_df["Credits"] = 1  # Default 1 credit per course
         selected_df = graduation_df[graduation_df["Course Name"].isin(selected_names)]
     
-        # --- LANGUAGE ARTS ---
-        eng_df = selected_df[selected_df["Department"] == "English"]
-        eng_credits = eng_df["Credits"].sum()
+        # ---- LANGUAGE ARTS ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
+        speech_debate_codes = ["2201", "2205"]
+    
+        eng_df = selected_df[selected_df["Department"] == "English"]
+        valid_english_codes = [code for group in required_english_groups for code in group]
+    
+        english_grad_df = eng_df[eng_df["Course Code"].astype(str).isin(valid_english_codes)]
+        speech_df = eng_df[eng_df["Course Code"].astype(str).isin(speech_debate_codes)]
+        extra_english_df = eng_df[
+            ~eng_df["Course Code"].astype(str).isin(valid_english_codes + speech_debate_codes)
+        ]
+    
+        english_credits = english_grad_df["Credits"].sum()
+        speech_credits = speech_df["Credits"].sum()
         english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
     
-        if eng_credits >= 4 and english_met:
-            st.success(f"English: ✅ {eng_credits}/4 (group requirements met)")
+        if english_credits >= 4 and english_met:
+            st.success(f"English: ✅ {english_credits}/4 (group requirements met)")
         else:
-            st.warning(f"English: {eng_credits}/4 credits — group coverage {'✓' if english_met else '✗'}")
+            st.warning(f"English: {english_credits}/4 credits — group coverage {'✓' if english_met else '✗'}")
     
-        # --- MATHEMATICS ---
+        if speech_credits >= 0.5:
+            st.success(f"Speech/Debate: ✅ {speech_credits}/0.5")
+        else:
+            st.warning(f"Speech/Debate: {speech_credits}/0.5")
+    
+        # ---- MATHEMATICS ----
+        required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
         math_df = selected_df[selected_df["Department"] == "Mathematics"]
         math_credits = math_df["Credits"].sum()
-        required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
         math_met = all(any(code in selected_codes for code in group) for group in required_math_groups)
     
         if math_credits >= 3 and math_met:
@@ -259,9 +275,23 @@ def show_graduation_tracker():
         else:
             st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_met else '✗'}")
     
-        # TODO: Add Science, Social Studies, etc.
-        st.info("✅ Partial University credit checks complete. Add other subjects next.")
+        # ---- ELECTIVES ----
+        matched_english_codes = valid_english_codes + speech_debate_codes
+        matched_math_codes = [code for group in required_math_groups for code in group]
     
+        unmatched_df = selected_df[
+            ~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)
+        ]
+        electives_df = pd.concat([unmatched_df, extra_english_df])
+        elective_credits = electives_df["Credits"].sum()
+    
+        if elective_credits >= 5:
+            st.success(f"Electives: ✅ {elective_credits}/5")
+        else:
+            st.warning(f"Electives: {elective_credits}/5")
+    
+        st.info("✅ Partial University credit checks complete. Add other subjects next.")
+
 
         dept_count = {key: 0 for key in tracker}
         for year in st.session_state.course_plan:
