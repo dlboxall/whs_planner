@@ -760,15 +760,6 @@ def show_graduation_tracker():
             used_pe_df = pe_df[pe_df["Course Code"].astype(str).isin(required_pe_codes)]
             extra_pe_df = pe_df[~pe_df.index.isin(used_pe_df.index)]
 
-        # ---- CTE/WORLD LANGUAGES ----
-        cte_lang_df = selected_df[selected_df["Department"].isin(["CTE", "World Languages"])]
-        cte_lang_credits = cte_lang_df["Credits"].sum()
-        if cte_lang_credits >= 1:
-            st.success(f"CTE/World Languages: ✅ {cte_lang_credits}/1")
-        else:
-            st.warning(f"CTE/World Languages: {cte_lang_credits}/1")
-        extra_cte_lang_df = cte_lang_df[cte_lang_df["Credits"].cumsum() > 1] if cte_lang_credits > 1 else pd.DataFrame()
-
         # ---- FINE ARTS ----
         fine_arts_df = selected_df[selected_df["Department"].isin(["Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"])]
         fine_arts_credits = fine_arts_df["Credits"].sum()
@@ -791,7 +782,6 @@ def show_graduation_tracker():
             rollover_finance_df,
             rollover_ss_df,
             extra_pe_df,
-            extra_cte_lang_df,
             extra_fine_arts_df,
             rollover_cte_df
         ])
@@ -811,7 +801,6 @@ def show_graduation_tracker():
             finance_credits >= 0.5 and
             social_studies_met and
             pe_credits >= 1 and required_pe_met and
-            cte_lang_credits >= 1 and
             fine_arts_credits >= 1 and
             elective_credits >= 5.5 and
             cte_credits >= 2
