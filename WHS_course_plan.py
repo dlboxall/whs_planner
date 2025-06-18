@@ -597,107 +597,107 @@ def show_graduation_tracker():
         ):
             st.success("🎓 All University graduation requirements met!")
 
-elif selected_pathway == "Career & Technical":
-    st.markdown("### 🛠️ Career & Technical Graduation Tracker")
-
-    # ---- MATHEMATICS ----
-    required_math_groups = [["4301", "4304"]]  # Algebra I
-    math_df = selected_df[selected_df["Department"] == "Mathematics"]
-    selected_math_codes = set(math_df["Course Code"].astype(str))
-    math_met = any(code in selected_math_codes for code in required_math_groups[0])
-
-    # Fulfill required
-    used_math_codes = set()
-    for group in required_math_groups:
-        for code in group:
-            if code in selected_math_codes:
-                used_math_codes.add(code)
+    elif selected_pathway == "Career & Technical":
+        st.markdown("### 🛠️ Career & Technical Graduation Tracker")
+    
+        # ---- MATHEMATICS ----
+        required_math_groups = [["4301", "4304"]]  # Algebra I
+        math_df = selected_df[selected_df["Department"] == "Mathematics"]
+        selected_math_codes = set(math_df["Course Code"].astype(str))
+        math_met = any(code in selected_math_codes for code in required_math_groups[0])
+    
+        # Fulfill required
+        used_math_codes = set()
+        for group in required_math_groups:
+            for code in group:
+                if code in selected_math_codes:
+                    used_math_codes.add(code)
+                    break
+    
+        math_fulfilled_df = math_df[math_df["Course Code"].astype(str).isin(used_math_codes)]
+    
+        # Fill remaining up to 3 credits
+        remaining_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
+        for idx, row in remaining_math_df.iterrows():
+            if math_fulfilled_df["Credits"].sum() >= 3:
                 break
-
-    math_fulfilled_df = math_df[math_df["Course Code"].astype(str).isin(used_math_codes)]
-
-    # Fill remaining up to 3 credits
-    remaining_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
-    for idx, row in remaining_math_df.iterrows():
-        if math_fulfilled_df["Credits"].sum() >= 3:
-            break
-        math_fulfilled_df = pd.concat([math_fulfilled_df, row.to_frame().T])
-
-    math_credits = math_fulfilled_df["Credits"].sum()
-    if math_credits >= 3 and math_met:
-        st.success(f"Mathematics: ✅ {math_credits}/3 (includes Algebra I)")
-    else:
-        st.warning(f"Mathematics: {math_credits}/3 credits — Algebra I {'✓' if math_met else '✗'}")
-
-    rollover_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
-
-    # ---- SCIENCE ----
-    required_sci_groups = [["7201"]]  # Biology
-    alt_sci_codes = {"5105", "5115"}  # Approved alt science
-    science_df = selected_df[selected_df["Department"] == "Science"]
-    science_credits = science_df["Credits"].sum()
-
-    group_met = any(code in selected_codes for code in required_sci_groups[0])
-    alt_met = any(code in selected_codes for code in alt_sci_codes)
-
-    if science_credits >= 3 and (group_met or alt_met):
-        st.success(f"Science: ✅ {science_credits}/3 (includes Biology or approved alt)")
-    else:
-        st.warning(f"Science: {science_credits}/3 credits — Bio/Alt required {'✓' if group_met or alt_met else '✗'}")
-
-    # Rollover
-    used_sci = science_df[science_df["Course Code"].astype(str).isin(required_sci_groups[0] + list(alt_sci_codes))]
-    rollover_science_df = science_df[~science_df.index.isin(used_sci.index)]
-
-    # ---- CTE (Cluster Logic Placeholder) ----
-    cte_df = selected_df[selected_df["Department"] == "CTE"]
-    cte_credits = cte_df["Credits"].sum()
-
-    if cte_credits >= 2:
-        st.success(f"CTE: ✅ {cte_credits}/2 (career cluster logic to be added)")
-    else:
-        st.warning(f"CTE: {cte_credits}/2 credits — cluster coverage not enforced yet")
-
-    # TODO: Add cluster validation logic here
-
-    rollover_cte_df = pd.DataFrame()
-    if cte_credits > 2:
-        rollover_cte_df = cte_df[cte_df["Credits"].cumsum() > 2]
-
-    # ---- Final Electives + Totals (reuse logic from University block)
-    electives_df = pd.concat([
-        unmatched_df,
-        extra_english_df,
-        rollover_math_df,
-        rollover_science_df,
-        rollover_finance_df,
-        rollover_ss_df,
-        extra_pe_df,
-        extra_cte_lang_df,
-        extra_fine_arts_df,
-        rollover_cte_df
-    ])
-
-    elective_credits = electives_df["Credits"].sum()
-    if elective_credits >= 5.5:
-        st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
-    else:
-        st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
-
-    # Graduation check
-    if (
-        english_credits >= 4 and english_met and
-        speech_credits >= 0.5 and
-        math_credits >= 3 and math_met and
-        science_credits >= 3 and (group_met or alt_met) and
-        finance_credits >= 0.5 and
-        social_studies_met and
-        pe_credits >= 1 and required_pe_met and
-        cte_credits >= 2 and
-        fine_arts_credits >= 1 and
-        elective_credits >= 5.5
-    ):
-        st.success("🎓 All Career & Technical graduation requirements met!")
+            math_fulfilled_df = pd.concat([math_fulfilled_df, row.to_frame().T])
+    
+        math_credits = math_fulfilled_df["Credits"].sum()
+        if math_credits >= 3 and math_met:
+            st.success(f"Mathematics: ✅ {math_credits}/3 (includes Algebra I)")
+        else:
+            st.warning(f"Mathematics: {math_credits}/3 credits — Algebra I {'✓' if math_met else '✗'}")
+    
+        rollover_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
+    
+        # ---- SCIENCE ----
+        required_sci_groups = [["7201"]]  # Biology
+        alt_sci_codes = {"5105", "5115"}  # Approved alt science
+        science_df = selected_df[selected_df["Department"] == "Science"]
+        science_credits = science_df["Credits"].sum()
+    
+        group_met = any(code in selected_codes for code in required_sci_groups[0])
+        alt_met = any(code in selected_codes for code in alt_sci_codes)
+    
+        if science_credits >= 3 and (group_met or alt_met):
+            st.success(f"Science: ✅ {science_credits}/3 (includes Biology or approved alt)")
+        else:
+            st.warning(f"Science: {science_credits}/3 credits — Bio/Alt required {'✓' if group_met or alt_met else '✗'}")
+    
+        # Rollover
+        used_sci = science_df[science_df["Course Code"].astype(str).isin(required_sci_groups[0] + list(alt_sci_codes))]
+        rollover_science_df = science_df[~science_df.index.isin(used_sci.index)]
+    
+        # ---- CTE (Cluster Logic Placeholder) ----
+        cte_df = selected_df[selected_df["Department"] == "CTE"]
+        cte_credits = cte_df["Credits"].sum()
+    
+        if cte_credits >= 2:
+            st.success(f"CTE: ✅ {cte_credits}/2 (career cluster logic to be added)")
+        else:
+            st.warning(f"CTE: {cte_credits}/2 credits — cluster coverage not enforced yet")
+    
+        # TODO: Add cluster validation logic here
+    
+        rollover_cte_df = pd.DataFrame()
+        if cte_credits > 2:
+            rollover_cte_df = cte_df[cte_df["Credits"].cumsum() > 2]
+    
+        # ---- Final Electives + Totals (reuse logic from University block)
+        electives_df = pd.concat([
+            unmatched_df,
+            extra_english_df,
+            rollover_math_df,
+            rollover_science_df,
+            rollover_finance_df,
+            rollover_ss_df,
+            extra_pe_df,
+            extra_cte_lang_df,
+            extra_fine_arts_df,
+            rollover_cte_df
+        ])
+    
+        elective_credits = electives_df["Credits"].sum()
+        if elective_credits >= 5.5:
+            st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
+        else:
+            st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
+    
+        # Graduation check
+        if (
+            english_credits >= 4 and english_met and
+            speech_credits >= 0.5 and
+            math_credits >= 3 and math_met and
+            science_credits >= 3 and (group_met or alt_met) and
+            finance_credits >= 0.5 and
+            social_studies_met and
+            pe_credits >= 1 and required_pe_met and
+            cte_credits >= 2 and
+            fine_arts_credits >= 1 and
+            elective_credits >= 5.5
+        ):
+            st.success("🎓 All Career & Technical graduation requirements met!")
 
 
     elif selected_pathway == "Honors/Scholarship Opportunity":
