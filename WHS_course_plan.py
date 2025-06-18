@@ -491,8 +491,10 @@ def show_graduation_tracker():
             extra_cte_lang_df = cte_lang_df[cte_lang_df["Credits"].cumsum() > 1]
 
         # ---- FINE ARTS ----
-        fine_arts_df = selected_df[
-            selected_df["Department"].isin(["MUS", "ART"])
+       fine_arts_df = selected_df[
+            selected_df["Department"].isin([
+                "Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"
+            ])
         ]
         fine_arts_credits = fine_arts_df["Credits"].sum()
         
