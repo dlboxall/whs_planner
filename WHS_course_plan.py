@@ -129,45 +129,98 @@ for year in years:
     for i in range(8):
         department = row_labels_fall[i] if i < 4 else row_labels_spring[i - 4]
         col = cols[i % 4]
+
         with col:
             label = f"{year} – {department}"
-
             dept_courses = base_courses[base_courses["Department"] == department]
 
-            if i < 4 and department == "English":
-                # Special filtering for English core courses
-                allowed_codes = english_course_codes_by_grade.get(year, [])
-                eligible_courses = dept_courses[
-                    dept_courses["Course Code"].astype(str).isin(allowed_codes)
-                ]
-            else:
-                eligible_courses = dept_courses[
-                    dept_courses["Course Code"].astype(str).apply(
-                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+            if i < 4:
+                # --- Core subjects ---
+                if department == "English":
+                    allowed_codes = english_course_codes_by_grade.get(year, [])
+                    eligible_courses = dept_courses[
+                        dept_courses["Course Code"].astype(str).isin(allowed_codes)
+                    ]
+                else:
+                    eligible_courses = dept_courses[
+                        dept_courses["Course Code"].astype(str).apply(
+                            lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+                        )
+                    ]
+
+                if not eligible_courses.empty:
+                    options = [""] + eligible_courses["Course Name"].tolist()
+                    code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+                    notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+                    selected_course = st.selectbox(
+                        label=label,
+                        options=options,
+                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                        key=f"{year}_{i}"
                     )
-                ]
 
-            if not eligible_courses.empty:
-                options = [""] + eligible_courses["Course Name"].tolist()
-                code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
-                notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+                    st.session_state.course_plan[year][i] = selected_course
+                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
 
-                selected_course = st.selectbox(
-                    label=label,
-                    options=options,
-                    index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
-                    key=f"{year}_{i}"
+                    if selected_course:
+                        note = notes_lookup.get(selected_course, "")
+                        if note:
+                            st.caption(f"ℹ️ {note}")
+                else:
+                    st.info(f"No eligible courses found for {department} in {year}.")
+
+            else:
+                # --- Electives: 3-letter department code input ---
+                course_code_key = f"{year}_{i}_code"
+
+                if course_code_key not in st.session_state:
+                    st.session_state[course_code_key] = ""
+
+                st.text_input(
+                    f"Enter 3-letter code for Course {i+1}",
+                    max_chars=3,
+                    key=course_code_key
                 )
 
-                st.session_state.course_plan[year][i] = selected_course
-                st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+                course_code = st.session_state[course_code_key].strip().upper()
+                department_names = dept_code_to_name.get(course_code, [])
 
-                if selected_course:
-                    note = notes_lookup.get(selected_course, "")
-                    if note:
-                        st.caption(f"ℹ️ {note}")
-            else:
-                st.info(f"No eligible courses found for {department} in {year}.")
+                if isinstance(department_names, str):
+                    department_names = [department_names]
+
+                if department_names:
+                    dept_courses = base_courses[base_courses["Department"].isin(department_names)]
+                    eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
+                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+                    )]
+                else:
+                    eligible_courses = pd.DataFrame(columns=base_courses.columns)
+
+                if not eligible_courses.empty:
+                    options = [""] + eligible_courses["Course Name"].tolist()
+                    code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
+                    notes_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Notes"]))
+
+                    selected_course = st.selectbox(
+                        label=f"{label} – Select Course",
+                        options=options,
+                        index=options.index(st.session_state.course_plan[year][i]) if st.session_state.course_plan[year][i] in options else 0,
+                        key=f"{year}_{i}"
+                    )
+
+                    st.session_state.course_plan[year][i] = selected_course
+                    st.session_state.course_plan_codes[year][i] = code_lookup.get(selected_course, "")
+
+                    if selected_course:
+                        note = notes_lookup.get(selected_course, "")
+                        if note:
+                            st.caption(f"ℹ️ {note}")
+                elif course_code:
+                    if not department_names:
+                        st.warning(f"'{course_code}' is not a valid department code.")
+                    else:
+                        st.warning(f"No eligible course found for code '{course_code}' in {year} Grade.")
 
     st.markdown("---")
 
