@@ -47,7 +47,7 @@ Intro To Audio Production,1223,Performing Arts,"[9,10,11,12]",0.5,,None,Quarter 
 Algebra I,4301,Mathematics,[9],1,,None,
 Accelerated Algebra I ,4304,Mathematics,"[8,9]",1,Accelerated,None,
 Geometry,4401,Mathematics,"[9,10,11,12]",1,,"[4301,4304]",
-Accelerated Geometry,4402,Mathematics,"[8,9,10,11,12]",1,Accelerated,[4304],
+Accelerated Geometry,4402,Mathematics,"[9,10,11,12]",1,Accelerated,[4304],
 Algebra II with Financial Applications,4506,Mathematics,"[10,11,12]",1,,"[4401,4402]",
 Accelerated Algebra II,4504,Mathematics,"[10,11,12]",1,Accelerated,"[4401,4402]",
 College Algebra (dual credit),4502,Mathematics,"[10,11,12]",1,Dual Credit,"[4506,4504]",
@@ -60,7 +60,7 @@ Women's Fitness,6102,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE
 Weight Training,6106,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
 Team Sports,6113,Physical Education,"[9, 10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
 Individual & Dual Activities,6115,Physical Education,"[10, 11, 12]",0.5,,None,Maximum 2 PE classes per year
-Health Education,6105,Physical Education,"[8, 9, 10, 11, 12]",0.5,,None,Required; May be taken in Middle School
+Health Education,6105,Physical Education,"[9, 10, 11, 12]",0.5,,None,Required if Integrated Health not taken in Middle School
 Recreational Sports,6117,Physical Education,"[11, 12]",0.5,,"[2501,2504]",Maximum 2 PE classes per year
 Biology,7201,Science,[9],1,,None,
 Physical Science,7101,Science,[10],1,,[7201],
@@ -77,9 +77,10 @@ World Geography,8101,Social Studies,[9],0.5,,None,Quarter course
 Accelerated World Geography,8102,Social Studies,"[8,9]",1,Accelerated,None,
 Modern World History,8201,Social Studies,[10],0.5,,None,Quarter course
 Accelerated World History,8203,Social Studies,[10],1,Accelerated,None,
-US History,8304,Social Studies,[11],1,,None,
-AP US History,8310,Social Studies,"[11,12]",1.5,AP,[8203],
-US Government,8401,Social Studies,"[11,12]",0.5,,"[2501,2504]",Quarter course
+US History,8304,Social Studies,[11],1,,None, Must also take US Government
+AP US History,8310,Social Studies,"[11,12]",1.5,AP,[8203], Must also take US Government
+US Government,8401,Social Studies,"[11,12]",0.5,,"[2501,2504]",Quarter course; Must also take US History
+AP US Government,8405,Social Studies,"[11,12]",1,AP,None,See Mr. Downey for questions; Must also take US History
 Rising World Powers,8605,Social Studies,"[9,10]",0.5,,None,Quarter course
 Criminal Justice,8700,Social Studies,"[10,11,12]",0.5,,None,Quarter course
 Psychology,8702,Social Studies,"[10,11,12]",0.5,,None,Quarter course
