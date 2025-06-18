@@ -540,12 +540,32 @@ def show_graduation_tracker():
 
         elective_credits = electives_df["Credits"].sum()
     
-        if elective_credits >= 5:
+        #if elective_credits >= 5:
+            #st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
+        #else:
+            #st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
+    
+        #st.info("✅ Partial University credit checks complete. Add other subjects next.")
+        
+        if elective_credits >= 5.5:
             st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
         else:
             st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
-    
-        st.info("✅ Partial University credit checks complete. Add other subjects next.")
+        
+        # ✅ Graduation status message
+        if (
+            english_credits >= 4 and english_met and
+            speech_credits >= 0.5 and
+            math_credits >= 3 and math_met and
+            science_credits >= 3 and science_group_met and
+            finance_credits >= 0.5 and
+            social_studies_met and
+            pe_credits >= 1 and required_pe_met and
+            cte_lang_credits >= 1 and
+            fine_arts_credits >= 1 and
+            elective_credits >= 5.5
+        ):
+            st.success("🎓 All University graduation requirements met!")
 
     elif selected_pathway == "Career & Technical":
         st.info("📋 Career & Technical graduation tracker coming soon...")
