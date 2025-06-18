@@ -298,17 +298,17 @@ def show_graduation_tracker():
         
         # Build selected_df by including duplicates
         selected_df_rows = []
-        
+
         for course_name in st.session_state.ms_credits + sum(st.session_state.course_plan.values(), []):
             if not course_name:
                 continue
             row = graduation_df[graduation_df["Course Name"] == course_name]
             if not row.empty:
-                selected_df_rows.append(row.iloc[0])
+                selected_df_rows.append(row)
         
-        selected_df = pd.DataFrame(selected_df_rows)
+        selected_df = pd.concat(selected_df_rows, ignore_index=True) if selected_df_rows else pd.DataFrame(columns=graduation_df.columns)
 
-    
+
         # ---- LANGUAGE ARTS ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
         speech_debate_codes = ["2201", "2205"]
