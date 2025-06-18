@@ -225,7 +225,7 @@ for year in years:
     st.markdown("---")
 
 def show_graduation_tracker():
-    st.markdown("### 🎓 Graduation Tracker")
+    #st.markdown("### 🎓 Graduation Tracker")
     graduation_df = course_catalog.copy()
     selected_df_rows = []
     
@@ -242,6 +242,7 @@ def show_graduation_tracker():
     selected_pathway = st.session_state.get("grad_pathway", "University")
 
     if selected_pathway == "University":
+        st.markdown("### 🎓 Graduation Tracker")
         # --- DUPLICATE COURSE CODE CHECK ---
         unlimited_repeatable_codes = {"1201", "1210", "1221"}
         limited_repeatable_counts = {"2410": 2}
@@ -675,8 +676,113 @@ def show_graduation_tracker():
         rollover_cte_df = pd.DataFrame()
         if cte_credits > 2:
             rollover_cte_df = cte_df[cte_df["Credits"].cumsum() > 2]
-    
-        # ---- Final Electives + Totals (reuse logic from University block)
+
+        # ---- ENGLISH + SPEECH/DEBATE ----
+        required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
+        speech_debate_codes = ["2201", "2205"]
+        eng_df = selected_df[selected_df["Department"] == "English"]
+        valid_english_codes = [code for group in required_english_groups for code in group]
+        english_grad_df = eng_df[eng_df["Course Code"].astype(str).isin(valid_english_codes)]
+        speech_df = eng_df[eng_df["Course Code"].astype(str).isin(speech_debate_codes)]
+        extra_english_df = eng_df[~eng_df["Course Code"].astype(str).isin(valid_english_codes + speech_debate_codes)]
+
+        english_credits = english_grad_df["Credits"].sum()
+        speech_credits = speech_df["Credits"].sum()
+        english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
+
+        if english_credits >= 4 and english_met:
+            st.success(f"English: ✅ {english_credits}/4 (group requirements met)")
+        else:
+            st.warning(f"English: {english_credits}/4 credits — group coverage {'✓' if english_met else '✗'}")
+
+        if speech_credits >= 0.5:
+            st.success(f"Speech/Debate: ✅ {speech_credits}/0.5")
+        else:
+            st.warning(f"Speech/Debate: {speech_credits}/0.5")
+
+        # ---- SOCIAL STUDIES ----
+        required_ss_groups = [["8304", "8310"], ["8401", "8405"]]  # U.S. History + Government
+        social_df = selected_df[selected_df["Department"] == "Social Studies"]
+        social_credits = social_df["Credits"].sum()
+        ss_group_met = all(any(code in selected_codes for code in group) for group in required_ss_groups)
+
+        used_ss_codes = set()
+        for group in required_ss_groups:
+            for code in group:
+                if code in selected_codes:
+                    used_ss_codes.add(code)
+                    break
+
+        group_credit_df = social_df[social_df["Course Code"].astype(str).isin(used_ss_codes)]
+        group_credit_total = group_credit_df["Credits"].sum()
+        additional_credit_df = social_df[~social_df["Course Code"].astype(str).isin(used_ss_codes)]
+        additional_credit_total = additional_credit_df["Credits"].sum()
+        social_studies_met = (
+            ss_group_met and
+            (group_credit_total + additional_credit_total) >= 3 and
+            additional_credit_total >= 1.5
+        )
+
+        if social_studies_met:
+            st.success(f"Social Studies: ✅ {social_credits}/3 (includes U.S. History, Govt, and electives)")
+        else:
+            st.warning(f"Social Studies: {social_credits}/3 credits — group coverage {'✓' if ss_group_met else '✗'}, electives {'✓' if additional_credit_total >= 1.5 else '✗'}")
+
+        rollover_ss_df = (
+            additional_credit_df[additional_credit_df["Credits"].cumsum() > (1.5 if ss_group_met else 0)]
+            if social_credits > 3 else pd.DataFrame()
+        )
+
+        # ---- ECONOMICS / PERSONAL FINANCE ----
+        finance_codes = ["8701", "9120"]
+        finance_df = selected_df[selected_df["Course Code"].astype(str).isin(finance_codes)]
+        finance_credits = finance_df["Credits"].sum()
+        if finance_credits >= 0.5:
+            st.success(f"Econ/Personal Finance: ✅ {finance_credits}/0.5")
+        else:
+            st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
+        rollover_finance_df = finance_df[finance_df["Credits"] > 0.5] if finance_credits > 0.5 else pd.DataFrame()
+
+        # ---- PHYSICAL EDUCATION / HEALTH ----
+        required_pe_codes = {"6105", "6101"}
+        pe_df = selected_df[selected_df["Department"] == "Physical Education"]
+        pe_codes = set(pe_df["Course Code"].astype(str))
+        pe_credits = pe_df["Credits"].sum()
+        required_pe_met = required_pe_codes.issubset(pe_codes)
+
+        if pe_credits >= 1 and required_pe_met:
+            st.success(f"PhysEd/Health: ✅ {pe_credits}/1 (includes PE I + Health)")
+        else:
+            st.warning(f"PhysEd/Health: {pe_credits}/1 credits — requirement {'✓' if required_pe_met else '✗'}")
+
+        extra_pe_df = pd.DataFrame()
+        if pe_credits > 1:
+            used_pe_df = pe_df[pe_df["Course Code"].astype(str).isin(required_pe_codes)]
+            extra_pe_df = pe_df[~pe_df.index.isin(used_pe_df.index)]
+
+        # ---- CTE/WORLD LANGUAGES ----
+        cte_lang_df = selected_df[selected_df["Department"].isin(["CTE", "World Languages"])]
+        cte_lang_credits = cte_lang_df["Credits"].sum()
+        if cte_lang_credits >= 1:
+            st.success(f"CTE/World Languages: ✅ {cte_lang_credits}/1")
+        else:
+            st.warning(f"CTE/World Languages: {cte_lang_credits}/1")
+        extra_cte_lang_df = cte_lang_df[cte_lang_df["Credits"].cumsum() > 1] if cte_lang_credits > 1 else pd.DataFrame()
+
+        # ---- FINE ARTS ----
+        fine_arts_df = selected_df[selected_df["Department"].isin(["Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"])]
+        fine_arts_credits = fine_arts_df["Credits"].sum()
+        if fine_arts_credits >= 1:
+            st.success(f"Fine Arts: ✅ {fine_arts_credits}/1")
+        else:
+            st.warning(f"Fine Arts: {fine_arts_credits}/1")
+        extra_fine_arts_df = fine_arts_df[fine_arts_df["Credits"].cumsum() > 1] if fine_arts_credits > 1 else pd.DataFrame()
+
+        # ---- ELECTIVES ----
+        matched_english_codes = valid_english_codes + speech_debate_codes
+        matched_math_codes = [code for group in required_math_groups for code in group]
+        unmatched_df = selected_df[~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)]
+
         electives_df = pd.concat([
             unmatched_df,
             extra_english_df,
@@ -689,14 +795,14 @@ def show_graduation_tracker():
             extra_fine_arts_df,
             rollover_cte_df
         ])
-    
         elective_credits = electives_df["Credits"].sum()
+
         if elective_credits >= 5.5:
             st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
         else:
             st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
-    
-        # Graduation check
+
+        # ---- FINAL GRADUATION CHECK ----
         if (
             english_credits >= 4 and english_met and
             speech_credits >= 0.5 and
@@ -705,9 +811,10 @@ def show_graduation_tracker():
             finance_credits >= 0.5 and
             social_studies_met and
             pe_credits >= 1 and required_pe_met and
-            cte_credits >= 2 and
+            cte_lang_credits >= 1 and
             fine_arts_credits >= 1 and
-            elective_credits >= 5.5
+            elective_credits >= 5.5 and
+            cte_credits >= 2
         ):
             st.success("🎓 All Career & Technical graduation requirements met!")
 
