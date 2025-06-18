@@ -389,7 +389,7 @@ def show_graduation_tracker():
             rollover_science_df = pd.DataFrame(columns=course_catalog.columns)
 
         # ---- SOCIAL STUDIES ----
-        required_ss_groups = [["8304", "8310"], ["8401"]]  # U.S. History and Government
+        required_ss_groups = [["8304", "8310"], ["8401","8405"]]  # U.S. History and Government
         social_df = selected_df[selected_df["Department"] == "Social Studies"]
         social_credits = social_df["Credits"].sum()
         
