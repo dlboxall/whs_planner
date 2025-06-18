@@ -686,31 +686,33 @@ def show_graduation_tracker():
         else:
             st.warning(f"CTE: {cte_credits}/2 credits")
         
-        # --- CTE CLUSTER VALIDATION ---
-        cte_codes_taken = set(cte_df["Course Code"].astype(str))
+        # --- CTE CLUSTER VALIDATION (by CREDITS) ---
+        cte_df["Course Code"] = cte_df["Course Code"].astype(str)
+        cte_codes_taken = set(cte_df["Course Code"])
         
         cluster_hits = {}
         for cluster, codes in cte_cluster_map.items():
-            overlap = cte_codes_taken.intersection(codes)
+            # Match only rows whose Course Code is in this cluster
+            matched = cte_df[cte_df["Course Code"].isin(codes)]
         
             if cluster == "Culinary Arts":
-                # Enforce mutual exclusion between 16058 and 16059
-                culinary_limit_codes = {"16058", "16059"}
-                overlap_culinary = overlap - (overlap & culinary_limit_codes) | (
-                    {"16058"} if "16058" in overlap else {"16059"} if "16059" in overlap else set()
-                )
-                if len(overlap_culinary) >= 2:
-                    cluster_hits[cluster] = overlap_culinary
-            else:
-                if len(overlap) >= 2:
-                    cluster_hits[cluster] = overlap
+                # Limit to only one of the two Culinary special-case courses
+                if "16058" in matched["Course Code"].values and "16059" in matched["Course Code"].values:
+                    # Keep the higher-credit one (or either arbitrarily if same)
+                    matched = matched[~matched["Course Code"].isin(["16059"])]  # keep only 16058
+                # If only one is present, it's fine — leave as-is
         
+            total_cluster_credits = matched["Credits"].sum()
+        
+            if total_cluster_credits >= 2:
+                cluster_hits[cluster] = total_cluster_credits
+        
+        # Show result
         if cluster_hits:
-            matched_cluster = list(cluster_hits.keys())[0]
-            st.success(f"✅ Completed CTE cluster: **{matched_cluster}**")
+            matched_cluster = max(cluster_hits, key=cluster_hits.get)
+            st.success(f"✅ Completed CTE cluster: **{matched_cluster}** ({cluster_hits[matched_cluster]} credits)")
         else:
-            st.warning("⚠️ CTE cluster coverage not met. Two courses from the same cluster required.")
-
+            st.warning("⚠️ CTE cluster coverage not met. Two credits from the same cluster required.")
     
         rollover_cte_df = pd.DataFrame()
         if cte_credits > 2:
