@@ -474,6 +474,38 @@ def show_graduation_tracker():
             used_pe_df = pe_df[pe_df["Course Code"].astype(str).isin(required_pe_codes)]
             extra_pe_df = pe_df[~pe_df.index.isin(used_pe_df.index)]
 
+        # ---- CTE / WORLD LANGUAGES ----
+        cte_lang_df = selected_df[
+            selected_df["Department"].isin(["CTE", "World Languages"])
+        ]
+        cte_lang_credits = cte_lang_df["Credits"].sum()
+        
+        if cte_lang_credits >= 1:
+            st.success(f"CTE/World Languages: ✅ {cte_lang_credits}/1")
+        else:
+            st.warning(f"CTE/World Languages: {cte_lang_credits}/1")
+        
+        # Rollover any excess CTE/Lang credits to electives
+        extra_cte_lang_df = pd.DataFrame()
+        if cte_lang_credits > 1:
+            extra_cte_lang_df = cte_lang_df[cte_lang_df["Credits"].cumsum() > 1]
+
+        # ---- FINE ARTS ----
+        fine_arts_df = selected_df[
+            selected_df["Department"].isin(["MUS", "ART"])
+        ]
+        fine_arts_credits = fine_arts_df["Credits"].sum()
+        
+        if fine_arts_credits >= 1:
+            st.success(f"Fine Arts: ✅ {fine_arts_credits}/1")
+        else:
+            st.warning(f"Fine Arts: {fine_arts_credits}/1")
+        
+        # Rollover excess Fine Arts credits to electives
+        extra_fine_arts_df = pd.DataFrame()
+        if fine_arts_credits > 1:
+            extra_fine_arts_df = fine_arts_df[fine_arts_df["Credits"].cumsum() > 1]
+        
         # ---- ELECTIVES ----
         matched_english_codes = valid_english_codes + speech_debate_codes
         matched_math_codes = [code for group in required_math_groups for code in group]
@@ -488,7 +520,9 @@ def show_graduation_tracker():
             rollover_finance_df,
             rollover_ss_df,
             rollover_math_df,
-            extra_pe_df
+            extra_pe_df,
+            extra_cte_lang_df,
+            extra_fine_arts_df
         ])
 
         # Optional: Warn if more than 2 PE courses taken in a single year
@@ -504,9 +538,9 @@ def show_graduation_tracker():
         elective_credits = electives_df["Credits"].sum()
     
         if elective_credits >= 5:
-            st.success(f"Electives: ✅ {elective_credits}/5")
+            st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
         else:
-            st.warning(f"Electives: {elective_credits}/5")
+            st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
     
         st.info("✅ Partial University credit checks complete. Add other subjects next.")
 
