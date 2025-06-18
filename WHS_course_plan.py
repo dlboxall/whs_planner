@@ -228,6 +228,21 @@ def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
     graduation_df = course_catalog.copy()
     selected_df_rows = []
+
+    cte_cluster_map = {
+        "Agriculture": {"9605", "18501", "9601", "18102"},
+        "Automotive": {"20109", "20104"},
+        "Bio-Medical": {"14255", "14256"},
+        "Building Trades": {"17003", "17004"},
+        "Cabinetmaking": {"17007", "17008"},
+        "Culinary Arts": {"22202", "22205", "16058", "16059"},
+        "Exploratory": {"80023", "80024", "80025", "80026"},
+        "Health Science": {"14001", "14002"},
+        "Human Services": {"19051", "19255", "19001", "22213"},
+        "Machine Tool": {"13203", "13204"},
+        "STEM": {"21008", "21006", "21004", "21012"},
+        "Welding": {"13207", "13208"}
+    }
     
     for course_name in st.session_state.ms_credits + sum(st.session_state.course_plan.values(), []):
         if not course_name:
@@ -665,13 +680,37 @@ def show_graduation_tracker():
         # ---- CTE (Cluster Logic Placeholder) ----
         cte_df = selected_df[selected_df["Department"] == "CTE"]
         cte_credits = cte_df["Credits"].sum()
-    
+        
         if cte_credits >= 2:
-            st.success(f"CTE: ✅ {cte_credits}/2 (career cluster logic to be added)")
+            st.success(f"CTE: ✅ {cte_credits}/2")
         else:
-            st.warning(f"CTE: {cte_credits}/2 credits — cluster coverage not enforced yet")
-    
-        # TODO: Add cluster validation logic here
+            st.warning(f"CTE: {cte_credits}/2 credits")
+        
+        # --- CTE CLUSTER VALIDATION ---
+        cte_codes_taken = set(cte_df["Course Code"].astype(str))
+        
+        cluster_hits = {}
+        for cluster, codes in cte_cluster_map.items():
+            overlap = cte_codes_taken.intersection(codes)
+        
+            if cluster == "Culinary Arts":
+                # Enforce mutual exclusion between 16058 and 16059
+                culinary_limit_codes = {"16058", "16059"}
+                overlap_culinary = overlap - (overlap & culinary_limit_codes) | (
+                    {"16058"} if "16058" in overlap else {"16059"} if "16059" in overlap else set()
+                )
+                if len(overlap_culinary) >= 2:
+                    cluster_hits[cluster] = overlap_culinary
+            else:
+                if len(overlap) >= 2:
+                    cluster_hits[cluster] = overlap
+        
+        if cluster_hits:
+            matched_cluster = list(cluster_hits.keys())[0]
+            st.success(f"✅ Completed CTE cluster: **{matched_cluster}**")
+        else:
+            st.warning("⚠️ CTE cluster coverage not met. Two courses from the same cluster required.")
+
     
         rollover_cte_df = pd.DataFrame()
         if cte_credits > 2:
