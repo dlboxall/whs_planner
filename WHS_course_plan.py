@@ -226,8 +226,6 @@ for year in years:
 
 def show_graduation_tracker():
     st.markdown("### 🎓 Graduation Tracker")
-
-    selected_pathway = st.session_state.get("grad_pathway", "University")
     graduation_df = course_catalog.copy()
     selected_df_rows = []
     
@@ -237,9 +235,11 @@ def show_graduation_tracker():
         row = graduation_df[graduation_df["Course Name"] == course_name]
         if not row.empty:
             selected_df_rows.append(row)
-
     selected_df = pd.concat(selected_df_rows, ignore_index=True) if selected_df_rows else pd.DataFrame(columns=graduation_df.columns)
 
+    selected_codes = selected_df["Course Code"].astype(str).tolist()
+
+    selected_pathway = st.session_state.get("grad_pathway", "University")
 
     if selected_pathway == "University":
         # --- DUPLICATE COURSE CODE CHECK ---
