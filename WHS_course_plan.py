@@ -111,6 +111,14 @@ def has_prereq_met(course_code, current_year, course_plan_codes, prereq_dict, cu
     except:
         return False
 
+english_course_codes_by_grade = {
+    "9th Grade": ["2401", "2404"],
+    "10th Grade": ["2501", "2504"],
+    "11th Grade": ["2601", "2608"],
+    "12th Grade": ["2715", "2606"]
+}
+
+
 # Main planner loop
 for year in years:
     st.header(year)
@@ -127,10 +135,23 @@ for year in years:
             if i < 4:
                 # --- Core subjects: dropdown selection by department ---
                 dept_courses = base_courses[base_courses["Department"] == department]
-                eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
-                    lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
-                )]
+                #eligible_courses = dept_courses[dept_courses["Course Code"].astype(str).apply(
+                    #lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+                #)]
+            if department == "English":
+                grade_level = year  # year is something like "9th Grade"
+                allowed_codes = english_course_codes_by_grade.get(grade_level, [])
+                eligible_courses = dept_courses[
+                    dept_courses["Course Code"].astype(str).isin(allowed_codes)
+                ]
+            else:
+                eligible_courses = dept_courses[
+                    dept_courses["Course Code"].astype(str).apply(
+                        lambda code: has_prereq_met(code, year, st.session_state.course_plan_codes, prereq_dict, i)
+                    )
+                ]
 
+                
                 if not eligible_courses.empty:
                     options = [""] + eligible_courses["Course Name"].tolist()
                     code_lookup = dict(zip(eligible_courses["Course Name"], eligible_courses["Course Code"].astype(str)))
