@@ -491,7 +491,7 @@ def show_graduation_tracker():
             extra_cte_lang_df = cte_lang_df[cte_lang_df["Credits"].cumsum() > 1]
 
         # ---- FINE ARTS ----
-       fine_arts_df = selected_df[
+        fine_arts_df = selected_df[
             selected_df["Department"].isin([
                 "Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"
             ])
@@ -507,6 +507,7 @@ def show_graduation_tracker():
         extra_fine_arts_df = pd.DataFrame()
         if fine_arts_credits > 1:
             extra_fine_arts_df = fine_arts_df[fine_arts_df["Credits"].cumsum() > 1]
+
         
         # ---- ELECTIVES ----
         matched_english_codes = valid_english_codes + speech_debate_codes
