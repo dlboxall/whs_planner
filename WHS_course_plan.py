@@ -326,23 +326,42 @@ def show_graduation_tracker():
         # ---- MATHEMATICS ----
         required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
         math_df = selected_df[selected_df["Department"] == "Mathematics"]
-        math_credits = math_df["Credits"].sum()
-        math_met = all(any(code in selected_codes for code in group) for group in required_math_groups)
-    
-        if math_credits >= 3 and math_met:
+        
+        # Identify group coverage
+        selected_math_codes = set(math_df["Course Code"].astype(str))
+        math_group_met = all(any(code in selected_math_codes for code in group) for group in required_math_groups)
+        
+        # Select one course per required group
+        used_math_codes = set()
+        for group in required_math_groups:
+            for code in group:
+                if code in selected_math_codes:
+                    used_math_codes.add(code)
+                    break
+        
+        required_math_df = math_df[math_df["Course Code"].astype(str).isin(used_math_codes)]
+        
+        # Add additional courses until 3 credits is met
+        math_credit_total = 0
+        math_fulfilled_df = required_math_df.copy()
+        
+        # Fill remaining credit requirement from unused math courses
+        remaining_df = math_df[~math_df.index.isin(required_math_df.index)]
+        for idx, row in remaining_df.iterrows():
+            if math_fulfilled_df["Credits"].sum() >= 3:
+                break
+            math_fulfilled_df = pd.concat([math_fulfilled_df, row.to_frame().T])
+        
+        math_credits = math_fulfilled_df["Credits"].sum()
+        
+        # Display result
+        if math_credits >= 3 and math_group_met:
             st.success(f"Mathematics: ✅ {math_credits}/3 (Algebra I, Geometry, Algebra II)")
         else:
-            st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_met else '✗'}")
-
-        # ---- MATH ROLLOVER TO ELECTIVES ----
-        required_math_credits = 3
-        extra_math_credit = math_credits - required_math_credits
+            st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_group_met else '✗'}")
         
-        if extra_math_credit > 0:
-            rollover_math_df = math_df.copy()
-            # If you want to be more precise and exclude required group matches, we can refine this.
-        else:
-            rollover_math_df = pd.DataFrame(columns=course_catalog.columns)
+        # Rollover anything *not* used to fulfill math requirement
+        rollover_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
 
         # ---- SCIENCE ----
         required_sci_groups = [["7201"], ["7101", "7301"]]
