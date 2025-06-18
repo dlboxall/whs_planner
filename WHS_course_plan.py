@@ -173,7 +173,7 @@ for year in years:
                             st.caption(f"ℹ️ {note}")
                 else:
                     st.info(f"No eligible courses found for {department} in {year}.")
-            else:
+            
                 # --- Electives: text input for 3-letter department code ---
                 course_code_key = f"{year}_{i}_code"
 
