@@ -1,9 +1,9 @@
 ﻿Course Name,Course Code,Department,Grade Levels,Credits,Tags,Prerequisites,Notes
 Band,5601,Fine Arts,[8],0,,None,
 Orchestra,5604,Fine Arts,[8],0,,None,
-Accounting I,9110,CTE,"[10,11,12]",1,,None,
-Accounting II,9111,CTE,"[11,12]",1,,[9110],
-Introduction To Business,9115,CTE,"[9,10,11,12]",0.5,,None,Quarter class
+Accounting I,9110,Business,"[10,11,12]",1,,None,
+Accounting II,9111,Business,"[11,12]",1,,[9110],
+Introduction To Business,9115,Business,"[9,10,11,12]",0.5,,None,Quarter class
 Personal Finance,9120,CTE,"[11,12]",0.5,,"[2501,2504]",Quarter class; Economics or Personal Finance required
 PLTW Intro To Computer Science,5105,Computer Science,"[9,10,11,12]",1,,None,
 PLTW Computer Science Principles,5606,Computer Science,"[9,10,11,12]",1,,[5105],
@@ -76,7 +76,7 @@ Environmental Biology,7210,Science,"[11,12]",1,Dual Credit,"[[7201], [7101]]",B 
 World Geography,8101,Social Studies,[9],0.5,,None,Quarter course
 Modern World History,8201,Social Studies,[10],0.5,,None,Quarter course
 US History,8304,Social Studies,[11],1,,None, Must also take US Government
-AP US History,8310,Social Studies,[11],1.5,AP,[8203], Must also take US Government
+AP US History,8310,Social Studies,[11],1.5,AP,None,Must also take US Government
 US Government,8401,Social Studies,[12],0.5,,"[2501,2504]",Quarter course; Must also take US History
 AP US Government,8405,Social Studies,[12],1,AP,None,See Mr. Downey for questions; Must also take US History
 Rising World Powers,8605,Social Studies,"[9,10]",0.5,,None,Quarter course
