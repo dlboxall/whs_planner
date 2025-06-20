@@ -696,7 +696,15 @@ def show_graduation_tracker():
         
             total_cluster_credits = matched["Credits"].sum()
         
-            if total_cluster_credits >= 2:
+            # Count course codes matched in this cluster
+            codes_taken_in_cluster = set(matched["Course Code"].astype(str))
+            cluster_defined_codes = set(codes)
+            
+            # Check conditions
+            all_courses_completed = codes_taken_in_cluster == cluster_defined_codes
+            enough_credits = total_cluster_credits >= 2
+            
+            if all_courses_completed or enough_credits:
                 cluster_hits[cluster] = total_cluster_credits
         
         # Show result
