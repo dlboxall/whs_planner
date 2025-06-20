@@ -508,12 +508,18 @@ def show_graduation_tracker():
         
         if finance_credits >= 0.5:
             st.success(f"Econ/Personal Finance: ✅ {finance_credits}/0.5")
-            rollover_finance_df = finance_df[finance_df["Credits"] > 0.5]
         else:
             st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
+        
+        # ✅ ALWAYS define rollover_finance_df to prevent UnboundLocalError
+        if finance_credits > 0.5:
+            rollover_finance_df = finance_df[finance_df["Credits"] > 0.5]
+        else:
             rollover_finance_df = pd.DataFrame()
         
+        # Track which courses have been used
         claimed_courses.update(finance_df["Course Code"].astype(str))
+
 
 
         # ---- PHYSICAL EDUCATION / HEALTH ----
