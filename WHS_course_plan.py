@@ -687,36 +687,35 @@ def show_graduation_tracker():
         
         # --- CTE CLUSTER VALIDATION (by CREDITS) ---
         cte_df["Course Code"] = cte_df["Course Code"].astype(str)
-        cte_codes_taken = set(cte_df["Course Code"])
-        
+
+        # First, reserve enough credits for general CTE requirement
+        cte_df_sorted = cte_df.sort_values(by="Credits", ascending=False)
+        general_cte_df = pd.DataFrame()
+        general_cte_credits = 0
+
+        for idx, row in cte_df_sorted.iterrows():
+            if general_cte_credits >= 2:
+                break
+            general_cte_df = pd.concat([general_cte_df, row.to_frame().T])
+            general_cte_credits += row["Credits"]
+
+        # Remaining CTE courses are eligible for cluster check
+        remaining_cte_df = cte_df[~cte_df.index.isin(general_cte_df.index)]
         cluster_hits = {}
+
         for cluster, codes in cte_cluster_map.items():
-            # Match only rows whose Course Code is in this cluster
-            matched = cte_df[cte_df["Course Code"].isin(codes)]
-        
+            matched = remaining_cte_df[remaining_cte_df["Course Code"].isin(codes)]
             total_cluster_credits = matched["Credits"].sum()
-        
-            # Count course codes matched in this cluster
-            codes_taken_in_cluster = set(matched["Course Code"].astype(str))
-            cluster_defined_codes = set(codes)
-            
-            # Check conditions
-            all_courses_completed = codes_taken_in_cluster == cluster_defined_codes
-            enough_credits = total_cluster_credits >= 2
-            
-            if all_courses_completed or enough_credits:
+            codes_taken = set(matched["Course Code"].astype(str))
+            all_courses_completed = codes_taken == set(codes)
+            if all_courses_completed or total_cluster_credits >= 2:
                 cluster_hits[cluster] = total_cluster_credits
-        
-        # Show result
+
         if cluster_hits:
             matched_cluster = max(cluster_hits, key=cluster_hits.get)
             st.success(f"✅ Completed CTE cluster: **{matched_cluster}** ({cluster_hits[matched_cluster]} credits)")
         else:
             st.warning("⚠️ CTE cluster coverage not met. Two credits from the same cluster required.")
-    
-        rollover_cte_df = pd.DataFrame()
-        if cte_credits > 2:
-            rollover_cte_df = cte_df[cte_df["Credits"].cumsum() > 2]
 
         # ---- ENGLISH + SPEECH/DEBATE ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
