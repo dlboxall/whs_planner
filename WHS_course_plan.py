@@ -230,20 +230,19 @@ def show_graduation_tracker():
     selected_df_rows = []
 
     cte_cluster_map = {
-        "Agriculture": {"9605", "18501", "9601", "18102"},
-        "Automotive": {"20109", "20104"},
-        "Bio-Medical": {"14255", "14256"},
-        "Building Trades": {"17003", "17004"},
-        "Cabinetmaking": {"17007", "17008"},
-        "Culinary Arts": {"22202", "22205", "16058", "16059"},
-        "Exploratory": {"80023", "80024", "80025", "80026"},
-        "Health Science": {"14001", "14002"},
-        "Human Services": {"19051", "19255", "19001", "22213"},
-        "Machine Tool": {"13203", "13204"},
-        "STEM": {"21008", "21006", "21004", "21012"},
-        "Welding": {"13207", "13208"}
+        "Ag, Food & Natural Resources": {"9601", "9605", "18102", "18203", "18501"},
+        "Architecture & Construction": {"17003", "17004", "17007", "17008"},
+        "Business and Finance": {"9115", "9110", "9120"},
+        "Education & Training": {"19051", "19052", "19151"},
+        "Health Science": {"3066", "3067", "14001", "14002", "14154"},
+        "Hospitality & Tourism": {"16052", "16058", "16059", "19253"},
+        "Human Services": {"19001", "19051", "19052"},
+        "Information Technology": {"5105", "5606", "5700"},
+        "Manufacturing": {"13203", "13204", "13207", "13208"},
+        "STEM": {"21017", "21018", "21023"},
+        "Transportation & Distribution": {"20104", "20110"}
     }
-    
+
     for course_name in st.session_state.ms_credits + sum(st.session_state.course_plan.values(), []):
         if not course_name:
             continue
@@ -694,13 +693,6 @@ def show_graduation_tracker():
         for cluster, codes in cte_cluster_map.items():
             # Match only rows whose Course Code is in this cluster
             matched = cte_df[cte_df["Course Code"].isin(codes)]
-        
-            if cluster == "Culinary Arts":
-                # Limit to only one of the two Culinary special-case courses
-                if "16058" in matched["Course Code"].values and "16059" in matched["Course Code"].values:
-                    # Keep the higher-credit one (or either arbitrarily if same)
-                    matched = matched[~matched["Course Code"].isin(["16059"])]  # keep only 16058
-                # If only one is present, it's fine — leave as-is
         
             total_cluster_credits = matched["Credits"].sum()
         
