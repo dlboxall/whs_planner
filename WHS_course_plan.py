@@ -810,8 +810,8 @@ def show_graduation_tracker():
         else:
             rollover_finance_df = pd.DataFrame()
 
-# Track which courses have been used
-claimed_courses.update(finance_df["Course Code"].astype(str))
+        # Track which courses have been used
+        claimed_courses.update(finance_df["Course Code"].astype(str))
 
         # ---- PHYSICAL EDUCATION / HEALTH ----
         required_pe_codes = {"6105", "6101"}
