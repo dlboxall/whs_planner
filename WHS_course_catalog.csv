@@ -93,36 +93,33 @@ Spanish III,3103,World Languages,"[11,12]",1,,[3102],B or higher in Spanish II
 Spanish  IV,3104,World Languages,"[11,12]",1,,[3103],B or higher in Spanish III
 Plant Science,9601,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
 Animal Science,9605,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
-Machine Tool,13203,CTE,"[10,11,12]",1,Dual Credit,None,
-Adv Machine Tool,13204,CTE,"[10,11,12]",1,Dual Credit,[13203],
-Welding,13207,CTE,"[10,11,12]",1,Dual Credit,None,
-Adv Welding,13208,CTE,"[10,11,12]",1,Dual Credit,[13207],
-Health Science Careers,14001,CTE,"[11,12]",1,Dual Credit,None,Does not count as a HS science credit
-MedicalTerm & Hlthcare Exp,14002,CTE,"[11,12]",1,Dual Credit,[14001],
-Prin of Biomedical Science,14255,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
-Human Body Systems,14256,CTE,"[10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
-Culinary Arts I,16058,CTE,"[10,11,12]",1,,None,
-Culinary Arts 2,16059,CTE,"[10,11,12]",1,,"[16058,22202,22205]",
+Companion Animals,18102,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+Wildlife & Fisheries,18501,CTE,"[9,10,11,12]",1,,None,
+Ag Leadership & Communications,18203,CTE,"[9,10,11,12]",0.5,,None,Quarter course
 General Construction,17003,CTE,"[10,11,12]",1,,None,
 Residential Construction,17004,CTE,"[10,11,12]",1,Dual Credit,[17003],DC depends on grade and end of course exam
 Woodworking,17007,CTE,"[9,10,11,12]",1,Dual Credit,None,
 Adv Woodworking,17008,CTE,"[10,11,12]",1,Dual Credit,[17007],
-Companion Animals,18102,CTE,"[9,10,11,12]",0.5,,None,Quarter course
-Wildlife & Fisheries,18501,CTE,"[9,10,11,12]",1,,None,
-Intro to Human Services,19001,CTE,"[10,11,12]",0.5,,None,Quarter course
 Human Development: PreSch-School Age,19051,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. classes for DC
-Human Development: Early Chilhood/Parenting,19255,CTE,"[10,11,12]",0.5,Dual Credit,None,Must take both human devel. classes for DC
-Maintenance & Light Repair,20104,CTE,"[10,11,12]",1,,None,
-SmEng/Intro to Auto,20109,CTE,"[10,11,12]",1,,None,
-Principles of Engineering,21004,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
-Intro to Engineering,21006,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
-Digital Electronics,21008,CTE,"[10,11,12]",1,Dual Credit,"[4301,4304]",
-Civil Eng & Architecture,21012,CTE,"[10,11,12]",1,Dual Credit,"[4301,4304]",
-Foods and Nutrition,22202,CTE,"[9,10,11,12]",0.5,,None,Quarter course
-Cooking,22205,CTE,"[9,10,11,12]",0.5,,None,Quarter course
-Leadership and Service,22213,CTE,"[11,12]",0.5,,"[19001,19051,19255]",Quarter course
-Business Tech,80023,CTE,"[9,10]",0.5,,None,Quarter course
-Careers That Build,80024,CTE,"[9,10]",0.5,,None,Quarter course
-Science Tech,80025,CTE,"[9,10]",0.5,,None,Does not count as a HS science credit
+Human Development: Prenatal to Toddlers,19052,CTE,"[10,11,12]",0.5,Dual Credit,None, Must take both human devel. classes for DC
 Intro to Education & Training,19151,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+PLTW Biomedical Science,3066,CTE,"[9,10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
+PLTW Human Body Systems,3067,CTE,"[10,11,12]",1,Dual Credit,None,Does not count as a HS science credit
+Intro to Human Services,19001,CTE,"[10,11,12]",0.5,,None,Quarter course
+Health Service Careers I-Exploration,14001,CTE,"[11,12]",1,Dual Credit,None,
+Health Service Careers II-Engagement,14002,CTE,"[11,12]",1,Dual Credit,[14001],
+Medical Terminology,14154,CTE,"[11,12]",1,Dual Credit,[14001],
+Culinary Arts I,16058,CTE,"[10,11,12]",1,,None,
+Culinary Arts 2,16059,CTE,"[10,11,12]",1,,"[16058,22202,22205]",
+Nutrition and Wellness,19253,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+Fundamental Food Concepts,16052,CTE,"[9,10,11,12]",0.5,,None,Quarter course
+Machine Tool,13203,CTE,"[10,11,12]",1,Dual Credit,None,
+Adv Machine Tool,13204,CTE,"[10,11,12]",1,Dual Credit,[13203],
+Welding,13207,CTE,"[10,11,12]",1,Dual Credit,None,
+Adv Welding,13208,CTE,"[10,11,12]",1,Dual Credit,[13207],
+PLTW Principles of Engineering,21018,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
+PLTW Intro to Engineering Design,21017,CTE,"[9,10,11,12]",1,Dual Credit,"[4301,4304]",
+PLTW Digital Electronics,21023,CTE,"[10,11,12]",1,Dual Credit,"[4301,4304]",
+Maintenance & Light Repair,20104,CTE,"[10,11,12]",1,,None,
+ATV/Small Engine Mech,20110,CTE,"[10,11,12]",1,,None,
 Working w/People,80026,CTE,"[9,10]",0.5,,None,Quarter course
