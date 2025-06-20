@@ -495,21 +495,26 @@ def show_graduation_tracker():
             rollover_ss_df = pd.DataFrame(columns=course_catalog.columns)
 
         
-        # ---- PERSONAL FINANCE / ECONOMICS ----
+        # ---- ECONOMICS / PERSONAL FINANCE ----
         finance_codes = ["8701", "9120"]
-        finance_df = selected_df[selected_df["Course Code"].astype(str).isin(finance_codes)]
+        
+        # Filter for 8701 (Economics) or 9120 (Personal Finance) and ensure not used elsewhere
+        finance_df = selected_df[
+            selected_df["Course Code"].astype(str).isin(finance_codes) &
+            ~selected_df["Course Code"].astype(str).isin(claimed_courses)
+        ]
+        
         finance_credits = finance_df["Credits"].sum()
         
         if finance_credits >= 0.5:
             st.success(f"Econ/Personal Finance: ✅ {finance_credits}/0.5")
-        else:
-            st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
-
-        # Finance rollover to electives (optional)
-        if finance_credits > 0.5:
             rollover_finance_df = finance_df[finance_df["Credits"] > 0.5]
         else:
-            rollover_finance_df = pd.DataFrame(columns=course_catalog.columns)
+            st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
+            rollover_finance_df = pd.DataFrame()
+        
+        claimed_courses.update(finance_df["Course Code"].astype(str))
+
 
         # ---- PHYSICAL EDUCATION / HEALTH ----
         required_pe_codes = {"6105", "6101"}  # Health and PE I
