@@ -717,6 +717,9 @@ def show_graduation_tracker():
         else:
             st.warning("⚠️ CTE cluster coverage not met. Two credits from the same cluster required.")
 
+        # Define rollover_cte_df as remaining CTE courses not used for general CTE requirement
+        rollover_cte_df = cte_df[~cte_df.index.isin(general_cte_df.index)]
+
         # ---- ENGLISH + SPEECH/DEBATE ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
         speech_debate_codes = ["2201", "2205"]
