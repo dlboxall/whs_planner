@@ -790,6 +790,7 @@ def show_graduation_tracker():
 
         # ---- ECONOMICS / PERSONAL FINANCE ----
         finance_codes = ["8701", "9120"]
+        
         # Filter for 8701 (Economics) or 9120 (Personal Finance) and ensure not used elsewhere
         finance_df = selected_df[
             selected_df["Course Code"].astype(str).isin(finance_codes) &
@@ -802,8 +803,15 @@ def show_graduation_tracker():
             st.success(f"Econ/Personal Finance: ✅ {finance_credits}/0.5")
         else:
             st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
+        
+        # ✅ ALWAYS define rollover_finance_df to prevent UnboundLocalError
+        if finance_credits > 0.5:
+            rollover_finance_df = finance_df[finance_df["Credits"] > 0.5]
+        else:
+            rollover_finance_df = pd.DataFrame()
 
-        claimed_courses.update(finance_df["Course Code"].astype(str))
+# Track which courses have been used
+claimed_courses.update(finance_df["Course Code"].astype(str))
 
         # ---- PHYSICAL EDUCATION / HEALTH ----
         required_pe_codes = {"6105", "6101"}
