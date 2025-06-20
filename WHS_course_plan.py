@@ -228,6 +228,7 @@ def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
     graduation_df = course_catalog.copy()
     selected_df_rows = []
+    claimed_courses = set()
 
     cte_cluster_map = {
         "Ag, Food & Natural Resources": {"9601", "9605", "18102", "18203", "18501"},
