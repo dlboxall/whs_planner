@@ -255,7 +255,9 @@ def show_graduation_tracker():
     selected_codes = selected_df["Course Code"].astype(str).tolist()
 
     selected_pathway = st.session_state.get("grad_pathway", "University")
-
+#----------------------------------------------------------------------------------------------------------------------------------------
+#        UNIVERSITY GRADUATION PATHWAY TRACKER
+#----------------------------------------------------------------------------------------------------------------------------------------
     if selected_pathway == "University":
         st.markdown("### 🎓 Graduation Tracker")
         # --- DUPLICATE COURSE CODE CHECK ---
@@ -636,6 +638,10 @@ def show_graduation_tracker():
         ):
             st.success("🎓 All University graduation requirements met!")
 
+#----------------------------------------------------------------------------------------------------------------------------------------
+#        CAREER AND TECHNICAL GRADUATION PATHWAY TRACKER
+#----------------------------------------------------------------------------------------------------------------------------------------
+
     elif selected_pathway == "Career & Technical":
         st.markdown("### 🛠️ Career & Technical Graduation Tracker")
     
@@ -716,9 +722,26 @@ def show_graduation_tracker():
         else:
             st.warning("⚠️ CTE cluster coverage not met. Two credits from the same cluster required.")
         
-        # Rollover logic: if CTE credits > 2, extra gets counted as electives
-        rollover_cte_df = cte_df[cte_df["Credits"].cumsum() > 2]
-
+        # Identify rows used for general CTE (first 2 credits)
+        cte_df_sorted = cte_df.sort_values(by="Credits", ascending=False)
+        used_cte_indexes = set()
+        general_cte_credits = 0
+        
+        for idx, row in cte_df_sorted.iterrows():
+            if general_cte_credits >= 2:
+                break
+            general_cte_credits += row["Credits"]
+            used_cte_indexes.add(idx)
+        
+        # Also exclude courses used in the matched cluster
+        if cluster_hits:
+            matched_cluster = max(cluster_hits, key=cluster_hits.get)
+            cluster_course_codes = set(cte_cluster_map[matched_cluster])
+            cluster_indexes = cte_df[cte_df["Course Code"].isin(cluster_course_codes)].index
+            used_cte_indexes.update(cluster_indexes)
+        
+        # Filter out all used CTE rows from rollover
+        rollover_cte_df = cte_df[~cte_df.index.isin(used_cte_indexes)]
 
         # ---- ENGLISH + SPEECH/DEBATE ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
