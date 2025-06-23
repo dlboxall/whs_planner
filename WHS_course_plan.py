@@ -25,11 +25,11 @@ with col_logo:
     st.image("WHS_logo2.webp", width=120)
 
 with col_title:
-    st.markdown("<h1 style='text-align: center; margin-top: 30px;'>WHS Course Planner Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; margin-top: 5 px;'>WHS Course Planner Dashboard</h1>", unsafe_allow_html=True)
 
 with col_motto:
     st.markdown(
-        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 40px;'>"
+        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 50px;'>"
         "Empowering All Students to Succeed in an Ever-Changing World"
         "</div>",
         unsafe_allow_html=True
