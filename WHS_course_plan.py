@@ -18,7 +18,7 @@ dept_code_to_name = {
     "ART": "Visual Arts",
     "WLG": "World Languages"
 }
-
+st.set_page_config(page_title="Course Planner", layout="wide")
 col_logo, col_title, col_motto = st.columns([2, 3, 2])
 
 with col_logo:
