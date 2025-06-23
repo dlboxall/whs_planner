@@ -22,14 +22,14 @@ st.set_page_config(page_title="Course Planner", layout="wide")
 col_logo, col_title, col_motto = st.columns([2, 3, 2])
 
 with col_logo:
-    st.image("WHS_logo2.webp", width=120)
+    st.image("WHS_logo2.webp", width=130)
 
 with col_title:
-    st.markdown("<h1 style='text-align: center; margin-top: 5 px;'>WHS Course Planner Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; margin-top: 0 px;'>WHS Course Planner Dashboard</h1>", unsafe_allow_html=True)
 
 with col_motto:
     st.markdown(
-        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 50px;'>"
+        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 60px;'>"
         "Empowering All Students to Succeed in an Ever-Changing World"
         "</div>",
         unsafe_allow_html=True
