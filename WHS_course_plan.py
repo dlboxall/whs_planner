@@ -21,21 +21,22 @@ dept_code_to_name = {
 
 st.set_page_config(page_title="WHS Course Planner", layout="wide")
 
-# Show sidebar codes
-#department_sidebar()
-
-#logo and title on separate lines, left margin
-#st.image("WHS_logo2.webp", width=120)  # or "b44128e1-2c66-4614-b073-4dd6435b4f96.png"
-#st.markdown("## WHS Course Planner Dashboard")
-
-#logo and title on same line
-col1, col2 = st.columns([1, 4])  # Adjust ratio as needed
+col1, col2, col3 = st.columns([1, 3, 2])
 
 with col1:
     st.image("WHS_logo2.webp", width=100)
 
 with col2:
-    st.markdown("## WHS Course Planner Dashboard")
+    st.markdown("<h1 style='text-align: center;'>WHS Course Planner Dashboard</h1>", unsafe_allow_html=True)
+
+with col3:
+    st.markdown(
+        "<p style='text-align: right; font-style: italic; font-size: 18px;'>"
+        "Empowering All Students to Succeed in an Ever-Changing World"
+        "</p>",
+        unsafe_allow_html=True,
+    )
+
 
 # Two-column layout for student name and pathway selection
 name_col, path_col = st.columns(2)
