@@ -4,7 +4,7 @@ Orchestra,5604,Fine Arts,[8],0,,None,
 Accounting I,9110,Business,"[10,11,12]",1,,None,
 Accounting II,9111,Business,"[11,12]",1,,[9110],
 Introduction To Business,9115,Business,"[9,10,11,12]",0.5,,None,Quarter class
-Personal Finance,9120,CTE,"[11,12]",0.5,,"[2501,2504]",Quarter class; Economics or Personal Finance required
+Personal Finance,9120,Business,"[11,12]",0.5,,"[2501,2504]",Quarter class; Economics or Personal Finance required
 PLTW Intro To Computer Science,5105,Computer Science,"[9,10,11,12]",1,,None,
 PLTW Computer Science Principles,5606,Computer Science,"[9,10,11,12]",1,,[5105],
 PLTW Cybersecurity,5700,Computer Science,"[10,11,12]",1,,[5105],
