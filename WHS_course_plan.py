@@ -854,7 +854,8 @@ def show_graduation_tracker():
         matched_english_codes = valid_english_codes + speech_debate_codes
         matched_math_codes = [code for group in required_math_groups for code in group]
         unmatched_df = selected_df[~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)]
-
+        
+        # ---- Final Electives + Totals (after filtering used credits) ----
         electives_df = pd.concat([
             unmatched_df,
             extra_english_df,
@@ -864,14 +865,16 @@ def show_graduation_tracker():
             rollover_ss_df,
             extra_pe_df,
             extra_fine_arts_df,
-            rollover_cte_df
+            rollover_cte_df  # ✅ only unused CTE/BUS/CSC courses here
         ])
+        
         elective_credits = electives_df["Credits"].sum()
-
+        
         if elective_credits >= 5.5:
-            st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
+            st.success(f"Electives: ✅ {elective_credits}/5.5 (*min*)")
         else:
-            st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
+            st.warning(f"Electives: {elective_credits}/5.5 (*min*)")
+
 
         # ---- FINAL GRADUATION CHECK ----
         if (
