@@ -720,7 +720,7 @@ def show_graduation_tracker():
             total_cluster_credits = matched["Credits"].sum()
             codes_taken = set(matched["Course Code"].astype(str))
             all_courses_completed = codes_taken == set(codes)
-            if all_courses_completed or total_cluster_credits >= 2:
+            if all_courses_completed or total_cluster_credits >= 1.5:
                 cluster_hits[cluster] = total_cluster_credits
 
         if cluster_hits:
