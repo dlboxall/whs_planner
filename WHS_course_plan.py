@@ -29,11 +29,12 @@ with col_title:
 
 with col_motto:
     st.markdown(
-        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 40 px;'>"
+        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 45 px;'>"
         "Empowering All Students to Succeed in an Ever-Changing World"
         "</div>",
         unsafe_allow_html=True
     )
+st.markdown("---")
 
 # Two-column layout for student name and pathway selection
 name_col, path_col = st.columns(2)
