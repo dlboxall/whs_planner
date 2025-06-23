@@ -24,10 +24,18 @@ st.set_page_config(page_title="WHS Course Planner", layout="wide")
 # Show sidebar codes
 #department_sidebar()
 
-#st.markdown("## 📘 WHS Course Planner Dashboard")
-st.image("WHS_logo2.webp", width=120)  # or "b44128e1-2c66-4614-b073-4dd6435b4f96.png"
-st.markdown("## WHS Course Planner Dashboard")
+#logo and title on separate lines, left margin
+#st.image("WHS_logo2.webp", width=120)  # or "b44128e1-2c66-4614-b073-4dd6435b4f96.png"
+#st.markdown("## WHS Course Planner Dashboard")
 
+#logo and title on same line
+col1, col2 = st.columns([1, 4])  # Adjust ratio as needed
+
+with col1:
+    st.image("WHS_logo2.webp", width=100)
+
+with col2:
+    st.markdown("## WHS Course Planner Dashboard")
 
 # Two-column layout for student name and pathway selection
 name_col, path_col = st.columns(2)
