@@ -29,7 +29,7 @@ with col_title:
 
 with col_motto:
     st.markdown(
-        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 52 px;'>"
+        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 52px;'>"
         "Empowering All Students to Succeed in an Ever-Changing World"
         "</div>",
         unsafe_allow_html=True
