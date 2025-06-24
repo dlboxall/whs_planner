@@ -82,33 +82,42 @@ grade_requirements = {
 def hover_year_msg(year):
     msg = grade_requirements.get(year, "No specific requirements listed.")
     return f"""
-    <div style='position: relative; display: inline-block;'>
-        <span style='font-size: 1.5em; font-weight: 600;'>{year}</span>
-        <span style='
-            visibility: hidden;
-            width: 280px;
-            background-color: #f9f9f9;
-            color: #333;
-            text-align: left;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            top: 125%;
-            left: 0;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
-        ' class='tooltiptext'>
+    <style>
+    .tooltip-container {{
+        position: relative;
+        display: inline-block;
+        cursor: help;
+    }}
+
+    .tooltip-container .tooltip-text {{
+        visibility: hidden;
+        width: 280px;
+        background-color: #f9f9f9;
+        color: #333;
+        text-align: left;
+        border-radius: 6px;
+        padding: 8px;
+        position: absolute;
+        z-index: 1;
+        top: 125%;
+        left: 0;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+        font-size: 0.85rem;
+    }}
+
+    .tooltip-container:hover .tooltip-text {{
+        visibility: visible;
+    }}
+    </style>
+
+    <div class="tooltip-container">
+        <span style="font-size: 1.5em; font-weight: 600;">{year}</span>
+        <div class="tooltip-text">
             Required: {msg}
-        </span>
+        </div>
     </div>
-    <script>
-    const container = window.parent.document.querySelectorAll('section.main > div')[0];
-    const hoverDiv = container.querySelector('div');
-    const tooltip = hoverDiv.querySelector('.tooltiptext');
-    hoverDiv.onmouseenter = () => tooltip.style.visibility = 'visible';
-    hoverDiv.onmouseleave = () => tooltip.style.visibility = 'hidden';
-    </script>
     """
+
 # Session state initialization
 if "course_plan" not in st.session_state:
     st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
