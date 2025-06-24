@@ -20,51 +20,44 @@ dept_code_to_name = {
     "WLG": "World Languages"
 }
 st.set_page_config(page_title="Course Planner", layout="wide")
+
 if "show_intro" not in st.session_state:
     st.session_state.show_intro = True
 
 if st.session_state.show_intro:
-    with st.expander("📘 How to Use This Course Planner (Click to Collapse)", expanded=True):
+    with st.expander("How to Use This Course Planner (Click to Collapse)", expanded=True):
         st.markdown("""
-### 🧭 Welcome to the WHS Graduation Planner!
+<h3 style='margin-bottom: 0.5em;'>Welcome to the WHS Graduation Planner!</h3>
+<p>Use this tool to plan your 4-year high school course pathway and track graduation eligibility.</p>
 
-Use this tool to plan your 4-year high school course pathway and track graduation eligibility.
+<h4 style='text-decoration: underline;'>Graduation Requirements Checker</h4>
+<p>After selecting courses, scroll to the <strong>Graduation Pathway</strong> dropdown to choose:</p>
+<ul>
+  <li>🎓 <em>University/Regents-ready</em></li>
+  <li>🛠️ <em>Career & Technical Education (CTE)</em></li>
+  <li>🏅 <em>Advanced/Honors Endorsement</em></li>
+</ul>
+<p>The sidebar will show whether you’ve met required credits in each subject for the selected pathway.</p>
 
----
+<h4 style='text-decoration: underline;'>Department Codes List</h4>
+<p>Each elective course requires a 3-letter <strong>Department Code</strong> (e.g., <code>ART</code>, <code>CTE</code>, <code>PED</code>, <code>SCI</code>) before you can choose a course.</p>
+<p>Click the <strong>“Department Code”</strong> sidebar dropdown menu to view the full list of codes and their departments.</p>
 
-#### 🗂 Graduation Requirements Checker
-After selecting courses, scroll to the **Graduation Pathway** dropdown to choose:
-- 🎓 *University/Regents-ready*
-- 🛠️ *Career & Technical Education (CTE)*
-- 🏅 *Advanced/Honors Endorsement*
+<h4 style='text-decoration: underline;'>Core & Elective Course Selection</h4>
+<p>Each grade level includes:</p>
+<ul>
+  <li>4 core courses (English, Math, Science, Social Studies)</li>
+  <li>4 additional elective courses — shown in rows labeled <strong>Course 5 to Course 8</strong></li>
+</ul>
 
-Once selected, the sidebar will show whether you’ve met required credits in each subject.
+<h4 style='text-decoration: underline;'>Prerequisite Enforcement</h4>
+<p>Some advanced courses (like <strong>Chemistry</strong> or <strong>Algebra II</strong>) will only be available if you’ve already added the required prerequisite courses earlier in the planner.</p>
 
----
+<hr style="margin-top: 1.5em;">
 
-#### 🏷️ Department Codes List
-Each elective course requires a 3-letter **Department Code** (like `ART`, `CTE`, `PED`, `SCI`) before selecting a course.
+<p><strong>Enjoy planning!</strong> Make sure to scroll and double-check each grade’s section before reviewing graduation progress.</p>
+        """, unsafe_allow_html=True)
 
-Click the **“Department Code Help”** button to view the full list and what they cover.
-
----
-
-#### ⏳ Fall & Spring Course Selection
-Each grade level allows you to choose:
-- 4 **fall semester** core courses (English, Math, Science, Social Studies)
-- 4 **spring elective** or extended courses
-
-Spring courses appear in rows labeled **Course 5–Course 8**.
-
----
-
-#### 🔐 Prerequisite Enforcement
-Some advanced courses (like **Chemistry** or **Algebra II**) will only be available **after** you’ve added the required prerequisite course in an earlier grade.
-
----
-
-Enjoy planning! Make sure to scroll and double-check each grade’s section.
-        """)
         if st.button("✅ Close Instructions"):
             st.session_state.show_intro = False
 
