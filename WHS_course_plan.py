@@ -908,12 +908,13 @@ def show_graduation_tracker():
 #------------------------------------------------------------------------------------------------------------------------------------
 
     elif selected_pathway == "Honors/Scholarship Opportunity":
-        #st.info("📋 Honors/Scholarship Opportunity tracker coming soon...")
-    #if selected_pathway == "Honors/Scholarship Opportunity":
         st.markdown("🏅 **Advanced/Honors Endorsement Tracker**")
     
         claimed_courses = set()
-        selected_df = pd.concat(st.session_state.course_plan.values())
+        #selected_df = pd.concat(st.session_state.course_plan.values())
+        valid_course_dfs = [df for df in st.session_state.course_plan.values() if isinstance(df, pd.DataFrame) and not df.empty]
+        selected_df = pd.concat(valid_course_dfs, ignore_index=True) if valid_course_dfs else pd.DataFrame(columns=course_catalog.columns)
+
         selected_df["Course Code"] = selected_df["Course Code"].astype(str)
         selected_df["Credits"] = pd.to_numeric(selected_df["Credits"], errors="coerce")
         selected_df.dropna(subset=["Credits"], inplace=True)
