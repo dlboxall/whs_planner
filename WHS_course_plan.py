@@ -20,7 +20,56 @@ dept_code_to_name = {
     "WLG": "World Languages"
 }
 st.set_page_config(page_title="Course Planner", layout="wide")
-#st.image("Banner.png", use_container_width=True)
+if "show_intro" not in st.session_state:
+    st.session_state.show_intro = True
+
+if st.session_state.show_intro:
+    with st.expander("📘 How to Use This Course Planner (Click to Collapse)", expanded=True):
+        st.markdown("""
+### 🧭 Welcome to the WHS Graduation Planner!
+
+Use this tool to plan your 4-year high school course pathway and track graduation eligibility.
+
+---
+
+#### 🗂 Graduation Requirements Checker
+After selecting courses, scroll to the **Graduation Pathway** dropdown to choose:
+- 🎓 *University/Regents-ready*
+- 🛠️ *Career & Technical Education (CTE)*
+- 🏅 *Advanced/Honors Endorsement*
+
+Once selected, the sidebar will show whether you’ve met required credits in each subject.
+
+---
+
+#### 🏷️ Department Codes List
+Each elective course requires a 3-letter **Department Code** (like `ART`, `CTE`, `PED`, `SCI`) before selecting a course.
+
+Click the **“Department Code Help”** button to view the full list and what they cover.
+
+---
+
+#### ⏳ Fall & Spring Course Selection
+Each grade level allows you to choose:
+- 4 **fall semester** core courses (English, Math, Science, Social Studies)
+- 4 **spring elective** or extended courses
+
+Spring courses appear in rows labeled **Course 5–Course 8**.
+
+---
+
+#### 🔐 Prerequisite Enforcement
+Some advanced courses (like **Chemistry** or **Algebra II**) will only be available **after** you’ve added the required prerequisite course in an earlier grade.
+
+---
+
+Enjoy planning! Make sure to scroll and double-check each grade’s section.
+        """)
+        if st.button("✅ Close Instructions"):
+            st.session_state.show_intro = False
+
+if st.button("📘 Show How-To Guide Again"):
+    st.session_state.show_intro = True
 
 # Load and encode Banner.png
 with open("Banner.png", "rb") as f:
