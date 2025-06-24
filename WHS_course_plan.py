@@ -71,6 +71,44 @@ years = ["9th Grade", "10th Grade", "11th Grade", "12th Grade"]
 row_labels_fall = ["English", "Mathematics", "Science", "Social Studies"]
 row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 
+# Grade-level guidance messages for hover tooltips
+grade_requirements = {
+    "9th Grade": "English 9, Algebra I, Speech or Debate, World Geography, Biology, PE/Health",
+    "10th Grade": "English 10, Geometry, World History, Physical Science or Chemistry",
+    "11th Grade": "English 11, Algebra II or higher, U.S. History, lab science",
+    "12th Grade": "English 12, Government/Economics, additional math/science/electives"
+}
+
+def hover_year_msg(year):
+    msg = grade_requirements.get(year, "No specific requirements listed.")
+    return f"""
+    <div style='position: relative; display: inline-block;'>
+        <span style='font-size: 1.5em; font-weight: 600;'>{year}</span>
+        <span style='
+            visibility: hidden;
+            width: 280px;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            top: 125%;
+            left: 0;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+        ' class='tooltiptext'>
+            Required: {msg}
+        </span>
+    </div>
+    <script>
+    const container = window.parent.document.querySelectorAll('section.main > div')[0];
+    const hoverDiv = container.querySelector('div');
+    const tooltip = hoverDiv.querySelector('.tooltiptext');
+    hoverDiv.onmouseenter = () => tooltip.style.visibility = 'visible';
+    hoverDiv.onmouseleave = () => tooltip.style.visibility = 'hidden';
+    </script>
+    """
 # Session state initialization
 if "course_plan" not in st.session_state:
     st.session_state.course_plan = {year: ["" for _ in range(8)] for year in years}
@@ -134,7 +172,9 @@ english_course_codes_by_grade = {
 
 # Main planner loop
 for year in years:
-    st.header(year)
+    #st.header(year)
+    st.markdown(hover_year_msg(year), unsafe_allow_html=True)
+
     cols = st.columns(4)
     grade_num = int(year.split()[0].replace("th", "").replace("st", "").replace("nd", "").replace("rd", ""))
     base_courses = course_catalog[course_catalog["Grade Levels"].apply(lambda x: grade_num in x)]
