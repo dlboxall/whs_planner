@@ -270,14 +270,11 @@ def check_for_duplicate_courses(selected_df):
             or (code not in unlimited_repeatable_codes and code not in limited_repeatable_counts and count > 1)
         )
     ]
-
+#New code
     for code in non_repeatable_violations:
         name = course_catalog.loc[course_catalog["Course Code"] == code, "Course Name"].values
         course_name = name[0] if len(name) > 0 else f"Course {code}"
-        st.warning(f"⚠️ {course_name} appears too many times. Check for duplicates.")
-
-
-
+        st.warning(f"⚠️ **{course_name}** appears too many times. Check for duplicates.")
 
 def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
