@@ -271,10 +271,14 @@ def check_for_duplicate_courses(selected_df):
         )
     ]
 #New code
-    for code in non_repeatable_violations:
-        name = course_catalog.loc[course_catalog["Course Code"] == code, "Course Name"].values
-        course_name = name[0] if len(name) > 0 else f"Course {code}"
-        st.warning(f"⚠️ **{course_name}** appears too many times. Check for duplicates.")
+    # Report violations in a single summary message
+    if non_repeatable_violations:
+        names = [
+            course_catalog[course_catalog["Course Code"].astype(str) == code]["Course Name"].values[0]
+            for code in non_repeatable_violations
+            if not course_catalog[course_catalog["Course Code"].astype(str) == code].empty
+        ]
+        st.error(f"⚠️ Duplicate course selection: {', '.join(names)} — most courses may only be taken once.")
 
 def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
