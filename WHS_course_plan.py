@@ -998,7 +998,11 @@ def show_graduation_tracker():
         claimed_courses.update(finance_df["Course Code"])
     
         # --- PE/Health ---
-        pe_df = selected_df[selected_df["Department"] == "Physical Education"]
+        pe_df = selected_df[
+            (selected_df["Department"] == "Physical Education") &
+            (selected_df["Course Name"] != "Health Education")
+        ]
+
         #health_df = selected_df[selected_df["Department"] == "Health"]
         pe_credits = pe_df["Credits"].sum()
         #health_credits = health_df["Credits"].sum()
@@ -1063,7 +1067,8 @@ def show_graduation_tracker():
             finance_credits >= 0.5 and
             pe_credits >= 0.5 and health_credits >= 0.5 and
             fine_credits >= 1 and
-            (lang_credits >= 2 or cluster_hits)
+            (lang_credits >= 2 or cluster_hits) and
+            total_credits >= 24
         ):
             st.success("🎓 All Advanced/Honors Endorsement graduation requirements met!")
         else:
