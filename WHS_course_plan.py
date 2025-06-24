@@ -19,21 +19,34 @@ dept_code_to_name = {
     "WLG": "World Languages"
 }
 st.set_page_config(page_title="Course Planner", layout="wide")
-col_logo, col_title, col_motto = st.columns([2, 3, 2])
+st.markdown(
+    f"""
+    <div style="
+        background-image: url('Banner.png');
+        background-size: cover;
+        background-position: center;
+        width: 100%;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    ">
+        <h1 style="
+            color: black;
+            font-size: 2.5em;
+            margin: 0;
+            padding: 0 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        ">
+            WHS Course Planner Dashboard
+        </h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-with col_logo:
-    st.image("WHS_logo2.webp", width=130)
-
-with col_title:
-    st.markdown("<h1 style='text-align: center; margin-top: 0 px;'>WHS Course Planner Dashboard</h1>", unsafe_allow_html=True)
-
-with col_motto:
-    st.markdown(
-        "<div style='text-align: center; font-style: italic; font-weight: bold; margin-top: 49px;'>"
-        "Empowering All Students to Succeed in an Ever-Changing World"
-        "</div>",
-        unsafe_allow_html=True
-    )
 st.markdown("---")
 
 # Two-column layout for student name and pathway selection
