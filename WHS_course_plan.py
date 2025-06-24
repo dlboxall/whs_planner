@@ -20,14 +20,24 @@ dept_code_to_name = {
 }
 st.set_page_config(page_title="Course Planner", layout="wide")
 #st.image("Banner.png", use_container_width=True)
+
+# Display a clickable banner using Streamlit + HTML
 st.markdown(
     """
+    <style>
+        .clickable-banner {
+            display: block;
+            width: 100%;
+        }
+    </style>
     <a href="https://www.watertown.k12.sd.us/o/high-school" target="_blank" title="Visit Watertown High School">
-        <img src="Banner.png" alt="WHS Banner" style="width: 100%; height: auto;">
-    </a>
     """,
     unsafe_allow_html=True
 )
+
+st.image("Banner.png", use_container_width=True)
+
+st.markdown("</a>", unsafe_allow_html=True)
 
 st.markdown("---")
 
