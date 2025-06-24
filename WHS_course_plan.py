@@ -19,33 +19,7 @@ dept_code_to_name = {
     "WLG": "World Languages"
 }
 st.set_page_config(page_title="Course Planner", layout="wide")
-st.markdown(
-    f"""
-    <div style="
-        background-image: url('Banner.png');
-        background-size: cover;
-        background-position: center;
-        width: 100%;
-        height: 150px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    ">
-        <h1 style="
-            color: black;
-            font-size: 2.5em;
-            margin: 0;
-            padding: 0 20px;
-            #background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-        ">
-            WHS Course Planner Dashboard
-        </h1>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.image("Banner.png", use_column_width=True)
 
 st.markdown("---")
 
