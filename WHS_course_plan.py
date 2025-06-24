@@ -930,10 +930,10 @@ def show_graduation_tracker():
         # --- English ---
         english_df = selected_df[selected_df["Department"] == "English"]
         english_credits = english_df["Credits"].sum()
-        if english_credits >= 9:
-            st.success(f"English: ✅ {english_credits}/9 credits")
+        if english_credits >= 4:
+            st.success(f"English: ✅ {english_credits}/4 credits")
         else:
-            st.warning(f"English: {english_credits}/9 credits")
+            st.warning(f"English: {english_credits}/4 credits")
         claimed_courses.update(english_df["Course Code"])
     
         # --- Math ---
@@ -981,10 +981,10 @@ def show_graduation_tracker():
         }
         ss_met = all(any(code in ss_codes for code in group) for group in ss_required.values())
     
-        if ss_credits >= 8 and ss_met:
+        if ss_credits >= 3 and ss_met:
             st.success(f"Social Studies: ✅ {ss_credits}/8 (required classes met)")
         else:
-            st.warning(f"Social Studies: {ss_credits}/8 (check required coverage)")
+            st.warning(f"Social Studies: {ss_credits}/3 (check required coverage)")
         claimed_courses.update(ss_df["Course Code"])
     
         # --- Finance (8701) or Personal Finance (9120) ---
@@ -999,8 +999,11 @@ def show_graduation_tracker():
     
         # --- PE/Health ---
         pe_df = selected_df[selected_df["Department"] == "Physical Education"]
-        health_df = selected_df[selected_df["Department"] == "Health"]
+        #health_df = selected_df[selected_df["Department"] == "Health"]
         pe_credits = pe_df["Credits"].sum()
+        #health_credits = health_df["Credits"].sum()
+        # Consider "Health Education" by course name
+        health_df = selected_df[selected_df["Course Name"].str.contains("Health", case=False, na=False)]
         health_credits = health_df["Credits"].sum()
     
         if pe_credits >= 0.5 and health_credits >= 0.5:
@@ -1011,7 +1014,13 @@ def show_graduation_tracker():
         claimed_courses.update(health_df["Course Code"])
     
         # --- Fine Arts ---
-        fine_df = selected_df[selected_df["Department"] == "Fine Arts"]
+        fine_df = selected_df[
+            selected_df["Department"].isin([
+                "Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"
+            ])
+        ]        
+        
+        #fine_df = selected_df[selected_df["Department"] == "Fine Arts"]
         fine_credits = fine_df["Credits"].sum()
         if fine_credits >= 1:
             st.success(f"Fine Arts: ✅ {fine_credits}/1.0")
@@ -1047,10 +1056,10 @@ def show_graduation_tracker():
     
         # --- Final Graduation Check ---
         if (
-            english_credits >= 9 and
+            english_credits >= 4 and
             math_met and adv_math_met and math_credits >= 4 and
             bio_met and chem_met and physci_met and sci_credits >= 4 and
-            ss_met and ss_credits >= 8 and
+            ss_met and ss_credits >= 3 and
             finance_credits >= 0.5 and
             pe_credits >= 0.5 and health_credits >= 0.5 and
             fine_credits >= 1 and
