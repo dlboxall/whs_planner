@@ -912,9 +912,20 @@ def show_graduation_tracker():
     
         claimed_courses = set()
         #selected_df = pd.concat(st.session_state.course_plan.values())
-        valid_course_dfs = [df for df in st.session_state.course_plan.values() if isinstance(df, pd.DataFrame) and not df.empty]
-        selected_df = pd.concat(valid_course_dfs, ignore_index=True) if valid_course_dfs else pd.DataFrame(columns=course_catalog.columns)
+        #valid_course_dfs = [df for df in st.session_state.course_plan.values() if isinstance(df, pd.DataFrame) and not df.empty]
+        #selected_df = pd.concat(valid_course_dfs, ignore_index=True) if valid_course_dfs else pd.DataFrame(columns=course_catalog.columns)
 
+        selected_df_rows = []
+        for code in st.session_state.ms_credits + sum(st.session_state.course_plan.values(), []):
+            if not code:
+                continue
+            row = course_catalog[course_catalog["Course Code"].astype(str) == str(code)]
+            if not row.empty:
+                selected_df_rows.append(row)
+        
+        selected_df = pd.concat(selected_df_rows, ignore_index=True) if selected_df_rows else pd.DataFrame(columns=course_catalog.columns)
+
+        
         selected_df["Course Code"] = selected_df["Course Code"].astype(str)
         selected_df["Credits"] = pd.to_numeric(selected_df["Credits"], errors="coerce")
         selected_df.dropna(subset=["Credits"], inplace=True)
