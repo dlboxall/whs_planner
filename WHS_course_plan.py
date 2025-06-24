@@ -37,10 +37,10 @@ st.markdown(
             font-size: 2.5em;
             margin: 0;
             padding: 0 20px;
-            background-color: rgba(255, 255, 255, 0.7);
+            #background-color: rgba(255, 255, 255, 0.7);
             border-radius: 10px;
         ">
-            WHS Course Planner Dashboard(a)
+            WHS Course Planner Dashboard
         </h1>
     </div>
     """,
