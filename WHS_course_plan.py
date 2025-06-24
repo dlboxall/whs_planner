@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import ast
 from layout import department_sidebar
+import base64
 
 #Connect to Dept Codes in sidebar
 dept_code_to_name = {
@@ -21,23 +22,20 @@ dept_code_to_name = {
 st.set_page_config(page_title="Course Planner", layout="wide")
 #st.image("Banner.png", use_container_width=True)
 
-# Display a clickable banner using Streamlit + HTML
+# Load and encode Banner.png
+with open("Banner.png", "rb") as f:
+    data = f.read()
+    encoded = base64.b64encode(data).decode()
+
+# Insert base64 image into clickable <img> tag
 st.markdown(
-    """
-    <style>
-        .clickable-banner {
-            display: block;
-            width: 100%;
-        }
-    </style>
+    f"""
     <a href="https://www.watertown.k12.sd.us/o/high-school" target="_blank" title="Visit Watertown High School">
+        <img src="data:image/png;base64,{encoded}" alt="WHS Banner" style="width: 100%; height: auto;">
+    </a>
     """,
     unsafe_allow_html=True
 )
-
-st.image("Banner.png", use_container_width=True)
-
-st.markdown("</a>", unsafe_allow_html=True)
 
 st.markdown("---")
 
