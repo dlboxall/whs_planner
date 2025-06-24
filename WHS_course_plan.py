@@ -237,6 +237,48 @@ for year in years:
 
     st.markdown("---")
 
+# --- DUPLICATE COURSE CODE CHECK GLOBALS ---
+unlimited_repeatable_codes = {"1201", "1210", "1221"}  # e.g., Band, Orchestra
+limited_repeatable_counts = {"2410": 2}  # e.g., Exp in Reading (max 2 times)
+
+from collections import Counter
+
+def check_for_duplicate_courses(selected_df):
+    """Checks for course codes that appear more often than allowed."""
+    all_selected_codes = []
+
+    for course_name in st.session_state.ms_credits:
+        if course_name:
+            row = course_catalog[course_catalog["Course Name"] == course_name]
+            if not row.empty:
+                all_selected_codes.append(str(row["Course Code"].values[0]))
+
+    for year in st.session_state.course_plan:
+        for course_name in st.session_state.course_plan[year]:
+            if course_name:
+                row = course_catalog[course_catalog["Course Name"] == course_name]
+                if not row.empty:
+                    all_selected_codes.append(str(row["Course Code"].values[0]))
+
+    code_counts = Counter(all_selected_codes)
+
+    non_repeatable_violations = [
+        code for code, count in code_counts.items()
+        if (
+            (code in unlimited_repeatable_codes and count > 1000)  # safeguard: should never warn
+            or (code in limited_repeatable_counts and count > limited_repeatable_counts[code])
+            or (code not in unlimited_repeatable_codes and code not in limited_repeatable_counts and count > 1)
+        )
+    ]
+
+    for code in non_repeatable_violations:
+        name = course_catalog.loc[course_catalog["Course Code"] == code, "Course Name"].values
+        course_name = name[0] if len(name) > 0 else f"Course {code}"
+        st.warning(f"⚠️ {course_name} appears too many times. Check for duplicates.")
+
+
+
+
 def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
     graduation_df = course_catalog.copy()
@@ -923,7 +965,8 @@ def show_graduation_tracker():
         selected_df["Course Code"] = selected_df["Course Code"].astype(str)
         selected_df["Credits"] = pd.to_numeric(selected_df["Credits"], errors="coerce")
         selected_df.dropna(subset=["Credits"], inplace=True)
-    
+        check_for_duplicate_courses(selected_df)
+
         total_credits = selected_df["Credits"].sum()
         st.markdown(f"**Total Credits:** {total_credits:.1f} / 24 required")
     
