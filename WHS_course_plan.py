@@ -19,8 +19,7 @@ dept_code_to_name = {
     "WLG": "World Languages"
 }
 st.set_page_config(page_title="Course Planner", layout="wide")
-st.image("Banner.png", use_column_width=True)
-
+st.image("Banner.png", use_container_width=True)
 st.markdown("---")
 
 # Two-column layout for student name and pathway selection
