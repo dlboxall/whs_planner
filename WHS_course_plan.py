@@ -903,10 +903,157 @@ def show_graduation_tracker():
             cte_credits >= 2
         ):
             st.success("🎓 All Career & Technical graduation requirements met!")
-
+#------------------------------------------------------------------------------------------------------------------------------------
+#               HONORS/ADVANCED ENDORSEMENT PATHWAY
+#------------------------------------------------------------------------------------------------------------------------------------
 
     elif selected_pathway == "Honors/Scholarship Opportunity":
-        st.info("📋 Honors/Scholarship Opportunity tracker coming soon...")
+        #st.info("📋 Honors/Scholarship Opportunity tracker coming soon...")
+    #if selected_pathway == "Honors/Scholarship Opportunity":
+        st.markdown("🏅 **Advanced/Honors Endorsement Tracker**")
+    
+        claimed_courses = set()
+        selected_df = pd.concat(st.session_state.course_plan.values())
+        selected_df["Course Code"] = selected_df["Course Code"].astype(str)
+        selected_df["Credits"] = pd.to_numeric(selected_df["Credits"], errors="coerce")
+        selected_df.dropna(subset=["Credits"], inplace=True)
+    
+        total_credits = selected_df["Credits"].sum()
+        st.markdown(f"**Total Credits:** {total_credits:.1f} / 24 required")
+    
+        # --- English ---
+        english_df = selected_df[selected_df["Department"] == "English"]
+        english_credits = english_df["Credits"].sum()
+        if english_credits >= 9:
+            st.success(f"English: ✅ {english_credits}/9 credits")
+        else:
+            st.warning(f"English: {english_credits}/9 credits")
+        claimed_courses.update(english_df["Course Code"])
+    
+        # --- Math ---
+        required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
+        advanced_math_codes = ["4502"] + [code for code in selected_df["Course Code"] if code.isdigit() and int(code) > 4600]
+        math_df = selected_df[selected_df["Department"] == "Mathematics"]
+        math_codes = set(math_df["Course Code"])
+        math_credits = math_df["Credits"].sum()
+    
+        math_met = all(any(code in math_codes for code in group) for group in required_math_groups)
+        adv_math_met = any(code in math_codes for code in advanced_math_codes)
+    
+        if math_met and adv_math_met and math_credits >= 4:
+            st.success(f"Mathematics: ✅ {math_credits}/4 (Algebra I, Geometry, Algebra II + Adv Math)")
+        else:
+            st.warning(f"Mathematics: {math_credits}/4 (check coverage)")
+        claimed_courses.update(math_df["Course Code"])
+    
+        # --- Science ---
+        sci_df = selected_df[selected_df["Department"] == "Science"]
+        sci_codes = sci_df["Course Code"]
+        sci_credits = sci_df["Credits"].sum()
+    
+        bio_met = "7201" in sci_codes.values
+        chem_met = "7301" in sci_codes.values
+        physci_met = "7101" in sci_codes.values
+        other_sci_credit = sci_credits >= 4
+    
+        if bio_met and chem_met and physci_met and other_sci_credit:
+            st.success(f"Science: ✅ {sci_credits}/4 (Bio, Chem, PhysSci + elective)")
+        else:
+            st.warning(f"Science: {sci_credits}/4 (check coverage)")
+        claimed_courses.update(sci_df["Course Code"])
+    
+        # --- Social Studies ---
+        ss_df = selected_df[selected_df["Department"] == "Social Studies"]
+        ss_credits = ss_df["Credits"].sum()
+        ss_codes = ss_df["Course Code"].tolist()
+    
+        ss_required = {
+            "Geography": ["8401", "8405"],
+            "World History": ["8304", "8310"],
+            "U.S. History": ["8101"],
+            "U.S. Government": ["8201"]
+        }
+        ss_met = all(any(code in ss_codes for code in group) for group in ss_required.values())
+    
+        if ss_credits >= 8 and ss_met:
+            st.success(f"Social Studies: ✅ {ss_credits}/8 (required classes met)")
+        else:
+            st.warning(f"Social Studies: {ss_credits}/8 (check required coverage)")
+        claimed_courses.update(ss_df["Course Code"])
+    
+        # --- Finance (8701) or Personal Finance (9120) ---
+        finance_codes = ["8701", "9120"]
+        finance_df = selected_df[selected_df["Course Code"].isin(finance_codes)]
+        finance_credits = finance_df["Credits"].sum()
+        if finance_credits >= 0.5:
+            st.success(f"Econ/Finance: ✅ {finance_credits}/0.5")
+        else:
+            st.warning(f"Econ/Finance: {finance_credits}/0.5")
+        claimed_courses.update(finance_df["Course Code"])
+    
+        # --- PE/Health ---
+        pe_df = selected_df[selected_df["Department"] == "Physical Education"]
+        health_df = selected_df[selected_df["Department"] == "Health"]
+        pe_credits = pe_df["Credits"].sum()
+        health_credits = health_df["Credits"].sum()
+    
+        if pe_credits >= 0.5 and health_credits >= 0.5:
+            st.success(f"PE/Health: ✅ PE {pe_credits}, Health {health_credits} (1.0 total)")
+        else:
+            st.warning(f"PE/Health: PE {pe_credits}, Health {health_credits} (1.0 total)")
+        claimed_courses.update(pe_df["Course Code"])
+        claimed_courses.update(health_df["Course Code"])
+    
+        # --- Fine Arts ---
+        fine_df = selected_df[selected_df["Department"] == "Fine Arts"]
+        fine_credits = fine_df["Credits"].sum()
+        if fine_credits >= 1:
+            st.success(f"Fine Arts: ✅ {fine_credits}/1.0")
+        else:
+            st.warning(f"Fine Arts: {fine_credits}/1.0")
+        claimed_courses.update(fine_df["Course Code"])
+    
+        # --- World Language or CTE Cluster ---
+        lang_df = selected_df[selected_df["Department"] == "World Languages"]
+        lang_credits = lang_df["Credits"].sum()
+    
+        # CTE cluster logic
+        cte_df = selected_df[selected_df["Department"].isin(["CTE", "Business", "Computer Science"])]
+        cte_df["Course Code"] = cte_df["Course Code"].astype(str)
+    
+        cluster_hits = {}
+        for cluster, codes in cte_cluster_map.items():
+            matched = cte_df[cte_df["Course Code"].isin(codes)]
+            total_cluster_credits = matched["Credits"].sum()
+            codes_taken = set(matched["Course Code"])
+            all_courses_completed = codes_taken == set(codes)
+    
+            if all_courses_completed or total_cluster_credits >= 1.5:
+                cluster_hits[cluster] = total_cluster_credits
+    
+        if lang_credits >= 2:
+            st.success(f"Languages: ✅ {lang_credits}/2 credits in World Languages")
+        elif cluster_hits:
+            matched_cluster = max(cluster_hits, key=cluster_hits.get)
+            st.success(f"✅ Completed CTE cluster: **{matched_cluster}** ({cluster_hits[matched_cluster]} credits)")
+        else:
+            st.warning("World Language or CTE cluster requirement not met")
+    
+        # --- Final Graduation Check ---
+        if (
+            english_credits >= 9 and
+            math_met and adv_math_met and math_credits >= 4 and
+            bio_met and chem_met and physci_met and sci_credits >= 4 and
+            ss_met and ss_credits >= 8 and
+            finance_credits >= 0.5 and
+            pe_credits >= 0.5 and health_credits >= 0.5 and
+            fine_credits >= 1 and
+            (lang_credits >= 2 or cluster_hits)
+        ):
+            st.success("🎓 All Advanced/Honors Endorsement graduation requirements met!")
+        else:
+            st.warning("Some graduation requirements are still unmet. Please review the categories above.")
+
 
 # Call tracker in right-hand sidebar
 with st.sidebar:
