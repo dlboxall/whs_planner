@@ -40,7 +40,7 @@ if st.session_state.show_intro:
 <p>The sidebar will show whether you’ve met required credits in each subject for the selected pathway.</p>
 
 <h4 style='text-decoration: underline;'>Department Codes List</h4>
-<p>Each elective course requires a 3-letter <strong>Department Code</strong> (e.g., <code>ART</code>, <code>CTE</code>, <code>PED</code>, <code>SCI</code>) before you can choose a course.</p>
+<p>Each elective course requires a 3-letter <strong>Department Code</strong> (e.g., <strong>ART</strong>, <strong>CTE</strong>, <strong>SCI</strong>) before you can choose a course.</p>
 <p>Click the <strong>“Department Code”</strong> sidebar dropdown menu to view the full list of codes and their departments.</p>
 
 <h4 style='text-decoration: underline;'>Core & Elective Course Selection</h4>
