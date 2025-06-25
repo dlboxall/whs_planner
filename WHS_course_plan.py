@@ -454,18 +454,17 @@ if st.session_state.print_mode:
     # Encode HTML safely
     encoded_html = json.dumps(printable_html)
     
-    # Inject using a raw <a> link with escaped JS
-    st.markdown("""
-        <a href="#" onclick='
-            const printWin = window.open();
-            printWin.document.write(""" + encoded_html + """);
-            printWin.document.close();
-        ' style="display:inline-block; padding:8px 16px; margin-top:12px;
-                 font-size:16px; background:#f0f0f0; border:1px solid #ccc;
-                 border-radius:6px; text-decoration:none; color:#000;">
-            🖨️ Print This Plan
-        </a>
-    """, unsafe_allow_html=True)
+    # Print button as raw HTML with clean JS execution
+    st.components.v1.html(f"""
+        <html>
+        <body>
+            <button onclick="const win = window.open(); win.document.write({encoded_html}); win.document.close();"
+                    style="padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer;">
+                🖨️ Print This Plan
+            </button>
+        </body>
+        </html>
+    """, height=100)
 
 #----------END PRINT LOOP-------------
 
