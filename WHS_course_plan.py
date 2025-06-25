@@ -422,24 +422,50 @@ if st.session_state.print_mode:
 
     st.table(summary_df)
 
-    # Add print button via JS
-    st.markdown("""
-        <style>
-        .print-link {
-            display: inline-block;
-            padding: 8px 16px;
-            margin-top: 16px;
-            font-size: 16px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            text-decoration: none;
-            color: black;
-            cursor: pointer;
-        }
-        </style>
+    import json
+
+    # Convert the table to an HTML string for the new window
+    printable_html = f"""
+    <html>
+    <head>
+    <title>4-Year Course Plan</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; padding: 30px; }}
+        table {{ border-collapse: collapse; width: 100%; margin-top: 20px; }}
+        th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
+        h2 {{ text-align: center; }}
+    </style>
+    </head>
+    <body>
+    <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
+    <table>
+        <tr><th>Grade</th><th>Core</th><th>Elective</th></tr>
+    """
     
-        <a href="javascript:window.print()" class="print-link">🖨️ Print This Plan</a>
+    for year in years:
+        core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
+        elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
+        printable_html += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
+    
+    printable_html += """
+    </table>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+    </body>
+    </html>
+    """
+    
+    # Safely encode HTML for JavaScript injection
+    encoded_html = json.dumps(printable_html)
+    
+    # Launch print view in new window
+    st.markdown(f"""
+        <button onclick="const w = window.open(); w.document.write({encoded_html}); w.document.close();">
+            🖨️ Print This Plan
+        </button>
     """, unsafe_allow_html=True)
 
 #----------END PRINT LOOP-------------
