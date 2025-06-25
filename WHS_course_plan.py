@@ -371,6 +371,68 @@ def check_for_duplicate_courses(selected_df):
         ]
         st.error(f"⚠️ Duplicate course selection: {', '.join(names)} — most courses may only be taken once.")
 
+# === PRINT-FRIENDLY VIEW TOGGLE ===
+
+if "print_mode" not in st.session_state:
+    st.session_state.print_mode = False
+
+st.markdown("---")
+if st.session_state.print_mode:
+    if st.button("🔙 Back to Planner"):
+        st.session_state.print_mode = False
+else:
+    if st.button("🖨️ Print-Friendly View"):
+        st.session_state.print_mode = True
+
+# === DISPLAY PRINT-FRIENDLY VIEW IF TOGGLED ===
+if st.session_state.print_mode:
+    st.markdown("""
+        <style>
+        @media print {
+            .element-container, .stSidebar, header, footer {
+                display: none !important;
+            }
+            .stApp {
+                margin: 0;
+                padding: 0;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 0.95em;
+            }
+            th, td {
+                border: 1px solid #000;
+                padding: 6px;
+                text-align: left;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"## {st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan")
+
+    # Build a summary DataFrame
+    summary_df = pd.DataFrame(columns=["Core", "Elective"], index=years)
+
+    for year in years:
+        core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
+        elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
+        summary_df.loc[year] = [core, elective]
+
+    st.table(summary_df)
+
+    # Add print button via JS
+    st.markdown("""
+        <script>
+        function printPage() {
+            window.print();
+        }
+        </script>
+        <button onclick="printPage()">🖨️ Print This Plan</button>
+    """, unsafe_allow_html=True)
+#----------END PRINT LOOP-------------
+
 def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
     graduation_df = course_catalog.copy()
