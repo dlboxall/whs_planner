@@ -408,9 +408,13 @@ def show_graduation_tracker():
     if st.session_state.grad_pathway == "University":
         st.subheader("🎓 University Graduation Requirements")
     
-        #selected_df = build_selected_df()
+        # selected_df = build_selected_df()
         selected_df["Course Code"] = selected_df["Course Code"].astype(str)
-        selected_df["Credits"] = selected_df["Credits"].astype(float)
+        selected_df["Credits"] = pd.to_numeric(selected_df["Credits"], errors="coerce")
+        selected_df.dropna(subset=["Credits"], inplace=True)
+        check_for_duplicate_courses(selected_df)
+
+        #selected_df["Credits"] = selected_df["Credits"].astype(float)
     
         total_credits = selected_df["Credits"].sum()
         st.markdown(f"**Total Credits:** {total_credits} / 24 required")
