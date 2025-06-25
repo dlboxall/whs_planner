@@ -405,103 +405,30 @@ def show_graduation_tracker():
 #----------------------------------------------------------------------------------------------------------------------------------------
 #        UNIVERSITY GRADUATION PATHWAY TRACKER
 #----------------------------------------------------------------------------------------------------------------------------------------
-    if selected_pathway == "University":
-        st.markdown("### 🎓 Graduation Tracker")
-        # --- DUPLICATE COURSE CODE CHECK ---
-        unlimited_repeatable_codes = {"1201", "1210", "1221"}
-        limited_repeatable_counts = {"2410": 2}
-        
-        # Gather all selected course codes (MS + HS)
-        all_selected_codes = []
-        
-        for course_name in st.session_state.ms_credits:
-            if course_name:
-                row = course_catalog[course_catalog["Course Name"] == course_name]
-                if not row.empty:
-                    all_selected_codes.append(str(row["Course Code"].values[0]))
-        
-        for year in st.session_state.course_plan:
-            for course_name in st.session_state.course_plan[year]:
-                if course_name:
-                    row = course_catalog[course_catalog["Course Name"] == course_name]
-                    if not row.empty:
-                        all_selected_codes.append(str(row["Course Code"].values[0]))
-        
-        # Count duplicates
-        from collections import Counter
-        code_counts = Counter(all_selected_codes)
-        non_repeatable_violations = [
-            code for code, count in code_counts.items()
-            if (
-                (code in unlimited_repeatable_codes and count > 1000)  # effectively unlimited
-                or (code in limited_repeatable_counts and count > limited_repeatable_counts[code])
-                or (code not in unlimited_repeatable_codes and code not in limited_repeatable_counts and count > 1)
-            )
-        ]
-        
-        # Report violations
-        if non_repeatable_violations:
-            names = [
-                course_catalog[course_catalog["Course Code"].astype(str) == code]["Course Name"].values[0]
-                for code in non_repeatable_violations
-            ]
-            st.error(f"⚠️ Duplicate course selection: {', '.join(names)} — most courses may only be taken once.")
-
-        # Extract selected course codes and names
-        selected_codes = []
-        selected_names = []
-        
-        # Include MS credits if any
-        for course_name in st.session_state.ms_credits:
-            if not course_name:
-                continue
-            row = course_catalog[course_catalog["Course Name"] == course_name]
-            if row.empty:
-                continue
-            selected_codes.append(str(row["Course Code"].values[0]))
-            selected_names.append(row["Course Name"].values[0])
-
-        for year in st.session_state.course_plan:
-            for course_name in st.session_state.course_plan[year]:
-                if not course_name:
-                    continue
-                row = course_catalog[course_catalog["Course Name"] == course_name]
-                if row.empty:
-                    continue
-                selected_codes.append(str(row["Course Code"].values[0]))
-                selected_names.append(row["Course Name"].values[0])
+    if st.session_state.grad_pathway == "University":
+        st.subheader("🎓 University Graduation Requirements")
     
-        graduation_df = course_catalog.copy()
-        
-        # Build selected_df by including duplicates
-        selected_df_rows = []
-
-        for course_name in st.session_state.ms_credits + sum(st.session_state.course_plan.values(), []):
-            if not course_name:
-                continue
-            row = graduation_df[graduation_df["Course Name"] == course_name]
-            if not row.empty:
-                selected_df_rows.append(row)
-        
-        selected_df = pd.concat(selected_df_rows, ignore_index=True) if selected_df_rows else pd.DataFrame(columns=graduation_df.columns)
-
-
-        # ---- LANGUAGE ARTS ----
+        selected_df = build_selected_df()
+        selected_df["Course Code"] = selected_df["Course Code"].astype(str)
+        selected_df["Credits"] = selected_df["Credits"].astype(float)
+    
+        total_credits = selected_df["Credits"].sum()
+        st.markdown(f"**Total Credits:** {total_credits} / 24 required")
+    
+        # ---- ENGLISH CHECK ----
         required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
         speech_debate_codes = ["2201", "2205"]
     
         eng_df = selected_df[selected_df["Department"] == "English"]
         valid_english_codes = [code for group in required_english_groups for code in group]
     
-        english_grad_df = eng_df[eng_df["Course Code"].astype(str).isin(valid_english_codes)]
-        speech_df = eng_df[eng_df["Course Code"].astype(str).isin(speech_debate_codes)]
-        extra_english_df = eng_df[
-            ~eng_df["Course Code"].astype(str).isin(valid_english_codes + speech_debate_codes)
-        ]
+        english_grad_df = eng_df[eng_df["Course Code"].isin(valid_english_codes)]
+        speech_df = eng_df[eng_df["Course Code"].isin(speech_debate_codes)]
     
         english_credits = english_grad_df["Credits"].sum()
         speech_credits = speech_df["Credits"].sum()
-        english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
+    
+        english_met = all(any(code in selected_df["Course Code"].tolist() for code in group) for group in required_english_groups)
     
         if english_credits >= 4 and english_met:
             st.success(f"English: ✅ {english_credits}/4 (group requirements met)")
@@ -513,277 +440,110 @@ def show_graduation_tracker():
         else:
             st.warning(f"Speech/Debate: {speech_credits}/0.5")
     
-        # ---- MATHEMATICS ----
-        required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
+        # ---- MATH CHECK ----
         math_df = selected_df[selected_df["Department"] == "Mathematics"]
-        
-        # Track selected codes
-        selected_math_codes = set(math_df["Course Code"].astype(str))
-        math_met = all(any(code in selected_math_codes for code in group) for group in required_math_groups)
-        
-        # Identify minimum courses to satisfy group coverage
-        used_math_codes = set()
-        for group in required_math_groups:
-            for code in group:
-                if code in selected_math_codes:
-                    used_math_codes.add(code)
-                    break
-        
-        # Build required group coverage
-        math_fulfilled_df = math_df[math_df["Course Code"].astype(str).isin(used_math_codes)]
-        
-        # Fill remaining up to 3 credits
-        remaining_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
-        for idx, row in remaining_math_df.iterrows():
-            if math_fulfilled_df["Credits"].sum() >= 3:
-                break
-            math_fulfilled_df = pd.concat([math_fulfilled_df, row.to_frame().T])
-        
-        math_credits = math_fulfilled_df["Credits"].sum()
-        
-        # ✅ Display
-        if math_credits >= 3 and math_met:
-            st.success(f"Mathematics: ✅ {math_credits}/3 (Algebra I, Geometry, Algebra II)")
+        math_credits = math_df["Credits"].sum()
+    
+        if math_credits >= 3:
+            st.success(f"Mathematics: ✅ {math_credits}/3")
         else:
-            st.warning(f"Mathematics: {math_credits}/3 credits — group coverage {'✓' if math_met else '✗'}")
-        
-        # ✅ Rollover only the math courses *not used* in the fulfilled block
-        rollover_math_df = math_df[~math_df.index.isin(math_fulfilled_df.index)]
-
-
-        # ---- SCIENCE ----
-        required_sci_groups = [["7201"], ["7101", "7301"]]
+            st.warning(f"Mathematics: {math_credits}/3 (check coverage)")
+    
+        # ---- SCIENCE CHECK ----
         science_df = selected_df[selected_df["Department"] == "Science"]
         science_credits = science_df["Credits"].sum()
-        
-        # Group requirement check
-        science_group_met = all(any(code in selected_codes for code in group) for group in required_sci_groups)
-        
-        # Ensure they have 3+ total credits and satisfy both group requirements
-        if science_credits >= 3 and science_group_met:
-            st.success(f"Science: ✅ {science_credits}/3 (includes Physical Science + Biology)")
+    
+        if science_credits >= 3:
+            st.success(f"Science: ✅ {science_credits}/3")
         else:
-            st.warning(f"Science: {science_credits}/3 credits — group coverage {'✓' if science_group_met else '✗'}")
-
-        # Remove only 1 credit from each required group
-        used_science_codes = set()
-        
-        for group in required_sci_groups:
-            for code in group:
-                if code in selected_codes and code not in used_science_codes:
-                    used_science_codes.add(code)
-                    break  # one per group
-        
-        # Calculate how many credits are left after satisfying the science requirement
-        required_science_codes = list(used_science_codes)
-        extra_science_df = science_df[
-            ~science_df["Course Code"].astype(str).isin(required_science_codes)
-        ]
-        
-        # We'll remove only 2 of the 3 total required credits (from code groups) —
-        # the 3rd credit can be from any science course, so we reduce the credit pool
-        total_required_credits = 3
-        required_science_df = science_df[
-            science_df["Course Code"].astype(str).isin(required_science_codes)
-        ]
-        required_credit_total = required_science_df["Credits"].sum()
-        
-        # Figure out how many science credits are "extra"
-        science_credit_buffer = science_credits - total_required_credits
-        if science_credit_buffer > 0:
-            rollover_science_df = extra_science_df.copy()
+            st.warning(f"Science: {science_credits}/3 (check coverage)")
+    
+        # ---- SOCIAL STUDIES CHECK ----
+        required_soc_codes = ["4101", "4103", "4105", "4107"]
+        soc_df = selected_df[selected_df["Department"] == "Social Studies"]
+        soc_credits = soc_df["Credits"].sum()
+        selected_codes = soc_df["Course Code"].tolist()
+        soc_required_met = all(code in selected_codes for code in required_soc_codes)
+    
+        if soc_credits >= 3 and soc_required_met:
+            st.success(f"Social Studies: ✅ {soc_credits}/3 (required courses met)")
         else:
-            rollover_science_df = pd.DataFrame(columns=course_catalog.columns)
-
-        # ---- SOCIAL STUDIES ----
-        required_ss_groups = [["8304", "8310"], ["8401","8405"]]  # U.S. History and Government
-        social_df = selected_df[selected_df["Department"] == "Social Studies"]
-        social_credits = social_df["Credits"].sum()
-        
-        # Check group coverage
-        ss_group_met = all(any(code in selected_codes for code in group) for group in required_ss_groups)
-        
-        # Subtract credit for each matched group (up to 1 credit max for history group, 0.5 for gov)
-        used_ss_codes = set()
-        for group in required_ss_groups:
-            for code in group:
-                if code in selected_codes:
-                    used_ss_codes.add(code)
-                    break
-        
-        # How many of the remaining credits apply to the 1.5 additional requirement?
-        group_credit_df = social_df[social_df["Course Code"].astype(str).isin(used_ss_codes)]
-        group_credit_total = group_credit_df["Credits"].sum()
-        additional_credit_required = 3 - group_credit_total
-        additional_credit_df = social_df[
-            ~social_df["Course Code"].astype(str).isin(used_ss_codes)
-        ]
-        
-        additional_credit_total = additional_credit_df["Credits"].sum()
-        social_studies_met = (
-            ss_group_met and
-            (group_credit_total + additional_credit_total) >= 3 and
-            additional_credit_total >= 1.5
-        )
-        
-        # Display result
-        if social_studies_met:
-            st.success(f"Social Studies: ✅ {social_credits}/3 (includes U.S. History, Govt, and electives)")
+            st.warning(f"Social Studies: {soc_credits}/3 (check required coverage)")
+    
+        # ---- ECON/FINANCE CHECK ----
+        econ_codes = ["4143", "4145"]
+        econ_df = soc_df[soc_df["Course Code"].isin(econ_codes)]
+        econ_credits = econ_df["Credits"].sum()
+    
+        if econ_credits >= 0.5:
+            st.success(f"Econ/Finance: ✅ {econ_credits}/0.5")
         else:
-            st.warning(f"Social Studies: {social_credits}/3 credits — group coverage {'✓' if ss_group_met else '✗'}, electives {'✓' if additional_credit_total >= 1.5 else '✗'}")
+            st.warning(f"Econ/Finance: {econ_credits}/0.5")
+
+        # ---- Native American Studies ----
+        na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "4111"]
+        na_credits = na_studies_df["Credits"].sum()
         
-        # Rollover extra SS credits to electives
-        required_ss_credits = 3
-        extra_social_credit = social_credits - required_ss_credits
-        
-        if extra_social_credit > 0:
-            rollover_ss_df = additional_credit_df[
-                additional_credit_df["Credits"].cumsum() > (1.5 if ss_group_met else 0)
-            ]
+        if na_credits >= 1.0:
+            st.success(f"Native American Studies: ✅ {na_credits}/1.0")
         else:
-            rollover_ss_df = pd.DataFrame(columns=course_catalog.columns)
-
-        
-        # ---- ECONOMICS / PERSONAL FINANCE ----
-        finance_codes = ["8701", "9120"]
-        
-        # Filter for 8701 (Economics) or 9120 (Personal Finance) and ensure not used elsewhere
-        finance_df = selected_df[
-            selected_df["Course Code"].astype(str).isin(finance_codes) &
-            ~selected_df["Course Code"].astype(str).isin(claimed_courses)
-        ]
-        
-        finance_credits = finance_df["Credits"].sum()
-        
-        if finance_credits >= 0.5:
-            st.success(f"Econ/Personal Finance: ✅ {finance_credits}/0.5")
-        else:
-            st.warning(f"Econ/Personal Finance: {finance_credits}/0.5")
-        
-        # ✅ ALWAYS define rollover_finance_df to prevent UnboundLocalError
-        if finance_credits > 0.5:
-            rollover_finance_df = finance_df[finance_df["Credits"] > 0.5]
-        else:
-            rollover_finance_df = pd.DataFrame()
-        
-        # Track which courses have been used
-        claimed_courses.update(finance_df["Course Code"].astype(str))
-
-
-
-        # ---- PHYSICAL EDUCATION / HEALTH ----
-        required_pe_codes = {"6105", "6101"}  # Health and PE I
-        pe_df = selected_df[selected_df["Department"] == "Physical Education"]
-        pe_codes = set(pe_df["Course Code"].astype(str))
+            st.warning(f"Native American Studies: {na_credits}/1.0")
+    
+        # ---- PE/HEALTH CHECK ----
+        pe_df = selected_df[selected_df["Department"] == "PE"]
+        health_df = selected_df[selected_df["Course Code"] == "7200"]
         pe_credits = pe_df["Credits"].sum()
-        
-        # Check if required courses are present
-        required_pe_met = required_pe_codes.issubset(pe_codes)
-        
-        # Graduation check
-        if pe_credits >= 1 and required_pe_met:
-            st.success(f"PhysEd/Health: ✅ {pe_credits}/1 (includes PE I + Health)")
-        else:
-            st.warning(f"PhysEd/Health: {pe_credits}/1 credits — requirement {'✓' if required_pe_met else '✗'}")
-        
-        # Rollover any PE credits beyond 1.0
-        extra_pe_df = pd.DataFrame()
-        if pe_credits > 1:
-            used_pe_df = pe_df[pe_df["Course Code"].astype(str).isin(required_pe_codes)]
-            extra_pe_df = pe_df[~pe_df.index.isin(used_pe_df.index)]
-
-        # ---- CTE / WORLD LANGUAGES ----
-        cte_lang_df = selected_df[
-            selected_df["Department"].isin(["CTE", "World Languages"])
-        ]
-        cte_lang_credits = cte_lang_df["Credits"].sum()
-        
-        if cte_lang_credits >= 1:
-            st.success(f"CTE/World Languages: ✅ {cte_lang_credits}/1")
-        else:
-            st.warning(f"CTE/World Languages: {cte_lang_credits}/1")
-        
-        # Rollover any excess CTE/Lang credits to electives
-        extra_cte_lang_df = pd.DataFrame()
-        if cte_lang_credits > 1:
-            extra_cte_lang_df = cte_lang_df[cte_lang_df["Credits"].cumsum() > 1]
-
-        # ---- FINE ARTS ----
-        fine_arts_df = selected_df[
-            selected_df["Department"].isin([
-                "Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"
-            ])
-        ]
-        fine_arts_credits = fine_arts_df["Credits"].sum()
-        
-        if fine_arts_credits >= 1:
-            st.success(f"Fine Arts: ✅ {fine_arts_credits}/1")
-        else:
-            st.warning(f"Fine Arts: {fine_arts_credits}/1")
-        
-        # Rollover excess Fine Arts credits to electives
-        extra_fine_arts_df = pd.DataFrame()
-        if fine_arts_credits > 1:
-            extra_fine_arts_df = fine_arts_df[fine_arts_df["Credits"].cumsum() > 1]
-
-        
-        # ---- ELECTIVES ----
-        matched_english_codes = valid_english_codes + speech_debate_codes
-        matched_math_codes = [code for group in required_math_groups for code in group]
+        health_credits = health_df["Credits"].sum()
+        pe_total = pe_credits + health_credits
     
-        unmatched_df = selected_df[
-            ~selected_df["Course Code"].astype(str).isin(matched_english_codes + matched_math_codes)
-        ]
-        electives_df = pd.concat([
-            unmatched_df,
-            extra_english_df,
-            rollover_science_df,
-            rollover_finance_df,
-            rollover_ss_df,
-            rollover_math_df,
-            extra_pe_df,
-            extra_cte_lang_df,
-            extra_fine_arts_df
-        ])
-
-        # Optional: Warn if more than 2 PE courses taken in a single year
-        for year in st.session_state.course_plan:
-            pe_in_year = 0
-            for course_name in st.session_state.course_plan[year]:
-                row = course_catalog[course_catalog["Course Name"] == course_name]
-                if not row.empty and row["Department"].values[0] == "Physical Education":
-                    pe_in_year += 1
-            if pe_in_year > 2:
-                st.warning(f"⚠️ {year}: More than 2 PE courses selected — max is 2 per year.")
-
-        elective_credits = electives_df["Credits"].sum()
-    
-        #if elective_credits >= 5:
-            #st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
-        #else:
-            #st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
-    
-        #st.info("✅ Partial University credit checks complete. Add other subjects next.")
-        
-        if elective_credits >= 5.5:
-            st.success(f"Electives: ✅ {elective_credits}/5.5 (_min_)")
+        if pe_credits >= 0.5 and health_credits >= 0.5:
+            st.success(f"PE/Health: ✅ PE {pe_credits}, Health {health_credits} ({pe_total} total)")
         else:
-            st.warning(f"Electives: {elective_credits}/5.5 (_min_)")
-        
-        # ✅ Graduation status message
-        if (
+            st.warning(f"PE/Health: PE {pe_credits}, Health {health_credits} ({pe_total} total)")
+    
+        # ---- FINE ARTS CHECK ----
+        fa_df = selected_df[selected_df["Department"] == "Fine Arts"]
+        fa_credits = fa_df["Credits"].sum()
+    
+        if fa_credits >= 1:
+            st.success(f"Fine Arts: ✅ {fa_credits}/1.0")
+        else:
+            st.warning(f"Fine Arts: {fa_credits}/1.0")
+    
+        # ---- WORLD LANGUAGE CHECK ----
+        wl_df = selected_df[selected_df["Department"] == "World Language"]
+        wl_codes = wl_df["Course Code"].tolist()
+        wl_credits = wl_df["Credits"].sum()
+    
+        same_lang_met = False
+        if len(wl_codes) >= 2:
+            from collections import Counter
+            counts = Counter([code[:2] for code in wl_codes])
+            same_lang_met = any(v >= 2 for v in counts.values())
+    
+        if wl_credits >= 2 and same_lang_met:
+            st.success(f"World Language: ✅ {wl_credits}/2 (same language)")
+        else:
+            st.warning(f"World Language: {wl_credits}/2 (2 years same language required)")
+    
+        # ---- FINAL STATUS CHECK ----
+        all_met = (
+            total_credits >= 24 and
             english_credits >= 4 and english_met and
             speech_credits >= 0.5 and
-            math_credits >= 3 and math_met and
-            science_credits >= 3 and science_group_met and
-            finance_credits >= 0.5 and
-            social_studies_met and
-            pe_credits >= 1 and required_pe_met and
-            cte_lang_credits >= 1 and
-            fine_arts_credits >= 1 and
-            elective_credits >= 5.5
-        ):
-            st.success("🎓 All University graduation requirements met!")
+            math_credits >= 3 and
+            science_credits >= 3 and
+            soc_credits >= 3 and soc_required_met and
+            econ_credits >= 0.5 and
+            pe_credits >= 0.5 and health_credits >= 0.5 and
+            fa_credits >= 1 and
+            wl_credits >= 2 and same_lang_met
+        )
+    
+        if not all_met:
+            st.error("Some graduation requirements are still unmet. Please review the categories above.")
+        else:
+            st.success("✅ All graduation requirements for the University Pathway are complete!")
 
 #----------------------------------------------------------------------------------------------------------------------------------------
 #        CAREER AND TECHNICAL GRADUATION PATHWAY TRACKER
