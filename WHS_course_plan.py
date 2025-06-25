@@ -361,7 +361,7 @@ def check_for_duplicate_courses(selected_df):
             or (code not in unlimited_repeatable_codes and code not in limited_repeatable_counts and count > 1)
         )
     ]
-#New code
+    
     # Report violations in a single summary message
     if non_repeatable_violations:
         names = [
@@ -425,18 +425,21 @@ if st.session_state.print_mode:
     # Add print button via JS
     st.markdown("""
         <style>
-        .print-button {
+        .print-link {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-top: 16px;
             font-size: 16px;
-            padding: 8px 14px;
-            border-radius: 6px;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
+            border-radius: 6px;
+            text-decoration: none;
+            color: black;
             cursor: pointer;
-            margin-top: 20px;
         }
         </style>
     
-        <button class="print-button" onclick="window.print()">🖨️ Print This Plan</button>
+        <a href="javascript:window.print()" class="print-link">🖨️ Print This Plan</a>
     """, unsafe_allow_html=True)
 
 #----------END PRINT LOOP-------------
