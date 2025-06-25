@@ -115,10 +115,10 @@ row_labels_spring = ["Course 5", "Course 6", "Course 7", "Course 8"]
 
 # Grade-level guidance messages for hover tooltips
 grade_requirements = {
-    "9th Grade": "English 9, Algebra I, Speech or Debate, World Geography, Biology, PE/Health",
-    "10th Grade": "English 10, Geometry, World History, Physical Science or Chemistry",
-    "11th Grade": "English 11, Algebra II or higher, U.S. History, lab science",
-    "12th Grade": "English 12, Government/Economics, additional math/science/electives"
+    "9th Grade": "English 9, Algebra I, Speech or Debate, World Geography, Biology, PE/Health [6 credits min]",
+    "10th Grade": "English 10, Geometry, World History, Physical Science or Chemistry [6 credits min]",
+    "11th Grade": "English 11, Algebra II, US History, Science, Personal Finance(BUS) or Economics(SOC) [6 credits min]",
+    "12th Grade": "English 12, US Government, Personal Finance(BUS) or Economics(SOC) [6 credits min]"
 }
 
 def hover_year_msg(year):
@@ -1062,15 +1062,33 @@ def show_graduation_tracker():
         total_credits = selected_df["Credits"].sum()
         st.markdown(f"**Total Credits:** {total_credits:.1f} / 24 required")
     
-        # --- English ---
-        english_df = selected_df[selected_df["Department"] == "English"]
-        english_credits = english_df["Credits"].sum()
-        if english_credits >= 4:
-            st.success(f"English: ✅ {english_credits}/4 credits")
+        # ---- LANGUAGE ARTS ----
+        required_english_groups = [["2401", "2404"], ["2501", "2504"], ["2601", "2608"], ["2715", "2606"]]
+        speech_debate_codes = ["2201", "2205"]
+        
+        eng_df = selected_df[selected_df["Department"] == "English"]
+        valid_english_codes = [code for group in required_english_groups for code in group]
+        
+        english_grad_df = eng_df[eng_df["Course Code"].astype(str).isin(valid_english_codes)]
+        speech_df = eng_df[eng_df["Course Code"].astype(str).isin(speech_debate_codes)]
+        extra_english_df = eng_df[
+            ~eng_df["Course Code"].astype(str).isin(valid_english_codes + speech_debate_codes)
+        ]
+        
+        english_credits = english_grad_df["Credits"].sum()
+        speech_credits = speech_df["Credits"].sum()
+        english_met = all(any(code in selected_codes for code in group) for group in required_english_groups)
+        
+        if english_credits >= 4 and english_met:
+            st.success(f"English: ✅ {english_credits}/4 (group requirements met)")
         else:
-            st.warning(f"English: {english_credits}/4 credits")
-        claimed_courses.update(english_df["Course Code"])
-    
+            st.warning(f"English: {english_credits}/4 credits — group coverage {'✓' if english_met else '✗'}")
+        
+        if speech_credits >= 0.5:
+            st.success(f"Speech/Debate: ✅ {speech_credits}/0.5")
+        else:
+            st.warning(f"Speech/Debate: {speech_credits}/0.5")
+
         # --- Math ---
         required_math_groups = [["4301", "4304"], ["4401", "4402"], ["4506", "4504"]]
         advanced_math_codes = ["4502"] + [code for code in selected_df["Course Code"] if code.isdigit() and int(code) > 4600]
@@ -1131,17 +1149,23 @@ def show_graduation_tracker():
         else:
             st.warning(f"Econ/Finance: {finance_credits}/0.5")
         claimed_courses.update(finance_df["Course Code"])
-    
+
+        # ---- Native American Studies ----
+        na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "4111"]
+        na_credits = na_studies_df["Credits"].sum()
+        
+        if na_credits >= 1.0:
+            st.success(f"Native American Studies: ✅ {na_credits}/1.0")
+        else:
+            st.warning(f"Native American Studies: {na_credits}/1.0")
+
         # --- PE/Health ---
         pe_df = selected_df[
             (selected_df["Department"] == "Physical Education") &
             (selected_df["Course Name"] != "Health Education")
         ]
 
-        #health_df = selected_df[selected_df["Department"] == "Health"]
         pe_credits = pe_df["Credits"].sum()
-        #health_credits = health_df["Credits"].sum()
-        # Consider "Health Education" by course name
         health_df = selected_df[selected_df["Course Name"].str.contains("Health", case=False, na=False)]
         health_credits = health_df["Credits"].sum()
     
@@ -1159,7 +1183,6 @@ def show_graduation_tracker():
             ])
         ]        
         
-        #fine_df = selected_df[selected_df["Department"] == "Fine Arts"]
         fine_credits = fine_df["Credits"].sum()
         if fine_credits >= 1:
             st.success(f"Fine Arts: ✅ {fine_credits}/1.0")
