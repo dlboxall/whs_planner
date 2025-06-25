@@ -410,7 +410,7 @@ if st.session_state.print_mode:
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"## {st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan")
+    #st.markdown(f"## {st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan")
 
     import json
 
@@ -466,8 +466,6 @@ if st.session_state.print_mode:
             🖨️ Print This Plan
         </a>
     """, unsafe_allow_html=True)
-
-
 
 #----------END PRINT LOOP-------------
 
