@@ -554,7 +554,7 @@ def show_graduation_tracker():
             speech_credits >= 0.5 and
             math_credits >= 3 and
             science_credits >= 3 and
-            soc_credits >= 3 and soc_required_met and
+            ss_credits >= 3 and ss_met and
             #econ_credits >= 0.5 and
             pe_credits >= 0.5 and health_credits >= 0.5 and
             fine_credits >= 1 and
