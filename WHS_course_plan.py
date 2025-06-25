@@ -412,58 +412,51 @@ if st.session_state.print_mode:
 
     st.markdown(f"## {st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan")
 
-    # Build a summary DataFrame
-    summary_df = pd.DataFrame(columns=["Core", "Elective"], index=years)
-
-    for year in years:
-        core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
-        elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
-        summary_df.loc[year] = [core, elective]
-
-    st.table(summary_df)
-
     import json
 
-    # Convert the table to an HTML string for the new window
-    printable_html = f"""
-    <html>
-    <head>
-    <title>4-Year Course Plan</title>
-    <style>
-        body {{ font-family: Arial, sans-serif; padding: 30px; }}
-        table {{ border-collapse: collapse; width: 100%; margin-top: 20px; }}
-        th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
-        h2 {{ text-align: center; }}
-    </style>
-    </head>
-    <body>
-    <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
-    <table>
-        <tr><th>Grade</th><th>Core</th><th>Elective</th></tr>
-    """
-    
+    # Build printable rows for HTML table
+    printable_rows = ""
     for year in years:
         core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
         elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
-        printable_html += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
-    
-    printable_html += """
-    </table>
-    <script>
-        window.onload = function() {
-            window.print();
-        }
-    </script>
+        printable_rows += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
+
+    # Full printable HTML
+    printable_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>{st.session_state.get('student_name', 'Student')}'s 4-Year Plan</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; padding: 30px; }}
+            h2 {{ text-align: center; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+            th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
+        </style>
+    </head>
+    <body>
+        <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
+        <table>
+            <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
+            <tbody>
+                {printable_rows}
+            </tbody>
+        </table>
+        <script>
+            window.onload = function() {{
+                window.print();
+            }};
+        </script>
     </body>
     </html>
     """
-    
-    # Safely encode HTML for JavaScript injection
+
+    # Encode HTML so it's safe to inject into JS
     encoded_html = json.dumps(printable_html)
-    
-    # Launch print view in new window
+
+    # Launch print view in new browser tab
     st.markdown(f"""
-        <button onclick="const w = window.open(); w.document.write({encoded_html}); w.document.close();">
+        <button onclick="const win = window.open(); win.document.write({encoded_html}); win.document.close();">
             🖨️ Print This Plan
         </button>
     """, unsafe_allow_html=True)
