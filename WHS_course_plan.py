@@ -687,7 +687,7 @@ def show_graduation_tracker():
         claimed_courses.update(health_df["Course Code"])
     
         # ---- FINE ARTS ----
-        fine_arts_df = selected_df[selected_df["Department"].isin(["Visual Arts", "Vocal Arts", "Performing Arts", "Fine Arts"])]
+        fine_arts_df = selected_df[selected_df["Department"].isin(["Visual Arts", "Vocal Music", "Performing Arts", "Fine Arts"])]
         fine_credits = fine_arts_df["Credits"].sum()
         if fine_credits >= 1:
             st.sidebar.success(f"Fine Arts: ✅ {fine_credits}/1 credit")
