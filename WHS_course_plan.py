@@ -1135,7 +1135,7 @@ def show_graduation_tracker():
         ss_met = all(any(code in ss_codes for code in group) for group in ss_required.values())
     
         if ss_credits >= 3 and ss_met:
-            st.success(f"Social Studies: ✅ {ss_credits}/8 (required classes met)")
+            st.success(f"Social Studies: ✅ {ss_credits}/3 (required classes met)")
         else:
             st.warning(f"Social Studies: {ss_credits}/3 (check required coverage)")
         claimed_courses.update(ss_df["Course Code"])
