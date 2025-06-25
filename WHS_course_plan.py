@@ -725,7 +725,7 @@ def show_graduation_tracker():
             sci_credits >= 3 and
             ss_credits >= 3 and ss_met and
             pe_credits >= 0.5 and health_credits >= 0.5 and
-            fine_credits >= 1 and
+            fine_credits >= 1
         )
     
         if not all_met:
