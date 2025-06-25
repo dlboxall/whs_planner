@@ -450,18 +450,23 @@ if st.session_state.print_mode:
     </body>
     </html>
     """
-
-    # Encode HTML so it's safe to inject into JS
+    
+    # Encode HTML safely
     encoded_html = json.dumps(printable_html)
-
-    # Launch print view in new browser tab
-    st.markdown(f"""
-        <a href="javascript:const win = window.open(); win.document.write({encoded_html}); win.document.close();" 
-           style="display:inline-block; padding:8px 16px; margin-top:12px; font-size:16px; background:#f0f0f0; 
-                  border:1px solid #ccc; border-radius:6px; text-decoration:none; color:#000;">
+    
+    # Inject using a raw <a> link with escaped JS
+    st.markdown("""
+        <a href="#" onclick='
+            const printWin = window.open();
+            printWin.document.write(""" + encoded_html + """);
+            printWin.document.close();
+        ' style="display:inline-block; padding:8px 16px; margin-top:12px;
+                 font-size:16px; background:#f0f0f0; border:1px solid #ccc;
+                 border-radius:6px; text-decoration:none; color:#000;">
             🖨️ Print This Plan
         </a>
     """, unsafe_allow_html=True)
+
 
 
 #----------END PRINT LOOP-------------
