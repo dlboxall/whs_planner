@@ -386,85 +386,53 @@ else:
 
 # === DISPLAY PRINT-FRIENDLY VIEW IF TOGGLED ===
 if st.session_state.print_mode:
-    st.markdown("""
-        <style>
-        @media print {
-            .element-container, .stSidebar, header, footer {
-                display: none !important;
-            }
-            .stApp {
-                margin: 0;
-                padding: 0;
-            }
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                font-size: 0.95em;
-            }
-            th, td {
-                border: 1px solid #000;
-                padding: 6px;
-                text-align: left;
-            }
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    import streamlit.components.v1 as components
 
-    st.markdown(f"## {st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan")
+    # Build raw HTML string directly — no json.dumps or string escaping
+    html_printable = f"""<!DOCTYPE html>
+<html>
+<head>
+    <title>{st.session_state.get('student_name', 'Student')}'s 4-Year Plan</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; padding: 30px; }}
+        h2 {{ text-align: center; }}
+        table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+        th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
+    </style>
+</head>
+<body>
+    <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
+    <table>
+        <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
+        <tbody>
+"""
 
-    import json
-
-    # Build printable rows for HTML table
-    printable_rows = ""
     for year in years:
         core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
         elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
-        printable_rows += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
+        html_printable += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
 
-    # Full printable HTML
-    printable_html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>{st.session_state.get('student_name', 'Student')}'s 4-Year Plan</title>
-        <style>
-            body {{ font-family: Arial, sans-serif; padding: 30px; }}
-            h2 {{ text-align: center; }}
-            table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
-            th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
-        </style>
-    </head>
-    <body>
-        <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
-        <table>
-            <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
-            <tbody>
-                {printable_rows}
-            </tbody>
-        </table>
-        <script>
-            window.onload = function() {{
-                window.print();
-            }};
-        </script>
-    </body>
-    </html>
-    """
-    
-    # Encode HTML safely
-    encoded_html = json.dumps(printable_html)
-    
-    # Print button as raw HTML with clean JS execution
-    st.components.v1.html(f"""
-        <html>
-        <body>
-            <button onclick="const win = window.open(); win.document.write({encoded_html}); win.document.close();"
-                    style="padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer;">
-                🖨️ Print This Plan
-            </button>
-        </body>
-        </html>
+    html_printable += """
+        </tbody>
+    </table>
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>
+"""
+
+    # Use iframe to open a real print preview
+    components.html(f"""
+        <button onclick="const printWindow = window.open('', '_blank');
+                         printWindow.document.write(`{html_printable}`);
+                         printWindow.document.close();">
+            🖨️ Print This Plan
+        </button>
     """, height=100)
+
 
 #----------END PRINT LOOP-------------
 
