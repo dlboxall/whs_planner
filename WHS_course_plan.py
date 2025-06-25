@@ -463,16 +463,15 @@ def show_graduation_tracker():
             st.warning(f"Science: {science_credits}/3 (check coverage)")
     
         # ---- SOCIAL STUDIES CHECK ----
-        # --- Social Studies ---
         ss_df = selected_df[selected_df["Department"] == "Social Studies"]
         ss_credits = ss_df["Credits"].sum()
         ss_codes = ss_df["Course Code"].tolist()
     
         ss_required = {
-            "Geography": ["8401", "8405"],
-            "World History": ["8304", "8310"],
-            "U.S. History": ["8101"],
-            "U.S. Government": ["8201"]
+            "Geography": ["8101"],
+            "World History": ["8201"],
+            "U.S. History": ["8304","8310"],
+            "U.S. Government": ["8401","8405"]
         }
         ss_met = all(any(code in ss_codes for code in group) for group in ss_required.values())
     
@@ -533,7 +532,7 @@ def show_graduation_tracker():
         claimed_courses.update(fine_df["Course Code"])
     
         # ---- WORLD LANGUAGE CHECK ----
-        wl_df = selected_df[selected_df["Department"] == "World Language"]
+        wl_df = selected_df[selected_df["Department"] == "World Languages"]
         wl_codes = wl_df["Course Code"].tolist()
         wl_credits = wl_df["Credits"].sum()
     
@@ -556,9 +555,9 @@ def show_graduation_tracker():
             math_credits >= 3 and
             science_credits >= 3 and
             soc_credits >= 3 and soc_required_met and
-            econ_credits >= 0.5 and
+            #econ_credits >= 0.5 and
             pe_credits >= 0.5 and health_credits >= 0.5 and
-            fa_credits >= 1 and
+            fine_credits >= 1 and
             wl_credits >= 2 and same_lang_met
         )
     
@@ -909,10 +908,10 @@ def show_graduation_tracker():
         ss_codes = ss_df["Course Code"].tolist()
     
         ss_required = {
-            "Geography": ["8401", "8405"],
-            "World History": ["8304", "8310"],
-            "U.S. History": ["8101"],
-            "U.S. Government": ["8201"]
+            "Geography": ["8101"],
+            "World History": ["8201"],
+            "U.S. History": ["8304","8310"],
+            "U.S. Government": ["8401","8405"]
         }
         ss_met = all(any(code in ss_codes for code in group) for group in ss_required.values())
     
@@ -1004,7 +1003,7 @@ def show_graduation_tracker():
             math_met and adv_math_met and math_credits >= 4 and
             bio_met and chem_met and physci_met and sci_credits >= 4 and
             ss_met and ss_credits >= 3 and
-            finance_credits >= 0.5 and
+            #finance_credits >= 0.5 and
             pe_credits >= 0.5 and health_credits >= 0.5 and
             fine_credits >= 1 and
             (lang_credits >= 2 or cluster_hits) and
