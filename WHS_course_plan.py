@@ -688,7 +688,7 @@ def show_graduation_tracker():
     
         # ---- FINE ARTS ----
         fine_arts_df = selected_df[selected_df["Department"].isin(["Visual Arts", "Vocal Arts", "Performing Arts", "Fine Arts"])]
-        fa_credits = fine_arts_df["Credits"].sum()
+        fine_credits = fine_arts_df["Credits"].sum()
         if fine_credits >= 1:
             st.sidebar.success(f"Fine Arts: ✅ {fine_credits}/1 credit")
         else:
