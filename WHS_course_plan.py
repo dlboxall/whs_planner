@@ -501,26 +501,36 @@ def show_graduation_tracker():
         else:
             st.warning(f"Native American Studies: {na_credits}/1.0")
     
-        # ---- PE/HEALTH CHECK ----
-        pe_df = selected_df[selected_df["Department"] == "PE"]
-        health_df = selected_df[selected_df["Course Code"] == "7200"]
+        # --- PE/Health ---
+        pe_df = selected_df[
+            (selected_df["Department"] == "Physical Education") &
+            (selected_df["Course Name"] != "Health Education")
+        ]
+
         pe_credits = pe_df["Credits"].sum()
+        health_df = selected_df[selected_df["Course Name"].str.contains("Health", case=False, na=False)]
         health_credits = health_df["Credits"].sum()
-        pe_total = pe_credits + health_credits
     
         if pe_credits >= 0.5 and health_credits >= 0.5:
-            st.success(f"PE/Health: ✅ PE {pe_credits}, Health {health_credits} ({pe_total} total)")
+            st.success(f"PE/Health: ✅ PE {pe_credits}, Health {health_credits} (1.0 total)")
         else:
-            st.warning(f"PE/Health: PE {pe_credits}, Health {health_credits} ({pe_total} total)")
+            st.warning(f"PE/Health: PE {pe_credits}, Health {health_credits} (1.0 total)")
+        claimed_courses.update(pe_df["Course Code"])
+        claimed_courses.update(health_df["Course Code"])
     
-        # ---- FINE ARTS CHECK ----
-        fa_df = selected_df[selected_df["Department"] == "Fine Arts"]
-        fa_credits = fa_df["Credits"].sum()
-    
-        if fa_credits >= 1:
-            st.success(f"Fine Arts: ✅ {fa_credits}/1.0")
+        # --- Fine Arts ---
+        fine_df = selected_df[
+            selected_df["Department"].isin([
+                "Fine Arts", "Vocal Music", "Performing Arts", "Visual Arts"
+            ])
+        ]        
+        
+        fine_credits = fine_df["Credits"].sum()
+        if fine_credits >= 1:
+            st.success(f"Fine Arts: ✅ {fine_credits}/1.0")
         else:
-            st.warning(f"Fine Arts: {fa_credits}/1.0")
+            st.warning(f"Fine Arts: {fine_credits}/1.0")
+        claimed_courses.update(fine_df["Course Code"])
     
         # ---- WORLD LANGUAGE CHECK ----
         wl_df = selected_df[selected_df["Department"] == "World Language"]
