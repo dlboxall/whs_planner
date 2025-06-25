@@ -456,10 +456,13 @@ if st.session_state.print_mode:
 
     # Launch print view in new browser tab
     st.markdown(f"""
-        <button onclick="const win = window.open(); win.document.write({encoded_html}); win.document.close();">
+        <a href="javascript:const win = window.open(); win.document.write({encoded_html}); win.document.close();" 
+           style="display:inline-block; padding:8px 16px; margin-top:12px; font-size:16px; background:#f0f0f0; 
+                  border:1px solid #ccc; border-radius:6px; text-decoration:none; color:#000;">
             🖨️ Print This Plan
-        </button>
+        </a>
     """, unsafe_allow_html=True)
+
 
 #----------END PRINT LOOP-------------
 
