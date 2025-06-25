@@ -694,30 +694,28 @@ def show_graduation_tracker():
         else:
             st.sidebar.warning(f"Fine Arts: {fine_credits}/1 credit")
     
-        # ---- WORLD LANGUAGE or CTE CLUSTER ----
-        lang_df = selected_df[selected_df["Department"] == "World Languages"]
-        lang_credits = lang_df["Credits"].sum()
-    
+        # ---- CTE CLUSTER CHECK----
         cte_df = selected_df[selected_df["Department"].isin(["CTE", "Business", "Computer Science"])]
         cte_df["Course Code"] = cte_df["Course Code"].astype(str)
-    
+        
         cluster_hits = {}
         for cluster, codes in cte_cluster_map.items():
             matched = cte_df[cte_df["Course Code"].isin(codes)]
             total_cluster_credits = matched["Credits"].sum()
             codes_taken = set(matched["Course Code"])
             all_courses_completed = codes_taken == set(codes)
+        
             if all_courses_completed or total_cluster_credits >= 1.5:
                 cluster_hits[cluster] = total_cluster_credits
-    
-        if lang_credits >= 2:
-            st.sidebar.success(f"Languages: ✅ {lang_credits}/2 credits in World Languages")
-        elif cluster_hits:
+        
+        if cluster_hits:
             matched_cluster = max(cluster_hits, key=cluster_hits.get)
-            st.sidebar.success(f"✅ Completed CTE cluster: **{matched_cluster}** ({cluster_hits[matched_cluster]} credits)")
+            st.sidebar.success(
+                f"✅ Completed CTE cluster: **{matched_cluster}** ({cluster_hits[matched_cluster]} credits)"
+            )
         else:
-            st.sidebar.warning("World Language or CTE cluster requirement not met")
-    
+            st.sidebar.warning("CTE cluster requirement not met")
+
         # ---- FINAL STATUS CHECK ----
         all_met = (
             total_credits >= 24 and
