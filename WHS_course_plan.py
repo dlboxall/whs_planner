@@ -408,7 +408,7 @@ def show_graduation_tracker():
     if st.session_state.grad_pathway == "University":
         st.subheader("🎓 University Graduation Requirements")
     
-        selected_df = build_selected_df()
+        #selected_df = build_selected_df()
         selected_df["Course Code"] = selected_df["Course Code"].astype(str)
         selected_df["Credits"] = selected_df["Credits"].astype(float)
     
