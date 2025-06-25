@@ -492,13 +492,13 @@ def show_graduation_tracker():
         claimed_courses.update(finance_df["Course Code"])
 
         # ---- Native American Studies ----
-        na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "4111"]
+        na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "8410"]
         na_credits = na_studies_df["Credits"].sum()
         
-        if na_credits >= 1.0:
-            st.success(f"Native American Studies: ✅ {na_credits}/1.0")
+        if na_credits >= 0.5:
+            st.success(f"Native American Studies: ✅ {na_credits}/0.5")
         else:
-            st.warning(f"Native American Studies: {na_credits}/1.0")
+            st.warning(f"Native American Studies: {na_credits}/0.5")
     
         # --- PE/Health ---
         pe_df = selected_df[
@@ -932,13 +932,13 @@ def show_graduation_tracker():
         claimed_courses.update(finance_df["Course Code"])
 
         # ---- Native American Studies ----
-        na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "4111"]
+        na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "8410"]
         na_credits = na_studies_df["Credits"].sum()
         
         if na_credits >= 1.0:
-            st.success(f"Native American Studies: ✅ {na_credits}/1.0")
+            st.success(f"Native American Studies: ✅ {na_credits}/0.5")
         else:
-            st.warning(f"Native American Studies: {na_credits}/1.0")
+            st.warning(f"Native American Studies: {na_credits}/0.5")
 
         # --- PE/Health ---
         pe_df = selected_df[
@@ -1003,7 +1003,6 @@ def show_graduation_tracker():
             math_met and adv_math_met and math_credits >= 4 and
             bio_met and chem_met and physci_met and sci_credits >= 4 and
             ss_met and ss_credits >= 3 and
-            #finance_credits >= 0.5 and
             pe_credits >= 0.5 and health_credits >= 0.5 and
             fine_credits >= 1 and
             (lang_credits >= 2 or cluster_hits) and
