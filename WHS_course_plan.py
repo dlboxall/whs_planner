@@ -424,13 +424,21 @@ if st.session_state.print_mode:
 
     # Add print button via JS
     st.markdown("""
-        <script>
-        function printPage() {
-            window.print();
+        <style>
+        .print-button {
+            font-size: 16px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            margin-top: 20px;
         }
-        </script>
-        <button onclick="printPage()">🖨️ Print This Plan</button>
+        </style>
+    
+        <button class="print-button" onclick="window.print()">🖨️ Print This Plan</button>
     """, unsafe_allow_html=True)
+
 #----------END PRINT LOOP-------------
 
 def show_graduation_tracker():
