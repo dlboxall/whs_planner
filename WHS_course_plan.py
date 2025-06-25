@@ -463,26 +463,34 @@ def show_graduation_tracker():
             st.warning(f"Science: {science_credits}/3 (check coverage)")
     
         # ---- SOCIAL STUDIES CHECK ----
-        required_soc_codes = ["4101", "4103", "4105", "4107"]
-        soc_df = selected_df[selected_df["Department"] == "Social Studies"]
-        soc_credits = soc_df["Credits"].sum()
-        selected_codes = soc_df["Course Code"].tolist()
-        soc_required_met = all(code in selected_codes for code in required_soc_codes)
+        # --- Social Studies ---
+        ss_df = selected_df[selected_df["Department"] == "Social Studies"]
+        ss_credits = ss_df["Credits"].sum()
+        ss_codes = ss_df["Course Code"].tolist()
     
-        if soc_credits >= 3 and soc_required_met:
-            st.success(f"Social Studies: ✅ {soc_credits}/3 (required courses met)")
+        ss_required = {
+            "Geography": ["8401", "8405"],
+            "World History": ["8304", "8310"],
+            "U.S. History": ["8101"],
+            "U.S. Government": ["8201"]
+        }
+        ss_met = all(any(code in ss_codes for code in group) for group in ss_required.values())
+    
+        if ss_credits >= 3 and ss_met:
+            st.success(f"Social Studies: ✅ {ss_credits}/3 (required classes met)")
         else:
-            st.warning(f"Social Studies: {soc_credits}/3 (check required coverage)")
+            st.warning(f"Social Studies: {ss_credits}/3 (check required coverage)")
+        claimed_courses.update(ss_df["Course Code"])
     
-        # ---- ECON/FINANCE CHECK ----
-        econ_codes = ["4143", "4145"]
-        econ_df = soc_df[soc_df["Course Code"].isin(econ_codes)]
-        econ_credits = econ_df["Credits"].sum()
-    
-        if econ_credits >= 0.5:
-            st.success(f"Econ/Finance: ✅ {econ_credits}/0.5")
+        # --- Finance (8701) or Personal Finance (9120) ---
+        finance_codes = ["8701", "9120"]
+        finance_df = selected_df[selected_df["Course Code"].isin(finance_codes)]
+        finance_credits = finance_df["Credits"].sum()
+        if finance_credits >= 0.5:
+            st.success(f"Econ/Finance: ✅ {finance_credits}/0.5")
         else:
-            st.warning(f"Econ/Finance: {econ_credits}/0.5")
+            st.warning(f"Econ/Finance: {finance_credits}/0.5")
+        claimed_courses.update(finance_df["Course Code"])
 
         # ---- Native American Studies ----
         na_studies_df = selected_df[selected_df["Course Code"].astype(str) == "4111"]
