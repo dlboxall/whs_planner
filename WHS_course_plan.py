@@ -951,6 +951,19 @@ if "print_mode" not in st.session_state:
 
 st.markdown("---")
 if st.session_state.print_mode:
+    if st.button("🔙 Back to Planner"):
+        st.session_state.print_mode = False
+else:
+    if st.button("🖨️ Print-Friendly View"):
+        st.session_state.print_mode = True
+
+# === PRINT-FRIENDLY VIEW TOGGLE ===
+
+if "print_mode" not in st.session_state:
+    st.session_state.print_mode = False
+
+st.markdown("---")
+if st.session_state.print_mode:
     import streamlit.components.v1 as components
     selected_pathway = st.session_state.get("grad_pathway", "N/A")
     total_credits = st.session_state.get("total_credits", 0)
