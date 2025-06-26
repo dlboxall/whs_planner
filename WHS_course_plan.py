@@ -951,18 +951,11 @@ if "print_mode" not in st.session_state:
 
 st.markdown("---")
 if st.session_state.print_mode:
-    if st.button("🔙 Back to Planner"):
-        st.session_state.print_mode = False
-else:
-    if st.button("🖨️ Print-Friendly View"):
-        st.session_state.print_mode = True
-
-# === DISPLAY PRINT-FRIENDLY VIEW IF TOGGLED ===
-if st.session_state.print_mode:
     import streamlit.components.v1 as components
     selected_pathway = st.session_state.get("grad_pathway", "N/A")
+    total_credits = st.session_state.get("total_credits", 0)
 
-    # Build raw HTML string directly – no json.dumps or string escaping
+    # Build the raw HTML string
     html_printable = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -997,13 +990,25 @@ if st.session_state.print_mode:
 </html>
 """
 
-    # Use iframe to open a real print preview
+    # Escape backticks, ${, and newlines for JavaScript-safe embedding
+    escaped_html = (
+        html_printable
+        .replace("\\", "\\\\")
+        .replace("`", "\\`")
+        .replace("${", "\\${")
+        .replace("\n", "\\n")
+    )
+
+    # Render the print button with the escaped HTML content
     components.html(f"""
-        <button onclick="const printWindow = window.open('', '_blank');
-                         printWindow.document.write(`{html_printable}`);
-                         printWindow.document.close();">
-            🖨️ Print This Plan
-        </button>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="const printWindow = window.open('', '_blank');
+                             printWindow.document.write(`{escaped_html}`);
+                             printWindow.document.close();"
+                    style='font-size: 16px; padding: 10px 20px; border-radius: 5px;'>
+                🖨️ Print This Plan
+            </button>
+        </div>
     """, height=100)
 
 #----------END PRINT LOOP-------------
