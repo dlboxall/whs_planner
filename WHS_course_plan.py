@@ -3,6 +3,7 @@ import pandas as pd
 import ast
 from layout import department_sidebar
 import base64
+import html
 
 #Connect to Dept Codes in sidebar
 dept_code_to_name = {
@@ -994,11 +995,10 @@ if st.session_state.print_mode:
         </div>
     """
 
-    # Use iframe to open a real print preview
-    escaped_html = html_printable.replace("'", "\\'").replace("\n", "\\n")
+    escaped_html = html.escape(html_printable)
     components.html(f"""
         <button onclick="const printWindow = window.open('', '_blank');
-                         printWindow.document.write('{escaped_html}');
+                         printWindow.document.write(`{html_printable}`);
                          printWindow.document.close();">
             🖨️ Print This Plan
         </button>
