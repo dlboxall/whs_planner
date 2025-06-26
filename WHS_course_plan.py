@@ -995,7 +995,6 @@ if st.session_state.print_mode:
         </div>
     """
 
-    escaped_html = html.escape(html_printable)
     components.html(f"""
         <button onclick="const printWindow = window.open('', '_blank');
                          printWindow.document.write(`{html_printable}`);
