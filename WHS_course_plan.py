@@ -371,7 +371,8 @@ def check_for_duplicate_courses(selected_df):
         ]
         st.error(f"⚠️ Duplicate course selection: {', '.join(names)} — most courses may only be taken once.")
 
-
+# Outside the function — placeholder value
+total_credits = 0
 def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
     graduation_df = course_catalog.copy()
@@ -565,7 +566,9 @@ def show_graduation_tracker():
             st.error("Some graduation requirements are still unmet. Please review the categories above.")
         else:
             st.success("✅ All graduation requirements for the University Pathway are complete!")
-
+        
+        return total_credits
+        
 #----------------------------------------------------------------------------------------------------------------------------------------
 #        CAREER AND TECHNICAL GRADUATION PATHWAY TRACKER
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -733,7 +736,9 @@ def show_graduation_tracker():
             st.error("Some graduation requirements are still unmet. Please review the categories above.")
         else:
             st.success("✅ All graduation requirements for the Career & Technical Pathway are complete!")
-
+            
+        return total_credits
+        
 #------------------------------------------------------------------------------------------------------------------------------------
 #               HONORS/ADVANCED ENDORSEMENT PATHWAY
 #------------------------------------------------------------------------------------------------------------------------------------
@@ -928,6 +933,8 @@ def show_graduation_tracker():
         else:
             st.warning("Some graduation requirements are still unmet. Please review the categories above.")
 
+        return total_credits
+
 # === PRINT-FRIENDLY VIEW TOGGLE ===
 
 if "print_mode" not in st.session_state:
@@ -944,6 +951,7 @@ else:
 # === DISPLAY PRINT-FRIENDLY VIEW IF TOGGLED ===
 if st.session_state.print_mode:
     import streamlit.components.v1 as components
+    selected_pathway = st.session_state.get("grad_pathway", "N/A")
 
     # Build raw HTML string directly — no json.dumps or string escaping
     html_printable = f"""<!DOCTYPE html>
@@ -972,19 +980,10 @@ if st.session_state.print_mode:
     html_printable += f"""
         </tbody>
         </table>
-    
-        <div style="margin-top: 24px; display: flex; justify-content: space-between; font-weight: bold;">
-            <div>Graduation pathway: {st.session_state.get('grad_pathway', 'Not selected')}</div>
-            <div>Total credits: {total_credits}</div>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <div><strong>Graduation pathway:</strong> {selected_pathway}</div>
+            <div><strong>Total credits:</strong> {total_credits}</div>
         </div>
-    
-        <script>
-            window.onload = function() {{
-                window.print();
-            }};
-        </script>
-    </body>
-    </html>
     """
 
     # Use iframe to open a real print preview
