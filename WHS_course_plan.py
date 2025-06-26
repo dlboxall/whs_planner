@@ -1012,22 +1012,24 @@ if st.session_state.print_mode:
         .replace("\n", "\\n")
     )
 
-    # Render the print button with the escaped HTML content
     # Escape only double quotes for safe injection into JS string
     escaped_html = html_printable.replace('"', '\\"')
+        
+    # Encode HTML as base64
+    encoded_html = base64.b64encode(html_printable.encode()).decode()
     
     components.html(f"""
         <div style="text-align: center; margin-top: 20px;">
-            <button onclick="const printWindow = window.open('', '_blank');
-                             printWindow.document.write(\\"{escaped_html}\\");
+            <button onclick="const printWindow = window.open();
+                             const html = atob('{encoded_html}');
+                             printWindow.document.write(html);
                              printWindow.document.close();"
                     style='font-size: 16px; padding: 10px 20px; border-radius: 5px;'>
                 🖨️ Print This Plan
             </button>
         </div>
     """, height=100)
-    
-
+     
 #----------END PRINT LOOP-------------
 
 
