@@ -935,6 +935,10 @@ def show_graduation_tracker():
 
         return total_credits
 
+    # End of show_graduation_tracker definition
+    # ------------------------------------------
+total_credits = show_graduation_tracker()
+
 # === PRINT-FRIENDLY VIEW TOGGLE ===
 
 if "print_mode" not in st.session_state:
