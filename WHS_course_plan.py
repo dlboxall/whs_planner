@@ -979,7 +979,7 @@ if st.session_state.print_mode:
     <table>
         <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
         <tbody>
-"""
+#"""
 
     for year in years:
         core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
