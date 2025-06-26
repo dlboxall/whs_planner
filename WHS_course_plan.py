@@ -567,6 +567,7 @@ def show_graduation_tracker():
         else:
             st.success("✅ All graduation requirements for the University Pathway are complete!")
         
+        st.session_state.total_credits = total_credits
         return total_credits
         
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -737,6 +738,7 @@ def show_graduation_tracker():
         else:
             st.success("✅ All graduation requirements for the Career & Technical Pathway are complete!")
             
+        st.session_state.total_credits = total_credits
         return total_credits
         
 #------------------------------------------------------------------------------------------------------------------------------------
@@ -932,12 +934,14 @@ def show_graduation_tracker():
             st.success("🎓 All Advanced/Honors Endorsement graduation requirements met!")
         else:
             st.warning("Some graduation requirements are still unmet. Please review the categories above.")
-
+        
+        st.session_state.total_credits = total_credits
         return total_credits
 
     # End of show_graduation_tracker definition
     # ------------------------------------------
-total_credits = show_graduation_tracker()
+# Only get total_credits for print mode, without rerendering the tracker
+total_credits = st.session_state.get("total_credits", 0)
 
 # === PRINT-FRIENDLY VIEW TOGGLE ===
 
