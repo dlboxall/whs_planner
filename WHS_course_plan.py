@@ -412,17 +412,23 @@ if st.session_state.print_mode:
         elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
         html_printable += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
 
-    html_printable += """
+    html_printable += f"""
         </tbody>
-    </table>
-    <script>
-        window.onload = function() {
-            window.print();
-        };
-    </script>
-</body>
-</html>
-"""
+        </table>
+    
+        <div style="margin-top: 24px; display: flex; justify-content: space-between; font-weight: bold;">
+            <div>Graduation pathway: {st.session_state.get('grad_pathway', 'Not selected')}</div>
+            <div>Total credits: {total_credits}</div>
+        </div>
+    
+        <script>
+            window.onload = function() {{
+                window.print();
+            }};
+        </script>
+    </body>
+    </html>
+    """
 
     # Use iframe to open a real print preview
     components.html(f"""
