@@ -371,76 +371,6 @@ def check_for_duplicate_courses(selected_df):
         ]
         st.error(f"⚠️ Duplicate course selection: {', '.join(names)} — most courses may only be taken once.")
 
-# === PRINT-FRIENDLY VIEW TOGGLE ===
-
-if "print_mode" not in st.session_state:
-    st.session_state.print_mode = False
-
-st.markdown("---")
-if st.session_state.print_mode:
-    if st.button("🔙 Back to Planner"):
-        st.session_state.print_mode = False
-else:
-    if st.button("🖨️ Print-Friendly View"):
-        st.session_state.print_mode = True
-
-# === DISPLAY PRINT-FRIENDLY VIEW IF TOGGLED ===
-if st.session_state.print_mode:
-    import streamlit.components.v1 as components
-
-    # Build raw HTML string directly — no json.dumps or string escaping
-    html_printable = f"""<!DOCTYPE html>
-<html>
-<head>
-    <title>{st.session_state.get('student_name', 'Student')}'s 4-Year Plan</title>
-    <style>
-        body {{ font-family: Arial, sans-serif; padding: 30px; }}
-        h2 {{ text-align: center; }}
-        table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
-        th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
-    </style>
-</head>
-<body>
-    <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
-    <table>
-        <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
-        <tbody>
-"""
-
-    for year in years:
-        core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
-        elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
-        html_printable += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
-
-    html_printable += f"""
-        </tbody>
-        </table>
-    
-        <div style="margin-top: 24px; display: flex; justify-content: space-between; font-weight: bold;">
-            <div>Graduation pathway: {st.session_state.get('grad_pathway', 'Not selected')}</div>
-            <div>Total credits: {total_credits}</div>
-        </div>
-    
-        <script>
-            window.onload = function() {{
-                window.print();
-            }};
-        </script>
-    </body>
-    </html>
-    """
-
-    # Use iframe to open a real print preview
-    components.html(f"""
-        <button onclick="const printWindow = window.open('', '_blank');
-                         printWindow.document.write(`{html_printable}`);
-                         printWindow.document.close();">
-            🖨️ Print This Plan
-        </button>
-    """, height=100)
-
-
-#----------END PRINT LOOP-------------
 
 def show_graduation_tracker():
     #st.markdown("### 🎓 Graduation Tracker")
@@ -998,8 +928,77 @@ def show_graduation_tracker():
         else:
             st.warning("Some graduation requirements are still unmet. Please review the categories above.")
 
+# === PRINT-FRIENDLY VIEW TOGGLE ===
 
-# Call tracker in right-hand sidebar
+if "print_mode" not in st.session_state:
+    st.session_state.print_mode = False
+
+st.markdown("---")
+if st.session_state.print_mode:
+    if st.button("🔙 Back to Planner"):
+        st.session_state.print_mode = False
+else:
+    if st.button("🖨️ Print-Friendly View"):
+        st.session_state.print_mode = True
+
+# === DISPLAY PRINT-FRIENDLY VIEW IF TOGGLED ===
+if st.session_state.print_mode:
+    import streamlit.components.v1 as components
+
+    # Build raw HTML string directly — no json.dumps or string escaping
+    html_printable = f"""<!DOCTYPE html>
+<html>
+<head>
+    <title>{st.session_state.get('student_name', 'Student')}'s 4-Year Plan</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; padding: 30px; }}
+        h2 {{ text-align: center; }}
+        table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+        th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
+    </style>
+</head>
+<body>
+    <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
+    <table>
+        <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
+        <tbody>
+"""
+
+    for year in years:
+        core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
+        elective = ", ".join([c for c in st.session_state.course_plan[year][4:] if c])
+        html_printable += f"<tr><td>{year}</td><td>{core}</td><td>{elective}</td></tr>"
+
+    html_printable += f"""
+        </tbody>
+        </table>
+    
+        <div style="margin-top: 24px; display: flex; justify-content: space-between; font-weight: bold;">
+            <div>Graduation pathway: {st.session_state.get('grad_pathway', 'Not selected')}</div>
+            <div>Total credits: {total_credits}</div>
+        </div>
+    
+        <script>
+            window.onload = function() {{
+                window.print();
+            }};
+        </script>
+    </body>
+    </html>
+    """
+
+    # Use iframe to open a real print preview
+    components.html(f"""
+        <button onclick="const printWindow = window.open('', '_blank');
+                         printWindow.document.write(`{html_printable}`);
+                         printWindow.document.close();">
+            🖨️ Print This Plan
+        </button>
+    """, height=100)
+#----------END PRINT LOOP-------------
+
+
+# Call tracker in sidebar
 with st.sidebar:
     department_sidebar()
     show_graduation_tracker()
