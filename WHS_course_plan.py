@@ -962,7 +962,7 @@ if st.session_state.print_mode:
     import streamlit.components.v1 as components
     selected_pathway = st.session_state.get("grad_pathway", "N/A")
 
-    # Build raw HTML string directly — no json.dumps or string escaping
+    # Build raw HTML string directly – no json.dumps or string escaping
     html_printable = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -979,6 +979,7 @@ if st.session_state.print_mode:
     <table>
         <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
         <tbody>
+"""
 
     for year in years:
         core = ", ".join([c for c in st.session_state.course_plan[year][:4] if c])
@@ -987,12 +988,14 @@ if st.session_state.print_mode:
 
     html_printable += f"""
         </tbody>
-        </table>
-        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <div><strong>Graduation pathway:</strong> {selected_pathway}</div>
-            <div><strong>Total credits:</strong> {total_credits}</div>
-        </div>
-    """
+    </table>
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <div><strong>Graduation pathway:</strong> {selected_pathway}</div>
+        <div><strong>Total credits:</strong> {total_credits}</div>
+    </div>
+</body>
+</html>
+"""
 
     # Use iframe to open a real print preview
     components.html(f"""
