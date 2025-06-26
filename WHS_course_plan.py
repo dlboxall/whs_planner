@@ -995,6 +995,7 @@ if st.session_state.print_mode:
         </div>
     """
 
+    # Use iframe to open a real print preview
     components.html(f"""
         <button onclick="const printWindow = window.open('', '_blank');
                          printWindow.document.write(`{html_printable}`);
