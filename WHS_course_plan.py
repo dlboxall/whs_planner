@@ -995,13 +995,15 @@ if st.session_state.print_mode:
     """
 
     # Use iframe to open a real print preview
+    escaped_html = html_printable.replace("'", "\\'").replace("\n", "\\n")
     components.html(f"""
         <button onclick="const printWindow = window.open('', '_blank');
-                         printWindow.document.write(`{html_printable}`);
+                         printWindow.document.write('{escaped_html}');
                          printWindow.document.close();">
             🖨️ Print This Plan
         </button>
     """, height=100)
+
 #----------END PRINT LOOP-------------
 
 
