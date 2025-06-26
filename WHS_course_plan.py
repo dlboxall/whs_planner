@@ -1,9 +1,11 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import ast
 from layout import department_sidebar
 import base64
 import html
+from datetime import datetime
 
 #Connect to Dept Codes in sidebar
 dept_code_to_name = {
@@ -964,10 +966,17 @@ if "print_mode" not in st.session_state:
 
 st.markdown("---")
 if st.session_state.print_mode:
-    import streamlit.components.v1 as components
+    
     selected_pathway = st.session_state.get("grad_pathway", "N/A")
     total_credits = st.session_state.get("total_credits", 0)
 
+    # Load and encode logo image
+    with open("WHS_logo2.webp", "rb") as image_file:
+        logo_base64 = base64.b64encode(image_file.read()).decode()
+
+    # Format timestamp as MM/DD/YY HH:MM (24-hour)
+    timestamp = datetime.now().strftime("%m/%d/%y %H:%M")
+    
     # Build the raw HTML string
     html_printable = f"""<!DOCTYPE html>
 <html>
@@ -978,13 +987,21 @@ if st.session_state.print_mode:
         h2 {{ text-align: center; }}
         table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
         th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
+        .header {{ display: flex; justify-content: space-between; align-items: center; }}
+        .logo {{ height: 60px; }}
+        .timestamp {{ font-size: 14px; color: #444; }}
     </style>
 </head>
 <body>
+    <div class="header">
+        <img src="data:image/webp;base64,{logo_base64}" class="logo" alt="School Logo" />
+        <div class="timestamp">{timestamp}</div>
+    </div>
     <h2>{st.session_state.get('student_name', 'Student')}'s 4-Year Course Plan</h2>
     <table>
         <thead><tr><th>Grade</th><th>Core</th><th>Elective</th></tr></thead>
         <tbody>
+
 """
 
     for year in years:
@@ -1031,7 +1048,6 @@ if st.session_state.print_mode:
     """, height=100)
      
 #----------END PRINT LOOP-------------
-
 
 # Call tracker in sidebar
 with st.sidebar:
